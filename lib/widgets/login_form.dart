@@ -16,10 +16,22 @@ class _LoginFormState extends State<LoginForm> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.network('https://www.redbacksoccer.com.au/wp-content/uploads/2019/02/CRFC-Logo-1.png'),
+          Image.network(
+              'https://www.redbacksoccer.com.au/wp-content/uploads/2019/02/CRFC-Logo-1.png'),
           email,
           pwd,
-          SizedBox(height: 100,)
+          SizedBox(
+            height: 100,
+          ),
+          MaterialButton(
+              color: Theme.of(context).accentColor,
+              child: Text(
+                "Login",
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, "/home");
+              }),
         ],
       ),
     );

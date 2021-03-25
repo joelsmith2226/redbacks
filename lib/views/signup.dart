@@ -7,7 +7,7 @@ class SignupView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Signup"),
+        title: Text("Signup"), centerTitle: true,
       ),
       body: Container(
         child: SignupForm(),

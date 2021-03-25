@@ -9,8 +9,18 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Home"),),
-      body: Container(child: Text("Team Here Pls"),),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage("https://i.pinimg.com/564x/a2/10/ad/a210ad3666aeedcdeac03fdeaa291ee4.jpg"),
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+      appBar: AppBar(
+        title: Text("Home"),
+        centerTitle: true,
+      ),
     );
   }
 }

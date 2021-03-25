@@ -6,7 +6,7 @@ class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Login"),),
+      appBar: AppBar(title: Text("Login"), centerTitle: true,),
       body: Container(child: LoginForm(),),
       floatingActionButton: FloatingActionButton(
         child: Text("Sign Up", style: TextStyle(fontSize: 14), textAlign: TextAlign.center,),
