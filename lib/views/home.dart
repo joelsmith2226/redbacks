@@ -6,6 +6,14 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  int _selectedIndex = 1;
+
+  void _onItemTapped(index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,6 +28,16 @@ class _HomeViewState extends State<HomeView> {
       appBar: AppBar(
         title: Text("Home"),
         centerTitle: true,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.compare_arrows), label: "Transfers"),
+          BottomNavigationBarItem(icon: Icon(Icons.sports_baseball), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.wine_bar), label: "Leaderboard"),
+        ],
+        currentIndex: _selectedIndex,
+        // selectedItemColor: Colors.amber[800],
+        onTap: (index) {_onItemTapped(index);},
       ),
     );
   }
