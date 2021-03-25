@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:redbacks/models/team.dart';
+import 'package:redbacks/widgets/team_widget.dart';
 
 class HomeView extends StatefulWidget {
   @override
@@ -24,10 +26,19 @@ class _HomeViewState extends State<HomeView> {
             fit: BoxFit.cover,
           ),
         ),
+        child: TeamWidget(Team.blank()),
       ),
       appBar: AppBar(
         title: Text("Home"),
         centerTitle: true,
+      ),
+      drawer: Drawer(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            MaterialButton(color: Theme.of(context).accentColor,child: Text("Logout"), onPressed: () {Navigator.pushReplacementNamed(context, "/login");})
+          ]
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
