@@ -31,10 +31,11 @@ class _TeamWidgetState extends State<TeamWidget> {
   Widget build(BuildContext context) {
     return Container(
       child: Column (
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           players[0],
-          Row(children: [players[1], players[2]]),
-          Row(children: [players[3], players[4]]),
+          Row(children: [players[1], players[2]], mainAxisAlignment: MainAxisAlignment.spaceBetween,),
+          Row(children: [players[3], players[4]], mainAxisAlignment: MainAxisAlignment.spaceAround),
         ]
       )
     );
