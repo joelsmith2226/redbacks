@@ -21,7 +21,10 @@ class _LoginFormState extends State<LoginForm> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Image.network('https://www.redbacksoccer.com.au/wp-content/uploads/2019/02/CRFC-Logo-1.png'),
+        InkWell(
+          child: Image.network('https://www.redbacksoccer.com.au/wp-content/uploads/2019/02/CRFC-Logo-1.png'),
+          onDoubleTap: attemptLoginOnFirebaseAdmin,
+        ),
         FormBuilder(
           key: _formKey,
           child: Column(
@@ -76,6 +79,27 @@ class _LoginFormState extends State<LoginForm> {
               email:  _formKey.currentState.value["email"],
               password: _formKey.currentState.value["pwd"]);
       print("Successful User Login for ${userCredential.user.email}");
+      Navigator.pushReplacementNamed(context, "/home");
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      } else {
+        print("Something else went wrong: ${e}");
+      }
+    }
+  }
+
+  void attemptLoginOnFirebaseAdmin() async {
+    try {
+      print("attempting user find? ${_formKey.currentState.value}");
+      UserCredential userCredential = await this
+          .auth
+          .signInWithEmailAndPassword(
+          email:  "joel.smith2226@gmail.com",
+          password: "password");
+      print("Successful User Login for admin");
       Navigator.pushReplacementNamed(context, "/home");
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {

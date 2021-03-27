@@ -2,7 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/widgets/homepage_summary.dart';
+import 'package:redbacks/widgets/leaderboard.dart';
+import 'package:redbacks/widgets/points_page.dart';
 import 'package:redbacks/widgets/team_widget.dart';
+import 'package:redbacks/widgets/transfers_page.dart';
 
 class HomeView extends StatefulWidget {
   @override
@@ -20,22 +23,9 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> pages = [ TransfersPage(), PointsPage(), Leaderboard()];
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage(
-                "https://i.pinimg.com/564x/a2/10/ad/a210ad3666aeedcdeac03fdeaa291ee4.jpg"),
-            fit: BoxFit.fill,
-          ),
-        ),
-        child: Column(
-          children: [
-            HomepageSummary(),
-            TeamWidget(Team.blank()),
-          ],
-        ),
-      ),
+      body: pages[_selectedIndex],
       appBar: AppBar(
         title: Text("Home"),
         centerTitle: true,

@@ -4,8 +4,9 @@ import 'package:redbacks/widgets/player_card.dart';
 
 class PlayerWidget extends StatefulWidget {
   Player player;
+  String secondaryValue;
 
-  PlayerWidget(this.player);
+  PlayerWidget(this.player, this.secondaryValue);
 
   @override
   _PlayerWidgetState createState() => _PlayerWidgetState();
@@ -27,7 +28,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                 width: MediaQuery.of(context).size.width * 0.25,
               ),
               NameTag(),
-              PointsTag(),
+              SecondaryTag(widget.secondaryValue),
             ],
           ),
           CaptainsArmband(widget.player.rank),
@@ -42,39 +43,40 @@ class _PlayerWidgetState extends State<PlayerWidget> {
         textAlign: TextAlign.center,
         text: TextSpan(
           text: "${widget.player.getLastName()}",
-          style: TextStyle(fontSize: 16, color: Colors.white),
+          style: TextStyle(fontSize: 14, color: Colors.white),
         ),
       ),
-      color: Colors.black.withAlpha(150),
+      color: Colors.black.withAlpha(180),
       width: MediaQuery.of(context).size.width * 0.2,
     );
   }
 
-  Widget PointsTag() {
+  Widget SecondaryTag(String value) {
     return Container(
-      child: RichText(
-        textAlign: TextAlign.center,
-        text: TextSpan(
-          text: "${widget.player.currPts}",
-          style: TextStyle(fontSize: 16, color: Colors.white),
+      child: Container(
+        child: RichText(
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            text: value,
+            style: TextStyle(fontSize: 14, color: Colors.white),
+          ),
         ),
+        color: Theme.of(context).primaryColor.withAlpha(150),
+        width: MediaQuery.of(context).size.width * 0.2,
       ),
-      color: Colors.black.withAlpha(100),
+      color: Colors.black,
       width: MediaQuery.of(context).size.width * 0.2,
     );
   }
 
-  Widget CaptainsArmband(String rank){
+  Widget CaptainsArmband(String rank) {
     print(rank);
     // if (rank == "") {
     //   return Container();
     // }
     return Container(
-      width:100,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.black
-      ),
+      width: 100,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black),
       // child: Text(rank, style: TextStyle(color: Colors.white)),
     );
   }

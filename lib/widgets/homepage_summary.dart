@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 class HomepageSummary extends StatefulWidget {
+  Widget body;
+  HomepageSummary({this.body});
+
   @override
   _HomepageSummaryState createState() => _HomepageSummaryState();
 }
@@ -13,7 +16,8 @@ class _HomepageSummaryState extends State<HomepageSummary> {
       height: 50,
       margin: EdgeInsets.only(bottom: 50),
       color: Colors.black.withAlpha(100),
-      child: Text("    GW12        25pts    ", style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold)), alignment: Alignment.center,
+      child: widget.body,
+      alignment: Alignment.center,
     );
   }
 }

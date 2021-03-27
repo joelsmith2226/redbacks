@@ -47,6 +47,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: MaterialColor(0xFFa01300, colorSwatch),
+        primaryColor: Color(0xFFa01300),
       ),
       home: LoginView(),
       routes: Routes.getRoutes(),
