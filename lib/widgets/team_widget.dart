@@ -35,6 +35,7 @@ class _TeamWidgetState extends State<TeamWidget> {
         children: [
           players[0],
           Row(children: [players[1], players[2]], mainAxisAlignment: MainAxisAlignment.spaceBetween,),
+          SizedBox(height:30),
           Row(children: [players[3], players[4]], mainAxisAlignment: MainAxisAlignment.spaceAround),
         ]
       )
