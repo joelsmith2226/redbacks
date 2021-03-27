@@ -19,6 +19,10 @@ class _SignupFormState extends State<SignupForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.all(20),
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      color: Colors.white,
       alignment: Alignment.center,
       child: BuildForm(),
     );

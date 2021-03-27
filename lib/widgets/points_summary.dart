@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:redbacks/widgets/homepage_summary.dart';
 import 'package:redbacks/widgets/summary_container.dart';
 
@@ -10,8 +11,8 @@ class PointsSummary extends StatefulWidget {
 class _PointsSummaryState extends State<PointsSummary> {
   @override
   Widget build(BuildContext context) {
-    const style = TextStyle(
-        color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold);
+    var style = GoogleFonts.merriweatherSans();
+
     return HomepageSummary(
         body: Row(
       mainAxisAlignment: MainAxisAlignment.center,

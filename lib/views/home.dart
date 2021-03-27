@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/widgets/homepage_summary.dart';
 import 'package:redbacks/widgets/leaderboard.dart';
@@ -24,10 +25,12 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     List<Widget> pages = [ TransfersPage(), PointsPage(), Leaderboard()];
+    List<String> titles = ["Transfers", "Points", "Leaderboard"];
     return Scaffold(
       body: pages[_selectedIndex],
       appBar: AppBar(
-        title: Text("Home"),
+        title: Text(titles[_selectedIndex], style: GoogleFonts.merriweatherSans(),
+        ),
         centerTitle: true,
       ),
       drawer: Container(
@@ -60,11 +63,11 @@ class _HomeViewState extends State<HomeView> {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.compare_arrows), label: "Transfers"),
+              icon: Icon(Icons.compare_arrows), label: titles[0]),
           BottomNavigationBarItem(
-              icon: Icon(Icons.sports_baseball), label: "Home"),
+              icon: Icon(Icons.sports_baseball), label: titles[1]),
           BottomNavigationBarItem(
-              icon: Icon(Icons.wine_bar), label: "Leaderboard"),
+              icon: Icon(Icons.wine_bar), label: titles[2]),
         ],
         currentIndex: _selectedIndex,
         // selectedItemColor: Colors.amber[800],

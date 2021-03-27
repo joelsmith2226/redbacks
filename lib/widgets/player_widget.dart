@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/widgets/player_card.dart';
 
@@ -39,11 +40,12 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
   Widget NameTag() {
     return Container(
+      padding: EdgeInsets.all(1),
       child: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
           text: "${widget.player.getLastName()}",
-          style: TextStyle(fontSize: 14, color: Colors.white),
+          style: TextStyle(fontSize: 14, color: Colors.white, fontFamily: GoogleFonts.merriweatherSans().fontFamily),
         ),
       ),
       color: Colors.black.withAlpha(180),
@@ -54,11 +56,12 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   Widget SecondaryTag(String value) {
     return Container(
       child: Container(
+        padding: EdgeInsets.all(1),
         child: RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
             text: value,
-            style: TextStyle(fontSize: 14, color: Colors.white)
+            style: TextStyle(fontSize: 14, color: Colors.white, fontFamily: GoogleFonts.merriweatherSans().fontFamily)
           ),
         ),
         color: Theme.of(context).primaryColor.withAlpha(150),

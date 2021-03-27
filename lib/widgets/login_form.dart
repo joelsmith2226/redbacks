@@ -13,7 +13,14 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(alignment: Alignment.center, child: BuildForm());
+    return Container(
+        margin: EdgeInsets.all(20),
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        color: Colors.white,
+        alignment: Alignment.center,
+        child: BuildForm(),
+      );
   }
 
   Widget BuildForm() {
@@ -22,7 +29,8 @@ class _LoginFormState extends State<LoginForm> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         InkWell(
-          child: Image.network('https://www.redbacksoccer.com.au/wp-content/uploads/2019/02/CRFC-Logo-1.png'),
+          child: Image.network(
+              'https://www.redbacksoccer.com.au/wp-content/uploads/2019/02/CRFC-Logo-1.png'),
           onDoubleTap: attemptLoginOnFirebaseAdmin,
         ),
         FormBuilder(
@@ -76,7 +84,7 @@ class _LoginFormState extends State<LoginForm> {
       UserCredential userCredential = await this
           .auth
           .signInWithEmailAndPassword(
-              email:  _formKey.currentState.value["email"],
+              email: _formKey.currentState.value["email"],
               password: _formKey.currentState.value["pwd"]);
       print("Successful User Login for ${userCredential.user.email}");
       Navigator.pushReplacementNamed(context, "/home");
@@ -97,8 +105,7 @@ class _LoginFormState extends State<LoginForm> {
       UserCredential userCredential = await this
           .auth
           .signInWithEmailAndPassword(
-          email:  "joel.smith2226@gmail.com",
-          password: "password");
+              email: "joel.smith2226@gmail.com", password: "password");
       print("Successful User Login for admin");
       Navigator.pushReplacementNamed(context, "/home");
     } on FirebaseAuthException catch (e) {
