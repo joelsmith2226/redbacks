@@ -22,8 +22,12 @@ class _TeamWidgetState extends State<TeamWidget> {
     players.add(PlayerWidget(Player.blank()));
     players.add(PlayerWidget(Player.blank()));
     players.add(PlayerWidget(Player.blank()));
-    players.add(PlayerWidget(Player.blank()));
-    players.add(PlayerWidget(Player.blank()));
+    Player captain = Player.blank();
+    captain.rank = "C";
+    Player vice = Player.blank();
+    captain.rank = "V";
+    players.add(PlayerWidget(captain));
+    players.add(PlayerWidget(vice));
     super.initState();
   }
 

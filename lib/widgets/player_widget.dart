@@ -19,24 +19,63 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     return Container(
       child: InkWell(
         onTap: showPlayerCard,
-        child: Column(
-          children: [
-            Image.asset("assets/avatar-nobg.png",
-                width: MediaQuery.of(context).size.width * 0.3),
-            Container(
-              child: RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                    text: "${widget.player.currPts}",
-                    style: TextStyle(fontSize: 20, color: Colors.black),
-                ),
+        child: Stack(children: [
+          Column(
+            children: [
+              Image.asset(
+                "assets/avatar-nobg.png",
+                width: MediaQuery.of(context).size.width * 0.25,
               ),
-              color: Colors.white,
-              width: MediaQuery.of(context).size.width * 0.2,
-            )
-          ],
+              NameTag(),
+              PointsTag(),
+            ],
+          ),
+          CaptainsArmband(widget.player.rank),
+        ]),
+      ),
+    );
+  }
+
+  Widget NameTag() {
+    return Container(
+      child: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          text: "${widget.player.getLastName()}",
+          style: TextStyle(fontSize: 16, color: Colors.white),
         ),
       ),
+      color: Colors.black.withAlpha(150),
+      width: MediaQuery.of(context).size.width * 0.2,
+    );
+  }
+
+  Widget PointsTag() {
+    return Container(
+      child: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          text: "${widget.player.currPts}",
+          style: TextStyle(fontSize: 16, color: Colors.white),
+        ),
+      ),
+      color: Colors.black.withAlpha(100),
+      width: MediaQuery.of(context).size.width * 0.2,
+    );
+  }
+
+  Widget CaptainsArmband(String rank){
+    print(rank);
+    // if (rank == "") {
+    //   return Container();
+    // }
+    return Container(
+      width:100,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.black
+      ),
+      // child: Text(rank, style: TextStyle(color: Colors.white)),
     );
   }
 }

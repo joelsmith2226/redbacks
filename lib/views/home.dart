@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/widgets/homepage_summary.dart';
@@ -25,7 +26,7 @@ class _HomeViewState extends State<HomeView> {
           image: DecorationImage(
             image: NetworkImage(
                 "https://i.pinimg.com/564x/a2/10/ad/a210ad3666aeedcdeac03fdeaa291ee4.jpg"),
-            fit: BoxFit.cover,
+            fit: BoxFit.fill,
           ),
         ),
         child: Column(
@@ -40,22 +41,30 @@ class _HomeViewState extends State<HomeView> {
         centerTitle: true,
       ),
       drawer: Container(
+        decoration: BoxDecoration(
+            color: Colors.black.withAlpha(100),
+
+            ),
         width: MediaQuery.of(context).size.width * 0.35,
         child: Drawer(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            MaterialButton(
-                color: Theme.of(context).accentColor,
-                child: Text("Settings"),
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, "/login");
-                }),
-            MaterialButton(
-                color: Theme.of(context).accentColor,
-                child: Text("Logout"),
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, "/login");
-                })
-          ]),
+          child: Container(
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              MaterialButton(
+                  color: Theme.of(context).accentColor,
+                  child: Text("Settings"),
+                  onPressed: () {
+                    // Navigator.pushReplacementNamed(context, "/login");
+                  }),
+              MaterialButton(
+                  color: Theme.of(context).accentColor,
+                  child: Text("Logout"),
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    Navigator.pushReplacementNamed(context, "/login");
+                  })
+            ]),
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(

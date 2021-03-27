@@ -43,25 +43,12 @@ class MyApp extends StatelessWidget {
   }
 
   Widget LaunchApp() {
-    Widget landingView = LoginView();
-    FirebaseAuth.instance
-        .authStateChanges()
-        .listen((User user) {
-      if (user == null) {
-        print('User is currently signed out!');
-        landingView = LoginView();
-      } else {
-        print('User is signed in!');
-        landingView = HomeView();
-      }
-    });
-
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: MaterialColor(0xFFa01300, colorSwatch),
       ),
-      home: landingView,
+      home: LoginView(),
       routes: Routes.getRoutes(),
     );
   }
