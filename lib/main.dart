@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:redbacks/views/home.dart';
 import 'package:redbacks/views/login.dart';
 
 import 'globals/constants.dart';
@@ -42,13 +43,16 @@ class MyApp extends StatelessWidget {
   }
 
   Widget LaunchApp() {
+    Widget landingView = LoginView();
     FirebaseAuth.instance
         .authStateChanges()
         .listen((User user) {
       if (user == null) {
         print('User is currently signed out!');
+        landingView = LoginView();
       } else {
         print('User is signed in!');
+        landingView = HomeView();
       }
     });
 
@@ -57,7 +61,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: MaterialColor(0xFFa01300, colorSwatch),
       ),
-      home: LoginView(),
+      home: landingView,
       routes: Routes.getRoutes(),
     );
   }

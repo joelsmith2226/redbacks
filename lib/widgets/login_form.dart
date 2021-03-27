@@ -6,48 +6,52 @@ class LoginForm extends StatefulWidget {
   @override
   _LoginFormState createState() => _LoginFormState();
 }
-final _formKey = GlobalKey<FormBuilderState>();
 
 class _LoginFormState extends State<LoginForm> {
+  FirebaseAuth auth = FirebaseAuth.instance;
+  final _formKey = GlobalKey<FormBuilderState>();
+
   @override
   Widget build(BuildContext context) {
-    Widget email = LoginTextForm("email", "Enter Email", false);
-    Widget pwd = LoginTextForm("pwd", "Enter password", true);
-    return Container(
-      alignment: Alignment.center,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Image.network(
-              'https://www.redbacksoccer.com.au/wp-content/uploads/2019/02/CRFC-Logo-1.png'),
-          FormBuilder(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                email,
-                pwd,
-              ],
-            ),
+    return Container(alignment: Alignment.center, child: BuildForm());
+  }
+
+  Widget BuildForm() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Image.network('https://www.redbacksoccer.com.au/wp-content/uploads/2019/02/CRFC-Logo-1.png'),
+        FormBuilder(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              LoginTextForm("email", "Enter Email", false),
+              LoginTextForm("pwd", "Enter password", true),
+            ],
           ),
-          MaterialButton(
-              color: Theme.of(context).accentColor,
-              child: Text(
-                "Login",
-                style: TextStyle(color: Colors.white),
-              ),
-              onPressed: () {
-                print("Login pressed");
-                attemptLoginOnFirebase();
-              }),
-        ],
-      ),
+        ),
+        MaterialButton(
+          color: Theme.of(context).accentColor,
+          child: Text(
+            "Login",
+            style: TextStyle(color: Colors.white),
+          ),
+          onPressed: () {
+            _formKey.currentState.save();
+            print("Login pressed");
+            attemptLoginOnFirebase();
+          },
+        ),
+      ],
     );
   }
 
   Widget LoginTextForm(String name, String label, bool pwd) {
-    var validators = [FormBuilderValidators.required(context),
-      FormBuilderValidators.max(context, 70)];
+    var validators = [
+      FormBuilderValidators.required(context),
+      FormBuilderValidators.max(context, 70)
+    ];
     return Container(
       width: MediaQuery.of(context).size.width * 0.75,
       child: FormBuilderTextField(
@@ -63,13 +67,14 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  void attemptLoginOnFirebase() async{
+  void attemptLoginOnFirebase() async {
     try {
-      print("attempting user find?");
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _formKey.currentState.value["email"],
-          password:  _formKey.currentState.value["pwd"]
-      );
+      print("attempting user find? ${_formKey.currentState.value}");
+      UserCredential userCredential = await this
+          .auth
+          .signInWithEmailAndPassword(
+              email:  _formKey.currentState.value["email"],
+              password: _formKey.currentState.value["pwd"]);
       print("Successful User Login for ${userCredential.user.email}");
       Navigator.pushReplacementNamed(context, "/home");
     } on FirebaseAuthException catch (e) {
