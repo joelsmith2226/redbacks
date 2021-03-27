@@ -58,7 +58,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
           textAlign: TextAlign.center,
           text: TextSpan(
             text: value,
-            style: TextStyle(fontSize: 14, color: Colors.white),
+            style: TextStyle(fontSize: 14, color: Colors.white)
           ),
         ),
         color: Theme.of(context).primaryColor.withAlpha(150),

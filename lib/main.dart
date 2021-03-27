@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:redbacks/views/home.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import 'package:redbacks/views/login.dart';
 
 import 'globals/constants.dart';
@@ -48,6 +49,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: MaterialColor(0xFFa01300, colorSwatch),
         primaryColor: Color(0xFFa01300),
+        accentColor:  Color(0xFFa01300).withAlpha(150),
+        textTheme: GoogleFonts.merriweatherSansTextTheme()
       ),
       home: LoginView(),
       routes: Routes.getRoutes(),
