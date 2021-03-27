@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:redbacks/views/login.dart';
 
@@ -6,14 +7,16 @@ import 'globals/router.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(); // declaring twice..?
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +42,16 @@ class MyApp extends StatelessWidget {
   }
 
   Widget LaunchApp() {
+    FirebaseAuth.instance
+        .authStateChanges()
+        .listen((User user) {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        print('User is signed in!');
+      }
+    });
+
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -50,6 +63,7 @@ class MyApp extends StatelessWidget {
   }
 
   Widget SomethingWentWrong() {
+    print("something wrong");
     return MaterialApp(
       home: Scaffold(
         body: Container(
@@ -60,6 +74,7 @@ class MyApp extends StatelessWidget {
   }
 
   Widget Loading() {
+    print("loading..");
     return MaterialApp(
       home: Scaffold(
         body: Container(

@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/widgets/login_form.dart';
 
 class LoginView extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
