@@ -1,11 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:redbacks/models/team.dart';
-import 'package:redbacks/widgets/homepage_summary.dart';
 import 'package:redbacks/widgets/leaderboard.dart';
 import 'package:redbacks/widgets/points_page.dart';
-import 'package:redbacks/widgets/team_widget.dart';
 import 'package:redbacks/widgets/transfers_page.dart';
 
 class HomeView extends StatefulWidget {
@@ -24,8 +21,9 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> pages = [ TransfersPage(), PointsPage(), Leaderboard()];
-    List<String> titles = ["Transfers", "Points", "Leaderboard"];
+    List<Widget> pages = [ TransfersPage(), PointsPage(), PointsPage(), Leaderboard()];
+    List<String> titles = ["Transfers", "Points", "Pick Team","Leaderboard"];
+
     return Scaffold(
       body: pages[_selectedIndex],
       appBar: AppBar(
@@ -61,13 +59,18 @@ class _HomeViewState extends State<HomeView> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Theme.of(context).accentColor,
+        unselectedItemColor: Colors.grey,
+        unselectedLabelStyle: TextStyle(color: Colors.grey),
         items: [
           BottomNavigationBarItem(
               icon: Icon(Icons.compare_arrows), label: titles[0]),
           BottomNavigationBarItem(
               icon: Icon(Icons.sports_baseball), label: titles[1]),
           BottomNavigationBarItem(
-              icon: Icon(Icons.wine_bar), label: titles[2]),
+              icon: Icon(Icons.arrow_forward), label: titles[2]),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.wine_bar), label: titles[3]),
         ],
         currentIndex: _selectedIndex,
         // selectedItemColor: Colors.amber[800],

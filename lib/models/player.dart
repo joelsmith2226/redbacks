@@ -1,20 +1,30 @@
 class Player {
   String _name;
-  double _value;
-  int _transferredIn;
-  int _transferredOut;
-  int _totalPts;
-  int _currPts;
-  String _rank;
+  double _price;
+  int _transferredIn = 0;
+  int _transferredOut = 0;
+  int _totalPts = 0;
+  int _currPts = 0;
+  String _rank = "";
+  String _position;
+  String _flagged = "";
 
   Player.blank(){
     this._name = "Cameron James";
-    this._value = 37.5;
+    this._price = 37.5;
     this._transferredIn = 0;
     this._transferredOut = 0;
     this._totalPts = 0;
     this._currPts = 5;
     this._rank = "";
+    this._position = "FWD";
+    this._flagged = "";
+  }
+
+  Player.initial(String name, double value, String position){
+    this._name = name;
+    this._price = value;
+    this._position = position;
   }
 
   String getLastName(){
@@ -51,10 +61,10 @@ class Player {
     _transferredIn = value;
   }
 
-  double get value => _value;
+  double get price => _price;
 
-  set value(double value) {
-    _value = value;
+  set price(double value) {
+    _price = value;
   }
 
   String get name => _name;
@@ -62,4 +72,18 @@ class Player {
   set name(String value) {
     _name = value;
   }
+
+  String get flagged => _flagged;
+
+  set flagged(String value) {
+    _flagged = value;
+  }
+
+  String get position => _position;
+
+  set position(String value) {
+    _position = value;
+  }
+
+
 }

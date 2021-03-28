@@ -13,3 +13,5 @@ Map<int, Color> colorSwatch =
   800:Color.fromRGBO(160,19,0, .9),
   900:Color.fromRGBO(160,19,0, 1),
 };
+
+const List<String> admins = ["joel.smith2226@gmail.com"];

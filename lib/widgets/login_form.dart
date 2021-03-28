@@ -29,8 +29,8 @@ class _LoginFormState extends State<LoginForm> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         InkWell(
-          child: Image.network(
-              'https://www.redbacksoccer.com.au/wp-content/uploads/2019/02/CRFC-Logo-1.png'),
+          child: Image.asset(
+              'assets/logo.png'),
           onDoubleTap: attemptLoginOnFirebaseAdmin,
         ),
         FormBuilder(

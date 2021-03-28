@@ -3,6 +3,8 @@ import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/widgets/player_widget.dart';
 
+import 'bench.dart';
+
 class TeamWidget extends StatefulWidget {
   Team team;
   String secondaryValueType;
@@ -29,6 +31,7 @@ class _TeamWidgetState extends State<TeamWidget> {
     captain.rank = "V";
     players.add(PlayerWidget(captain, secondaryValue));
     players.add(PlayerWidget(vice, secondaryValue));
+    players.add(PlayerWidget(Player.blank(), secondaryValue));
     super.initState();
   }
 
@@ -36,12 +39,13 @@ class _TeamWidgetState extends State<TeamWidget> {
   Widget build(BuildContext context) {
     return Container(
       child: Column (
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           players[0],
           Row(children: [players[1], players[2]], mainAxisAlignment: MainAxisAlignment.spaceBetween,),
-          SizedBox(height:30),
           Row(children: [players[3], players[4]], mainAxisAlignment: MainAxisAlignment.spaceAround),
+          SizedBox(height: 15),
+          Bench(player: Player.blank(), secondary: "5",),
         ]
       )
     );

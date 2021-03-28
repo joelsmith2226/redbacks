@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:redbacks/views/login.dart';
 
 import 'globals/constants.dart';
+import 'globals/initial_data.dart';
 import 'globals/router.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         // Once complete, show your application
         if (snapshot.connectionState == ConnectionState.done) {
           print("Connected successfully to Firebase");
+          InitialData();
           return LaunchApp();
         }
 

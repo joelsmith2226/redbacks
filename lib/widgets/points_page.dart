@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/widgets/points_summary.dart';
 import 'package:redbacks/widgets/team_widget.dart';
 
+import 'bench.dart';
 import 'homepage_summary.dart';
 
 class PointsPage extends StatelessWidget {
@@ -16,6 +18,7 @@ class PointsPage extends StatelessWidget {
         ),
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           PointsSummary(),
           TeamWidget(Team.blank(), "points"),

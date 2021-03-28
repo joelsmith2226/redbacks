@@ -19,6 +19,7 @@ class _TransfersPageState extends State<TransfersPage> {
         ),
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           TransfersSummary(),
           TeamWidget(Team.blank(), "money"),

@@ -14,7 +14,7 @@ class _HomepageSummaryState extends State<HomepageSummary> {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 50,
-      margin: EdgeInsets.only(bottom: 50),
+      margin: EdgeInsets.only(bottom: 20),
       color: Colors.black.withAlpha(100),
       child: widget.body,
       alignment: Alignment.center,

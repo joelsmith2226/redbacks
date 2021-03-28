@@ -6,8 +6,9 @@ import 'package:redbacks/widgets/player_card.dart';
 class PlayerWidget extends StatefulWidget {
   Player player;
   String secondaryValue;
+  bool benched = false;
 
-  PlayerWidget(this.player, this.secondaryValue);
+  PlayerWidget(this.player, this.secondaryValue, {this.benched = false});
 
   @override
   _PlayerWidgetState createState() => _PlayerWidgetState();
@@ -18,6 +19,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   Widget build(BuildContext context) {
     PlayerCard pc = PlayerCard(player: widget.player, context: context);
     var showPlayerCard = () => pc.displayCard();
+    var widthMultiplier = widget.benched ? 0.15 : 0.25;
     return Container(
       child: InkWell(
         onTap: showPlayerCard,
@@ -26,13 +28,13 @@ class _PlayerWidgetState extends State<PlayerWidget> {
             children: [
               Image.asset(
                 "assets/avatar-nobg.png",
-                width: MediaQuery.of(context).size.width * 0.25,
+                width: MediaQuery.of(context).size.width * widthMultiplier,
               ),
               NameTag(),
               SecondaryTag(widget.secondaryValue),
             ],
           ),
-          CaptainsArmband(widget.player.rank),
+          // CaptainsArmband(widget.player.rank),
         ]),
       ),
     );
@@ -45,7 +47,10 @@ class _PlayerWidgetState extends State<PlayerWidget> {
         textAlign: TextAlign.center,
         text: TextSpan(
           text: "${widget.player.getLastName()}",
-          style: TextStyle(fontSize: 14, color: Colors.white, fontFamily: GoogleFonts.merriweatherSans().fontFamily),
+          style: TextStyle(
+              fontSize: 14,
+              color: Colors.white,
+              fontFamily: GoogleFonts.merriweatherSans().fontFamily),
         ),
       ),
       color: Colors.black.withAlpha(180),
@@ -60,9 +65,11 @@ class _PlayerWidgetState extends State<PlayerWidget> {
         child: RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
-            text: value,
-            style: TextStyle(fontSize: 14, color: Colors.white, fontFamily: GoogleFonts.merriweatherSans().fontFamily)
-          ),
+              text: value,
+              style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontFamily: GoogleFonts.merriweatherSans().fontFamily)),
         ),
         color: Theme.of(context).primaryColor.withAlpha(150),
         width: MediaQuery.of(context).size.width * 0.2,

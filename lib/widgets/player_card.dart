@@ -17,7 +17,7 @@ class PlayerCard {
                 width: MediaQuery.of(context).size.width * 0.3),
             SizedBox(height:30),
             Text(
-                'Name: ${this.player.name}\nValue: \$${this.player.value}\nTotal Points: ${this.player.totalPts}\n'),
+                'Name: ${this.player.name}\nValue: \$${this.player.price}\nTotal Points: ${this.player.totalPts}\n'),
           ]),
       actions: [
         MaterialButton(
