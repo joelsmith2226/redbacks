@@ -3,10 +3,9 @@ import 'package:redbacks/models/player.dart';
 import 'package:redbacks/widgets/player_widget.dart';
 
 class Bench extends StatefulWidget {
-  Player player;
-  String secondary;
+  PlayerWidget player;
 
-  Bench({this.player, this.secondary});
+  Bench({this.player});
 
   @override
   _BenchState createState() => _BenchState();
@@ -22,11 +21,7 @@ class _BenchState extends State<Bench> {
       child: Stack(
         children: [
           Icon(Icons.event_seat, size: 80, color: Colors.white,),
-          PlayerWidget(
-            widget.player,
-            widget.secondary,
-            benched: true,
-          ),
+          widget.player,
         ],
       ),
       alignment: Alignment.center,

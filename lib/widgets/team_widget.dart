@@ -31,7 +31,7 @@ class _TeamWidgetState extends State<TeamWidget> {
     captain.rank = "V";
     players.add(PlayerWidget(captain, secondaryValue));
     players.add(PlayerWidget(vice, secondaryValue));
-    players.add(PlayerWidget(Player.blank(), secondaryValue));
+    players.add(PlayerWidget(Player.blank(), secondaryValue, benched: true,));
     super.initState();
   }
 
@@ -45,7 +45,7 @@ class _TeamWidgetState extends State<TeamWidget> {
           Row(children: [players[1], players[2]], mainAxisAlignment: MainAxisAlignment.spaceBetween,),
           Row(children: [players[3], players[4]], mainAxisAlignment: MainAxisAlignment.spaceAround),
           SizedBox(height: 15),
-          Bench(player: Player.blank(), secondary: "5",),
+          Bench(player: (PlayerWidget(Player.blank(), "benched", benched: true,))),
         ]
       )
     );
