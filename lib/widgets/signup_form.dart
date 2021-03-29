@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:provider/provider.dart';
 import 'package:redbacks/globals/router.dart';
+import 'package:redbacks/providers/logged_in_user.dart';
 
 class SignupForm extends StatefulWidget {
   @override
@@ -98,7 +100,11 @@ class _SignupFormState extends State<SignupForm> {
           email: this.email,
           password: this.conPwd
       );
-      print("Successful User Registration for ${userCredential.user.email}. Heading to team selection");
+      print("Successful User Registration for ${userCredential.user.email}.");
+      LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+      user.setInitialTeam();
+      user.initialiseUser();
+      print("Initialised user. Onto choosing team");
       Navigator.pushReplacementNamed(context, Routes.ChooseTeam);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {

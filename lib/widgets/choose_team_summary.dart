@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/homepage_summary.dart';
 import 'package:redbacks/widgets/summary_container.dart';
 
@@ -12,10 +14,11 @@ class _ChooseTeamSummaryState extends State<ChooseTeamSummary> {
   @override
   Widget build(BuildContext context) {
     var style = GoogleFonts.merriweatherSans();
+    LoggedInUser user = Provider.of<LoggedInUser>(context);
 
     return HomepageSummary(
       body: SummaryContainer(
-          body: ChooseTeamSummaryContainer("Budget Left:", "\$100.0m",)),
+          body: ChooseTeamSummaryContainer("Budget Left:", "\$${user.budget}m",)),
     );
   }
 

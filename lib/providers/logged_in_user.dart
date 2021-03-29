@@ -15,12 +15,10 @@ class LoggedInUser extends ChangeNotifier {
   int _totalPts;
   int _gwPts;
   Transfer _pendingTransfer;
+  double _teamValue;
+  double _budget;
 
-  LoggedInUser() {
-    // DELETE LATER
-    setInitialTeam();
-    initialiseUser();
-  }
+  LoggedInUser();
 
   void initialiseUser() {
     User user = RedbacksFirebase().isSignedIn(); // FirestoreAuth User
@@ -29,6 +27,7 @@ class LoggedInUser extends ChangeNotifier {
       this.uid = user.uid;
       this.admin = admins.contains(this.email);
       this.team = RedbacksFirebase().getTeam(this.uid);
+      this.calculateTeamValue();
       print("Loaded user successfully. Should proceed to home page");
       notifyListeners();
     } else {
@@ -38,6 +37,7 @@ class LoggedInUser extends ChangeNotifier {
 
   void setInitialTeam() {
     this.team = Team.blank();
+    this.budget = 100.0;
   }
 
   void beginTransfer(Player outgoing) {
@@ -48,7 +48,23 @@ class LoggedInUser extends ChangeNotifier {
   bool completeTransfer(Player incoming) {
     this.pendingTransfer.incoming = incoming;
     if (this.team.transfer(this.pendingTransfer)) {
-      notifyListeners();
+      if (this.adjustBudget()) {
+        notifyListeners();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Checks if user can afford to make the pending transfer
+  // Assumes only runs after confirming that both players are viable
+  // for transfer
+  bool adjustBudget(){
+    Player incoming = this.pendingTransfer.incoming;
+    Player outgoing = this.pendingTransfer.outgoing;
+    if (this.budget - incoming.price + outgoing.price >= 0){
+      this.budget -= incoming.price;
+      this.budget += outgoing.price;
       return true;
     }
     return false;
@@ -56,6 +72,10 @@ class LoggedInUser extends ChangeNotifier {
 
   bool isLoggedIn() {
     return this.email != null;
+  }
+
+  void calculateTeamValue(){
+    this.teamValue = this.team.teamValue(); // todo seems bad style
   }
 
   // GETTERS & SETTERS
@@ -105,5 +125,17 @@ class LoggedInUser extends ChangeNotifier {
 
   set pendingTransfer(Transfer value) {
     _pendingTransfer = value;
+  }
+
+  double get budget => _budget;
+
+  set budget(double value) {
+    _budget = value;
+  }
+
+  double get teamValue => _teamValue;
+
+  set teamValue(double value) {
+    _teamValue = value;
   }
 }

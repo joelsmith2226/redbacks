@@ -27,6 +27,15 @@ class Team {
     }
   }
 
+  double teamValue(){
+    double value = 0;
+    this.players.forEach((player) {
+      value += player.price;
+    });
+
+    return value;
+  }
+
   List<Player> get players => _players;
 
   set players(List<Player> value) {

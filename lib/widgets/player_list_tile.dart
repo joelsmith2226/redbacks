@@ -22,14 +22,13 @@ class _PlayerListTileState extends State<PlayerListTile> {
       onTap: () {
         LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
         Navigator.pop(context);
-        Navigator.pushReplacementNamed(context, Routes.ChooseTeam);
-
         // on error after attempting transfer
         if(!user.completeTransfer(widget.player)){
-          ErrorDialog err = ErrorDialog(body: "Couldn't complete transfer", context: context);
-          err.displayCard();
+          var sb = SnackBar(content: Text("Transfer fail: Not enough budget or can't find players"));
+          ScaffoldMessenger.of(context).showSnackBar(sb);
+        } else {
+          Navigator.pushReplacementNamed(context, Routes.ChooseTeam);
         }
-
       },
       leading: Text("${widget.player.position}"),
       title: Text("${widget.player.name}"),
