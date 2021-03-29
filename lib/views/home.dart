@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:redbacks/widgets/leaderboard.dart';
+import 'package:redbacks/widgets/pick_page.dart';
 import 'package:redbacks/widgets/points_page.dart';
 import 'package:redbacks/widgets/transfers_page.dart';
 
@@ -21,7 +22,7 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> pages = [ TransfersPage(), PointsPage(), PointsPage(), Leaderboard()];
+    List<Widget> pages = [ TransfersPage(), PointsPage(), PickPage(), Leaderboard()];
     List<String> titles = ["Transfers", "Points", "Pick Team","Leaderboard"];
 
     return Scaffold(
@@ -34,7 +35,6 @@ class _HomeViewState extends State<HomeView> {
       drawer: Container(
         decoration: BoxDecoration(
             color: Colors.black.withAlpha(100),
-
             ),
         width: MediaQuery.of(context).size.width * 0.35,
         child: Drawer(

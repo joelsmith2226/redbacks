@@ -10,6 +10,7 @@ class Team {
       Player.blank(),
       Player.blank(),
       Player.blank(),
+      Player.blank(),
     ];
   }
 

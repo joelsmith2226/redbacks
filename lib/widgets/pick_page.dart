@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:redbacks/models/team.dart';
+import 'package:redbacks/widgets/points_summary.dart';
 import 'package:redbacks/widgets/team_widget.dart';
-import 'package:redbacks/widgets/transfers_summary.dart';
 
-class TransfersPage extends StatefulWidget {
-  @override
-  _TransfersPageState createState() => _TransfersPageState();
-}
 
-class _TransfersPageState extends State<TransfersPage> {
+class PickPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,18 +17,10 @@ class _TransfersPageState extends State<TransfersPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          TransfersSummary(),
-          TeamWidget(
-            Team.blank(),
-            "money",
-            bench: false,
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.1,
-          ),
+          PointsSummary(),
+          TeamWidget(Team.blank(), "", bench: true,),
         ],
       ),
     );
-    ;
   }
 }
