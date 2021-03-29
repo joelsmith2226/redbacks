@@ -35,7 +35,7 @@ class LoginView extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         onPressed: () {
-          Navigator.pushNamed(context, Routes.Signup);
+          Navigator.pushNamed(context, Routes.ChooseTeam);
         },
       ),
     );

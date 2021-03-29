@@ -33,6 +33,5 @@ class _TransfersPageState extends State<TransfersPage> {
         ],
       ),
     );
-    ;
   }
 }

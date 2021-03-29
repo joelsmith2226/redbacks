@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:redbacks/models/team.dart';
+import 'package:redbacks/widgets/choose_team_summary.dart';
 import 'package:redbacks/widgets/team_widget.dart';
 
 class ChooseTeamView extends StatefulWidget {
@@ -23,7 +24,11 @@ class _ChooseTeamViewState extends State<ChooseTeamView> {
             fit: BoxFit.fill,
           ),
         ),
-        child: TeamWidget(Team.blank(), "money"),
+        child: Stack(
+            children: [
+          ChooseTeamSummary(),
+          TeamWidget(Team.blank(), "money", bench: false),
+        ]),
       ),
     );
   }
