@@ -39,16 +39,14 @@ class RedbacksFirebase {
         .catchError((error) => print("Failed to add player: $error"));
   }
 
-  void getPlayers() {
+  void getPlayers(List<Player> playerModels) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference players = firestore.collection('players');
-    List<Player> playerModels = [];
-
+    print("Going into getPlayers");
     players.get().then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        Player p = Player.template();
-        playerModels.add(p);
-        print(p.price);
+        playerModels.add(Player.fromData(doc.data()));
+        print("Player ${doc.data()["name"]} added to list");
       });
     }).onError((error, stackTrace) {print(error + "Error in getPlayers");});
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:redbacks/models/team.dart';
+import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/team_widget.dart';
 import 'package:redbacks/widgets/transfers_summary.dart';
 
@@ -11,6 +13,8 @@ class TransfersPage extends StatefulWidget {
 class _TransfersPageState extends State<TransfersPage> {
   @override
   Widget build(BuildContext context) {
+    LoggedInUser user = Provider.of<LoggedInUser>(context);
+
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -23,7 +27,7 @@ class _TransfersPageState extends State<TransfersPage> {
         children: [
           TransfersSummary(),
           TeamWidget(
-            Team.blank(),
+            user.team,
             "money",
             bench: false,
           ),

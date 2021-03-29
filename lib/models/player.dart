@@ -33,6 +33,18 @@ class Player {
     this._flagged = "";
   }
 
+  Player.fromData(Map<String, dynamic> data) {
+    this.name = data["name"];
+    this.price = data["price"];
+    this.transferredIn = data["transferredIn"];
+    this.transferredOut = data["transferredOut"];
+    this.totalPts = data["totalPts"];
+    this.currPts = data["gwPts"];
+    this.rank = "";
+    this.position = data["position"];
+    this.flagged = data["flagged"];
+  }
+
   Player.initial(String name, double value, String position){
     this._name = name;
     this._price = value;

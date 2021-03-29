@@ -17,6 +17,7 @@ class LoggedInUser extends ChangeNotifier {
   Transfer _pendingTransfer;
   double _teamValue;
   double _budget;
+  List<Player> _playerDB;
 
   LoggedInUser();
 
@@ -76,6 +77,19 @@ class LoggedInUser extends ChangeNotifier {
 
   void calculateTeamValue(){
     this.teamValue = this.team.teamValue(); // todo seems bad style
+  }
+
+  void loadInCurrentPlayerDatabase() {
+    this.playerDB = [];
+    RedbacksFirebase().getPlayers(this.playerDB);
+    //   (players) {
+    //   this.playerDB = players;
+    //   if(this.playerDB != null) {
+    //     print("Loaded in playerDB => ${this.playerDB.length}");
+    //   } else {
+    //     print("Jks loading in playerDB failed");
+    //   }
+    // });
   }
 
   // GETTERS & SETTERS
@@ -138,4 +152,12 @@ class LoggedInUser extends ChangeNotifier {
   set teamValue(double value) {
     _teamValue = value;
   }
+
+  List<Player> get playerDB => _playerDB;
+
+  set playerDB(List<Player> value) {
+    _playerDB = value;
+  }
+
+
 }

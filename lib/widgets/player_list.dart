@@ -9,8 +9,9 @@ class PlayerList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    this.players.sort((a, b) => a.position.compareTo(b.position));
     return Container(
-      height: 200,
+      height: MediaQuery.of(context).size.height*0.6,
       width: double.maxFinite,
       child: ListView.builder(
         itemCount: players.length,

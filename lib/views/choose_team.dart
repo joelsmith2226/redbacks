@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/redbacksFirebase.dart';
+import 'package:redbacks/globals/router.dart';
+import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/choose_team_summary.dart';
@@ -16,6 +19,7 @@ class _ChooseTeamViewState extends State<ChooseTeamView> {
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
     Team team = user.team;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Choose Team", style: GoogleFonts.merriweatherSans()),
@@ -28,11 +32,24 @@ class _ChooseTeamViewState extends State<ChooseTeamView> {
             fit: BoxFit.fill,
           ),
         ),
-        child: Stack(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-          ChooseTeamSummary(),
-          TeamWidget(team, "money", bench: false),
-        ]),
+              ChooseTeamSummary(),
+              TeamWidget(team, "money", bench: false),
+              Container(
+                margin: EdgeInsets.all(20),
+                child: MaterialButton(
+                  padding: EdgeInsets.all(20),
+                  color: Theme.of(context).canvasColor,
+
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, Routes.Home);
+                  },
+                  child: Text('Confirm'),
+                ),
+              ),
+            ]),
       ),
     );
   }

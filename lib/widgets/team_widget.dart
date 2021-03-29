@@ -25,7 +25,6 @@ class _TeamWidgetState extends State<TeamWidget> {
   @override
   void initState() {
     List<Player> players = widget.team.players;
-    print(players.length);
     r1Players.add(players[0]);
     r2Players.addAll([players[1], players[2]]);
     r3Players.addAll([players[3], players[4]]);
