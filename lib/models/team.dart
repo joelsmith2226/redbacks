@@ -1,4 +1,5 @@
 import 'package:redbacks/models/player.dart';
+import 'package:redbacks/models/transfer.dart';
 
 class Team {
   List<Player> _players;
@@ -12,6 +13,18 @@ class Team {
       Player.blank(),
       Player.blank(),
     ];
+  }
+
+  bool transfer(Transfer pendingTransfer){
+    Player incoming = pendingTransfer.incoming;
+    Player outgoing = pendingTransfer.outgoing;
+    int indexOfOutgoing = this._players.indexWhere((player) => player == outgoing);
+    if (indexOfOutgoing == null){
+      return false; // something went wrong, player doesn't exist
+    } else {
+      this._players[indexOfOutgoing] = incoming;
+      return true;
+    }
   }
 
   List<Player> get players => _players;
