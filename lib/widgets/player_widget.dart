@@ -20,6 +20,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     PlayerCard pc = PlayerCard(player: widget.player, context: context);
     var showPlayerCard = () => pc.displayCard();
     var widthMultiplier = widget.benched ? 0.15 : 0.25;
+
     return Container(
       child: InkWell(
         onTap: showPlayerCard,
@@ -27,8 +28,13 @@ class _PlayerWidgetState extends State<PlayerWidget> {
           Column(
             children: [
               Image.asset(
-                "assets/avatar-nobg.png",
-                width: MediaQuery.of(context).size.width * widthMultiplier,
+                widget.player.name == ""
+                    ? "assets/avatar-nobg-unset.png"
+                    : "assets/avatar-nobg.png",
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width * widthMultiplier,
               ),
               NameTag(),
               SecondaryTag(widget.secondaryValue),
@@ -50,11 +56,16 @@ class _PlayerWidgetState extends State<PlayerWidget> {
           style: TextStyle(
               fontSize: 14,
               color: Colors.white,
-              fontFamily: GoogleFonts.merriweatherSans().fontFamily),
+              fontFamily: GoogleFonts
+                  .merriweatherSans()
+                  .fontFamily),
         ),
       ),
       color: Colors.black.withAlpha(180),
-      width: MediaQuery.of(context).size.width * 0.2,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width * 0.2,
     );
   }
 
@@ -69,13 +80,24 @@ class _PlayerWidgetState extends State<PlayerWidget> {
               style: TextStyle(
                   fontSize: 14,
                   color: Colors.white,
-                  fontFamily: GoogleFonts.merriweatherSans().fontFamily)),
+                  fontFamily: GoogleFonts
+                      .merriweatherSans()
+                      .fontFamily)),
         ),
-        color: Theme.of(context).primaryColor.withAlpha(150),
-        width: MediaQuery.of(context).size.width * 0.2,
+        color: Theme
+            .of(context)
+            .primaryColor
+            .withAlpha(150),
+        width: MediaQuery
+            .of(context)
+            .size
+            .width * 0.2,
       ),
       color: Colors.black,
-      width: MediaQuery.of(context).size.width * 0.2,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width * 0.2,
     );
   }
 

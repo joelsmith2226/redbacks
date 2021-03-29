@@ -23,15 +23,15 @@ class _TeamWidgetState extends State<TeamWidget> {
     print(widget.team);
     String secondaryValue = widget.secondaryValueType == "points" ? "5" : "\$37.5m";
     players.add(PlayerWidget(Player.blank(), secondaryValue));
-    players.add(PlayerWidget(Player.blank(), secondaryValue));
-    players.add(PlayerWidget(Player.blank(), secondaryValue));
-    Player captain = Player.blank();
+    players.add(PlayerWidget(Player.template(), secondaryValue));
+    players.add(PlayerWidget(Player.template(), secondaryValue));
+    Player captain = Player.template();
     captain.rank = "C";
-    Player vice = Player.blank();
+    Player vice = Player.template();
     captain.rank = "V";
     players.add(PlayerWidget(captain, secondaryValue));
     players.add(PlayerWidget(vice, secondaryValue));
-    players.add(PlayerWidget(Player.blank(), secondaryValue, benched: true,));
+    players.add(PlayerWidget(Player.template(), secondaryValue, benched: true,));
     super.initState();
   }
 
@@ -45,7 +45,7 @@ class _TeamWidgetState extends State<TeamWidget> {
           Row(children: [players[1], players[2]], mainAxisAlignment: MainAxisAlignment.spaceBetween,),
           Row(children: [players[3], players[4]], mainAxisAlignment: MainAxisAlignment.spaceAround),
           SizedBox(height: 15),
-          Bench(player: (PlayerWidget(Player.blank(), "benched", benched: true,))),
+          Bench(player: (PlayerWidget(Player.template(), "benched", benched: true,))),
         ]
       )
     );

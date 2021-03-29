@@ -1,21 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:redbacks/globals/redbacksFirebase.dart';
 import 'package:redbacks/globals/router.dart';
+import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/login_form.dart';
 
 class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var signedIn = RedbacksFirebase().isSignedIn();
-    if (signedIn != null && signedIn) {
-      print('User is signed in! Reroute to home!');
+    LoggedInUser user = Provider.of<LoggedInUser>(context);
+    if (user.isLoggedIn()){
       Navigator.pushReplacementNamed(context, Routes.Home);
-    } else {
-      print('User is currently signed out! Continue with login');
     }
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Login", style: GoogleFonts.merriweatherSans()),

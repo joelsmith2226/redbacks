@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:redbacks/globals/router.dart';
 
 class SignupForm extends StatefulWidget {
   @override
@@ -97,8 +98,8 @@ class _SignupFormState extends State<SignupForm> {
           email: this.email,
           password: this.conPwd
       );
-      print("Successful User Registration for ${userCredential.user.email}");
-      Navigator.pop(context);
+      print("Successful User Registration for ${userCredential.user.email}. Heading to team selection");
+      Navigator.pushReplacementNamed(context, Routes.ChooseTeam);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');

@@ -9,9 +9,9 @@ class RedbacksFirebase {
   RedbacksFirebase();
 
   // User management
-  bool isSignedIn() {
+  User isSignedIn() {
     FirebaseAuth.instance.authStateChanges().listen((User user) {
-      return user == null;
+      return user;
     });
   }
 
@@ -46,7 +46,7 @@ class RedbacksFirebase {
 
     players.get().then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        Player p = Player.blank();
+        Player p = Player.template();
         playerModels.add(p);
         print(p.price);
       });

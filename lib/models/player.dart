@@ -10,6 +10,18 @@ class Player {
   String _flagged = "";
 
   Player.blank(){
+    this._name = "";
+    this._price = 0;
+    this._transferredIn = 0;
+    this._transferredOut = 0;
+    this._totalPts = 0;
+    this._currPts = 0;
+    this._rank = "";
+    this._position = "";
+    this._flagged = "";
+  }
+
+  Player.template(){
     this._name = "Cameron James";
     this._price = 37.5;
     this._transferredIn = 0;
@@ -28,6 +40,9 @@ class Player {
   }
 
   String getLastName(){
+    if (this.name == ""){
+      return "?";
+    }
     return this._name.split(' ')[1];
   }
 
