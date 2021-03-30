@@ -19,7 +19,6 @@ class _ChooseTeamViewState extends State<ChooseTeamView> {
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
     Team team = user.team;
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Choose Team", style: GoogleFonts.merriweatherSans()),
@@ -42,10 +41,10 @@ class _ChooseTeamViewState extends State<ChooseTeamView> {
                 child: MaterialButton(
                   padding: EdgeInsets.all(20),
                   color: Theme.of(context).canvasColor,
-
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, Routes.Home);
-                  },
+                  onPressed: team.isComplete() ? () {
+                    user.pushUserDetailsToDB();
+                    // Navigator.pushReplacementNamed(context, Routes.Home);
+                  } : null,
                   child: Text('Confirm'),
                 ),
               ),

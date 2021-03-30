@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:provider/provider.dart';
+import 'package:redbacks/providers/logged_in_user.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -107,6 +109,8 @@ class _LoginFormState extends State<LoginForm> {
           .signInWithEmailAndPassword(
               email: "joel.smith2226@gmail.com", password: "password");
       print("Successful User Login for admin");
+      LoggedInUser user = Provider.of<LoggedInUser>(context);
+      user.initialiseUser();
       Navigator.pushReplacementNamed(context, "/home");
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {

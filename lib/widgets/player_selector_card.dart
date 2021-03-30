@@ -14,7 +14,7 @@ class PlayerSelectorCard {
   PlayerSelectorCard({this.outgoingPlayer, this.context}) {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
     List<Player> playerDB = user.playerDB;
-    playerDB.removeWhere((element) => user.team.players.contains(element));
+    // playerDB.removeWhere((element) => user.team.players.contains(element));
     playerDB.sort((a, b) => a.position.compareTo(b.position));
 
     this.psc = AlertDialog(

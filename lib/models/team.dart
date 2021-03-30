@@ -41,4 +41,14 @@ class Team {
   set players(List<Player> value) {
     _players = value;
   }
+
+  bool isComplete() {
+    this.players.forEach((player) {
+      if (player.name == ""){
+        return false;
+      }
+    });
+    return true;
+
+  }
 }

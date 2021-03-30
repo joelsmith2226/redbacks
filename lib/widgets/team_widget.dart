@@ -21,6 +21,7 @@ class _TeamWidgetState extends State<TeamWidget> {
   List<Player> r1Players = [];
   List<Player> r2Players = [];
   List<Player> r3Players = [];
+  Player benchPlayer;
 
   @override
   void initState() {
@@ -30,6 +31,8 @@ class _TeamWidgetState extends State<TeamWidget> {
     r3Players.addAll([players[3], players[4]]);
     if (!widget.bench) {
       r2Players.add(players[5]);
+    } else {
+      benchPlayer = players[5];
     }
     super.initState();
   }
@@ -50,31 +53,30 @@ class _TeamWidgetState extends State<TeamWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-          Row(
-            children: playersToWidgets(r1Players),
-            mainAxisAlignment: MainAxisAlignment.center,
-          ),
-          Row(
-            children: playersToWidgets(r2Players),
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          ),
-          Row(
-            children: playersToWidgets(r3Players),
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-          ),
-          SizedBox(height: 15),
-          widget.bench
-              ? Bench(
-                  player: (PlayerWidget(
-                    Player.template(),
-                    "benched",
-                    benched: true,
-                  )),
-                )
-              : Container(),
-        ]));
+        child:
+            Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+      Row(
+        children: playersToWidgets(r1Players),
+        mainAxisAlignment: MainAxisAlignment.center,
+      ),
+      Row(
+        children: playersToWidgets(r2Players),
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      ),
+      Row(
+        children: playersToWidgets(r3Players),
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      ),
+      SizedBox(height: 15),
+      widget.bench
+          ? Bench(
+              player: (PlayerWidget(
+                this.benchPlayer,
+                "benched",
+                benched: true,
+              )),
+            )
+          : Container(),
+    ]));
   }
 }

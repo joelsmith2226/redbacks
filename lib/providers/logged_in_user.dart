@@ -92,6 +92,26 @@ class LoggedInUser extends ChangeNotifier {
     // });
   }
 
+  void pushUserDetailsToDB() {
+    // new user in users if needed
+    print("adding user to db");
+    RedbacksFirebase().addUserToDB(this.uid);
+    // new gw history in users/{user}/gw history if needed
+    // RedbacksFirebase().addGWHistoryToDB(this.uid);
+    // // new/update team in users/{user}/team
+    // RedbacksFirebase().pushTeamToDB(this.team, this.uid);
+    // // new/update other fields required to track
+    // RedbacksFirebase().pushMiscFieldsToDB(this.uid, this.budget, this.teamValue, this.email, this.gwPts, this.totalPts);
+
+  }
+
+
+  void pushTeamToDB() {
+    RedbacksFirebase().pushTeamToDB(this.team, this.uid);
+
+  }
+
+
   // GETTERS & SETTERS
   int get gwPts => _gwPts;
 
