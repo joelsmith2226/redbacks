@@ -5,17 +5,26 @@ import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/login_form.dart';
 
-class LoginView extends StatelessWidget {
+class LoginView extends StatefulWidget {
+  @override
+  _LoginViewState createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
+  LoggedInUser user;
+
   @override
   Widget build(BuildContext context) {
-    LoggedInUser user = Provider.of<LoggedInUser>(context);
+    this.user = Provider.of<LoggedInUser>(context);
     // Be sneaky and load players here
     if (user.playerDB == null){
       user.loadInCurrentPlayerDatabase();
     }
+
     if (user.isLoggedIn()){
       Navigator.pushReplacementNamed(context, Routes.Home);
     }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Login", style: GoogleFonts.merriweatherSans()),

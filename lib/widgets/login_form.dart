@@ -12,17 +12,20 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   FirebaseAuth auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormBuilderState>();
+  LoggedInUser user;
 
   @override
   Widget build(BuildContext context) {
+    this.user = Provider.of<LoggedInUser>(context);
+
     return Container(
-        margin: EdgeInsets.all(20),
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        color: Colors.white,
-        alignment: Alignment.center,
-        child: BuildForm(),
-      );
+      margin: EdgeInsets.all(20),
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      color: Colors.white,
+      alignment: Alignment.center,
+      child: BuildForm(),
+    );
   }
 
   Widget BuildForm() {
@@ -31,8 +34,7 @@ class _LoginFormState extends State<LoginForm> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         InkWell(
-          child: Image.asset(
-              'assets/logo.png'),
+          child: Image.asset('assets/logo.png'),
           onDoubleTap: attemptLoginOnFirebaseAdmin,
         ),
         FormBuilder(
@@ -89,7 +91,7 @@ class _LoginFormState extends State<LoginForm> {
               email: _formKey.currentState.value["email"],
               password: _formKey.currentState.value["pwd"]);
       print("Successful User Login for ${userCredential.user.email}");
-      Navigator.pushReplacementNamed(context, "/home");
+      this.user.initialiseUserLogin();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -103,23 +105,28 @@ class _LoginFormState extends State<LoginForm> {
 
   void attemptLoginOnFirebaseAdmin() async {
     try {
-      print("attempting user find? ${_formKey.currentState.value}");
-      UserCredential userCredential = await this
+      print("Attempting admin hack for joel.smith2226");
+      this
           .auth
           .signInWithEmailAndPassword(
-              email: "joel.smith2226@gmail.com", password: "password");
-      print("Successful User Login for admin");
-      LoggedInUser user = Provider.of<LoggedInUser>(context);
-      user.initialiseUser();
-      Navigator.pushReplacementNamed(context, "/home");
+              email: "joel.smith2226@gmail.com", password: "password")
+          .then((UserCredential userCredential) {
+        print("Successful login ADMIN PLS: ${userCredential.user.uid}");
+        this.user.initialiseUserLogin();
+      });
     } on FirebaseAuthException catch (e) {
+      var message;
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+        message = 'No user found for that email.';
       } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+        message = 'Wrong password provided for that user.';
       } else {
-        print("Something else went wrong: ${e}");
+        message = "Something else went wrong: ${e}";
       }
+      var sb = SnackBar(
+        content: Text(message),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(sb);
     }
   }
 }

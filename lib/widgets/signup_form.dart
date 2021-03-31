@@ -102,18 +102,20 @@ class _SignupFormState extends State<SignupForm> {
       );
       print("Successful User Registration for ${userCredential.user.email}.");
       LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-      user.setInitialTeam();
-      user.initialiseUser();
-      print("Initialised user. Onto choosing team");
       Navigator.pushReplacementNamed(context, Routes.ChooseTeam);
+      user.initialiseUserSignup(this.teamName);
+      print("Initialised user. Onto choosing team");
     } on FirebaseAuthException catch (e) {
+      var message = "";
       if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
+        message = 'The password provided is too weak.';
       } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
+        message = 'The account already exists for that email.';
       } else {
-        print("Something else went wrong: ${e}");
+        message = "Something else went wrong: ${e}";
       }
+      var sb = SnackBar(content: Text(message),);
+      ScaffoldMessenger.of(context).showSnackBar(sb);
     } catch (e) {
       print(e);
     }

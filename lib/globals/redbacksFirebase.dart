@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team.dart';
 
@@ -15,8 +14,17 @@ class RedbacksFirebase {
     });
   }
 
-  Team getTeam(String uid) {
-    return Team.blank();
+  Future<Team> getTeam(String uid) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    DocumentReference user = firestore.collection('users').doc(uid);
+    return user
+        .collection("Team")
+        .get()
+        .then((QuerySnapshot playerData) => 
+        Team.fromData(playerData.docs))
+    .onError((error, stackTrace) {
+      print("Error! ${error}");
+      return null;});
   }
 
   // Player Management
@@ -63,38 +71,106 @@ class RedbacksFirebase {
   // Pushes the user's current team to the Firebase DB
   Future<void> pushTeamToDB(Team team, String uid) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    CollectionReference teams = firestore.collection('teams');
+    DocumentReference user = firestore.collection('users').doc(uid);
     // First check if the doc already exists then update, otherwise add
-    return teams
-        .doc(uid)
-        .update({}).then((value) => print("Team Updated"))
+    team.players.asMap().forEach((index, player) {
+      addPlayerToTeamInDB(player, index, user);
+    });
+  }
+
+  Future<void> addPlayerToTeamInDB(
+      Player p, int index, DocumentReference user) {
+    return user
+        .collection("Team")
+        .doc("Player-${index}")
+        .set({
+          'name': p.name,
+          'price': p.price,
+          'position': p.position,
+          'flagged': p.flagged,
+          'transferredIn': p.transferredIn,
+          'transferredOut': p.transferredOut,
+          'gwPts': p.currPts,
+          'totalPts': p.totalPts,
+        })
+        .then((value) => print("Team Updated with player ${p.name}"))
         .catchError((error) => print("Failed to update team: $error"));
+  }
+
+  Future<void> checkUserInDB(String uid) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference users = firestore.collection('users');
+    // add a new user if the user is not in users
+    return users
+        .doc(uid)
+        .get()
+        .then((DocumentSnapshot doc) {
+          print("${uid} 1");
+          if (!doc.exists) {
+            addUserToDB(uid);
+          }
+        })
+        .then((value) => print("User SOrted out: ${uid}"))
+        .catchError((error) => print("Failed to sort out user: $error"));
   }
 
   Future<void> addUserToDB(String uid) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference users = firestore.collection('users');
-    // add a new user if the user is not in users
-    return users.doc(uid).get().then((DocumentSnapshot doc){
-      print("${uid} 1");
-      if (!doc.exists) {
-        print("${uid}");
-        users
-            .doc(uid)
-            .set({})
-            .then((value) => print("User Added: ${uid}"))
-            .catchError((error) => print("Failed to add user: $error"));
-      }
-    }).then((value) => print("User SOrted out: ${uid}"))
-        .catchError((error) => print("Failed to sort out user: $error"));;
 
+    return users
+        .doc(uid)
+        .set({})
+        .then((value) => print("User Added: ${uid}"))
+        .catchError((error) => print("Failed to add user: $error"));
   }
 
-  void addGWHistoryToDB(String uid) {
+  Future<void> addGWHistoryToDB(String uid) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    DocumentReference user = firestore.collection('users').doc(uid);
 
+    return user
+        .collection("GW-History")
+        .doc("GW-0")
+        .set({
+          "gw-pts": 0,
+          "total-pts": 0,
+          "hits-taken": 0,
+          "chips-used": "",
+        })
+        .then((value) => print("GW history added"))
+        .catchError((error) => print("Failed to add gw history: $error"));
   }
 
-  void pushMiscFieldsToDB(String uid, double budget, double teamValue, String email, int gwPts, int totalPts) {
+  Future<void> pushMiscFieldsToDB(String uid, double budget, double teamValue,
+      String email, int gwPts, int totalPts, String teamName) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference user = firestore.collection('users');
 
+    return user
+        .doc(uid)
+        .set({
+          "email": email,
+          "budget": budget,
+          "team-value": teamValue,
+          "gw-pts": gwPts,
+          "total-pts": totalPts,
+          "team-name": teamName,
+        })
+        .then((value) => print("User Misc Details Added: ${uid}"))
+        .catchError(
+            (error) => print("Failed to add user misc details: $error"));
+  }
+
+  Future<DocumentSnapshot> getMiscDetails(String uid) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference user = firestore.collection('users');
+
+    return user
+        .doc(uid)
+        .get()
+        .then((data) { return data;})
+        .catchError(
+            (error) => print("Failed to add user misc details: $error"));
   }
 }

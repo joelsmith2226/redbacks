@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/transfer.dart';
 
@@ -15,11 +16,25 @@ class Team {
     ];
   }
 
-  bool transfer(Transfer pendingTransfer){
+  Team.fromData(teamData) {
+    if (this.players != null) {
+      this.players.asMap().forEach((index, player) {
+        print(index);
+        this.players[index] = Player.fromData(teamData[index].data());
+      });
+    } else {
+      this.players = [];
+      teamData.forEach(
+          (playerData) => this.players.add(Player.fromData(playerData.data())));
+    }
+  }
+
+  bool transfer(Transfer pendingTransfer) {
     Player incoming = pendingTransfer.incoming;
     Player outgoing = pendingTransfer.outgoing;
-    int indexOfOutgoing = this._players.indexWhere((player) => player == outgoing);
-    if (indexOfOutgoing == null){
+    int indexOfOutgoing =
+        this._players.indexWhere((player) => player == outgoing);
+    if (indexOfOutgoing == null) {
       return false; // something went wrong, player doesn't exist
     } else {
       this._players[indexOfOutgoing] = incoming;
@@ -27,7 +42,7 @@ class Team {
     }
   }
 
-  double teamValue(){
+  double teamValue() {
     double value = 0;
     this.players.forEach((player) {
       value += player.price;
@@ -44,11 +59,10 @@ class Team {
 
   bool isComplete() {
     this.players.forEach((player) {
-      if (player.name == ""){
+      if (player.name == "") {
         return false;
       }
     });
     return true;
-
   }
 }

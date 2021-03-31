@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/leaderboard.dart';
 import 'package:redbacks/widgets/pick_page.dart';
 import 'package:redbacks/widgets/points_page.dart';
@@ -24,6 +26,7 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     List<Widget> pages = [ TransfersPage(), PointsPage(), PickPage(), Leaderboard()];
     List<String> titles = ["Transfers", "Points", "Pick Team","Leaderboard"];
+    LoggedInUser user = Provider.of<LoggedInUser>(context);
 
     return Scaffold(
       body: pages[_selectedIndex],
@@ -41,6 +44,7 @@ class _HomeViewState extends State<HomeView> {
           child: Container(
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Text(user.uid + "\n" + user.email),
               MaterialButton(
                   color: Theme.of(context).accentColor,
                   child: Text("Settings"),

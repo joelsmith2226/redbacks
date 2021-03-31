@@ -43,7 +43,7 @@ class _ChooseTeamViewState extends State<ChooseTeamView> {
                   color: Theme.of(context).canvasColor,
                   onPressed: team.isComplete() ? () {
                     user.pushUserDetailsToDB();
-                    // Navigator.pushReplacementNamed(context, Routes.Home);
+                    Navigator.pushReplacementNamed(context, Routes.Home);
                   } : null,
                   child: Text('Confirm'),
                 ),
