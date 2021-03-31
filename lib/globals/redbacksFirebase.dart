@@ -57,7 +57,7 @@ class RedbacksFirebase {
         print("Player ${doc.data()["name"]} added to list");
       });
     }).onError((error, stackTrace) {
-      print(error + "Error in getPlayers");
+      print("Error in getPlayers: ${error}");
     });
   }
 

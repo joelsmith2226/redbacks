@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/redbacksFirebase.dart';
+import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/models/transfer.dart';
@@ -20,11 +21,12 @@ class LoggedInUser extends ChangeNotifier {
   double _teamValue;
   double _budget;
   List<Player> _playerDB;
+  bool _signingUp = true;
 
   LoggedInUser();
 
   // Checks if user already logged in, then loads all appropriate details from DB
-  void initialiseUserLogin() {
+  void initialiseUserLogin(BuildContext context) {
     FirebaseAuth.instance.authStateChanges().listen((User user) {
       if (user != null) {
         this.email = user.email;
@@ -41,6 +43,8 @@ class LoggedInUser extends ChangeNotifier {
         });
         print(
             "Loaded user successfully ${this.uid}. Should proceed to home page");
+        this.signingUp = false; //if you've got this far, this should be false
+        Navigator.pushReplacementNamed(context, Routes.Home);
         notifyListeners();
       } else {
         print('User is currently signed out! Continue with login');
@@ -66,6 +70,7 @@ class LoggedInUser extends ChangeNotifier {
 
         print("User is all signed up and sent to DB ${this.uid}");
         notifyListeners();
+        print("Is the above the culprit... ^");
       } else {
         print(
             'User isn\'t signed in. Hopefully something went wrong that\'s fixable');
@@ -209,6 +214,12 @@ class LoggedInUser extends ChangeNotifier {
 
   set teamName(String value) {
     _teamName = value;
+  }
+
+  bool get signingUp => _signingUp;
+
+  set signingUp(bool value) {
+    _signingUp = value;
   }
 
   void loadMiscDetailsFromDB(DocumentSnapshot data) {

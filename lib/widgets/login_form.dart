@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 
 class LoginForm extends StatefulWidget {
@@ -91,7 +92,8 @@ class _LoginFormState extends State<LoginForm> {
               email: _formKey.currentState.value["email"],
               password: _formKey.currentState.value["pwd"]);
       print("Successful User Login for ${userCredential.user.email}");
-      this.user.initialiseUserLogin();
+      this.user.initialiseUserLogin(context);
+
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -112,7 +114,7 @@ class _LoginFormState extends State<LoginForm> {
               email: "joel.smith2226@gmail.com", password: "password")
           .then((UserCredential userCredential) {
         print("Successful login ADMIN PLS: ${userCredential.user.uid}");
-        this.user.initialiseUserLogin();
+        this.user.initialiseUserLogin(context);
       });
     } on FirebaseAuthException catch (e) {
       var message;

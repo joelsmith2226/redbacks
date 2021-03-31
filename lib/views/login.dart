@@ -21,7 +21,7 @@ class _LoginViewState extends State<LoginView> {
       user.loadInCurrentPlayerDatabase();
     }
 
-    if (user.isLoggedIn()){
+    if (user.isLoggedIn() && !user.signingUp){
       Navigator.pushReplacementNamed(context, Routes.Home);
     }
 

@@ -35,16 +35,19 @@ class _ChooseTeamViewState extends State<ChooseTeamView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ChooseTeamSummary(),
-              TeamWidget(team, "money", bench: false),
+              Expanded(child: TeamWidget(team, "money", bench: false)),
               Container(
                 margin: EdgeInsets.all(20),
                 child: MaterialButton(
                   padding: EdgeInsets.all(20),
                   color: Theme.of(context).canvasColor,
-                  onPressed: team.isComplete() ? () {
-                    user.pushUserDetailsToDB();
-                    Navigator.pushReplacementNamed(context, Routes.Home);
-                  } : null,
+                  onPressed: team.isComplete()
+                      ? () {
+                          user.pushUserDetailsToDB();
+                          user.signingUp = false;
+                          Navigator.pushReplacementNamed(context, Routes.Home);
+                        }
+                      : null,
                   child: Text('Confirm'),
                 ),
               ),
