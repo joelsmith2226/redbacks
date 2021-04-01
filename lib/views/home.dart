@@ -15,6 +15,7 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   int _selectedIndex = 1;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _onItemTapped(index) {
     setState(() {
@@ -29,6 +30,7 @@ class _HomeViewState extends State<HomeView> {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
 
     return Scaffold(
+      key: _scaffoldKey,
       body: pages[_selectedIndex],
       appBar: AppBar(
         title: Text(titles[_selectedIndex], style: GoogleFonts.merriweatherSans(),

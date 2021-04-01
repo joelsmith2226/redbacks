@@ -33,8 +33,9 @@ class Team {
     Player incoming = pendingTransfer.incoming;
     Player outgoing = pendingTransfer.outgoing;
     int indexOfOutgoing =
-        this._players.indexWhere((player) => player == outgoing);
-    if (indexOfOutgoing == null) {
+        this._players.indexWhere((player) => player.name == outgoing.name);
+    print(indexOfOutgoing);
+    if (indexOfOutgoing < 0) {
       return false; // something went wrong, player doesn't exist
     } else {
       this._players[indexOfOutgoing] = incoming;

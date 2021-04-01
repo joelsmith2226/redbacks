@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:redbacks/globals/redbacksFirebase.dart';
 import 'package:redbacks/globals/router.dart';
-import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/choose_team_summary.dart';
@@ -15,11 +13,14 @@ class ChooseTeamView extends StatefulWidget {
 }
 
 class _ChooseTeamViewState extends State<ChooseTeamView> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
     Team team = user.team;
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Choose Team", style: GoogleFonts.merriweatherSans()),
         centerTitle: true,

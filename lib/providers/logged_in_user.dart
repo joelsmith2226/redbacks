@@ -33,6 +33,7 @@ class LoggedInUser extends ChangeNotifier {
         this.uid = user.uid;
         this.admin = admins.contains(this.email);
         RedbacksFirebase().getTeam(this.uid).then((Team t) {
+          print("Team is sorted");
           this.team = t;
           this.calculateTeamValue();
         });
@@ -44,7 +45,6 @@ class LoggedInUser extends ChangeNotifier {
         print(
             "Loaded user successfully ${this.uid}. Should proceed to home page");
         this.signingUp = false; //if you've got this far, this should be false
-        Navigator.pushReplacementNamed(context, Routes.Home);
         notifyListeners();
       } else {
         print('User is currently signed out! Continue with login');
@@ -113,8 +113,11 @@ class LoggedInUser extends ChangeNotifier {
     return false;
   }
 
-  bool isLoggedIn() {
-    return this.email != null;
+  Future<bool> isLoggedIn() {
+    FirebaseAuth.instance.authStateChanges().listen((User user) {
+      return user != null;
+    }).onError((error, stack) => false);
+    
   }
 
   void calculateTeamValue() {

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/router.dart';
@@ -76,7 +77,6 @@ class _LoginFormState extends State<LoginForm> {
         decoration: InputDecoration(
           labelText: label,
         ),
-        // valueTransformer: (text) => num.tryParse(text),
         validator: FormBuilderValidators.compose(validators),
         keyboardType: TextInputType.text,
       ),
@@ -115,6 +115,9 @@ class _LoginFormState extends State<LoginForm> {
           .then((UserCredential userCredential) {
         print("Successful login ADMIN PLS: ${userCredential.user.uid}");
         this.user.initialiseUserLogin(context);
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          Navigator.pushReplacementNamed(context, Routes.Home);
+        });
       });
     } on FirebaseAuthException catch (e) {
       var message;

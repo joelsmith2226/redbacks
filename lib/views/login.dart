@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/router.dart';
@@ -12,20 +13,25 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   LoggedInUser user;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     this.user = Provider.of<LoggedInUser>(context);
     // Be sneaky and load players here
-    if (user.playerDB == null){
+    if (user.playerDB == null) {
       user.loadInCurrentPlayerDatabase();
     }
 
-    if (user.isLoggedIn() && !user.signingUp){
-      Navigator.pushReplacementNamed(context, Routes.Home);
-    }
+    // For persistent logins todo
+    isLoggedIn().then((bool isSignedIn) => isSignedIn
+        ? SchedulerBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushReplacementNamed(context, Routes.Home);
+          })
+        : null);
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Login", style: GoogleFonts.merriweatherSans()),
         centerTitle: true,
@@ -50,5 +56,13 @@ class _LoginViewState extends State<LoginView> {
         },
       ),
     );
+  }
+
+  Future<bool> isLoggedIn() async {
+    var isSignedIn = await user.isLoggedIn();
+    if (isSignedIn == null) {
+      return false;
+    }
+    return isSignedIn && !user.signingUp;
   }
 }

@@ -14,11 +14,14 @@ class TransferView extends StatefulWidget {
 }
 
 class _TransferViewState extends State<TransferView> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
     Player outgoing = user.pendingTransfer.outgoing;
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Transfer", style: GoogleFonts.merriweatherSans()),
         centerTitle: true,
