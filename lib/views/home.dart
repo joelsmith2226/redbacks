@@ -16,6 +16,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   int _selectedIndex = 1;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  List<Widget> _pages = [];
 
   void _onItemTapped(index) {
     setState(() {
@@ -24,29 +25,38 @@ class _HomeViewState extends State<HomeView> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    List<Widget> pages = [ TransfersPage(), PointsPage(), PickPage(), Leaderboard()];
-    List<String> titles = ["Transfers", "Points", "Pick Team","Leaderboard"];
+    List<String> titles = ["Transfers", "Points", "Pick Team", "Leaderboard"];
     LoggedInUser user = Provider.of<LoggedInUser>(context);
+    bool loaded = user.team != null;
+    if (loaded)
+      this._pages = [TransfersPage(), PointsPage(), PickPage(), Leaderboard()];
 
     return Scaffold(
       key: _scaffoldKey,
-      body: pages[_selectedIndex],
+      body: loaded ? _pages[_selectedIndex] : CircularProgressIndicator(),
       appBar: AppBar(
-        title: Text(titles[_selectedIndex], style: GoogleFonts.merriweatherSans(),
+        title: Text(
+          titles[_selectedIndex],
+          style: GoogleFonts.merriweatherSans(),
         ),
         centerTitle: true,
       ),
       drawer: Container(
         decoration: BoxDecoration(
-            color: Colors.black.withAlpha(100),
-            ),
+          color: Colors.black.withAlpha(100),
+        ),
         width: MediaQuery.of(context).size.width * 0.35,
         child: Drawer(
           child: Container(
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Text(user.uid + "\n" + user.email),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
               MaterialButton(
                   color: Theme.of(context).accentColor,
                   child: Text("Settings"),
@@ -75,8 +85,7 @@ class _HomeViewState extends State<HomeView> {
               icon: Icon(Icons.sports_baseball), label: titles[1]),
           BottomNavigationBarItem(
               icon: Icon(Icons.arrow_forward), label: titles[2]),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.wine_bar), label: titles[3]),
+          BottomNavigationBarItem(icon: Icon(Icons.wine_bar), label: titles[3]),
         ],
         currentIndex: _selectedIndex,
         // selectedItemColor: Colors.amber[800],

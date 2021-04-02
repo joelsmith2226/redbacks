@@ -101,10 +101,10 @@ class _SignupFormState extends State<SignupForm> {
           password: this.conPwd
       );
       print("Successful User Registration for ${userCredential.user.email}.");
+      // Set user to signup mode
       LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-      Navigator.pushReplacementNamed(context, Routes.ChooseTeam);
-      user.initialiseUserSignup(this.teamName);
-      print("Initialised user. Onto choosing team");
+      user.signingUp = true;
+      Navigator.pushReplacementNamed(context, Routes.Loading);
     } on FirebaseAuthException catch (e) {
       var message = "";
       if (e.code == 'weak-password') {

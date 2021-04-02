@@ -9,9 +9,7 @@ class RedbacksFirebase {
 
   // User management
   User isSignedIn() {
-    FirebaseAuth.instance.authStateChanges().listen((User user) {
-      return user;
-    });
+    return FirebaseAuth.instance.currentUser;
   }
 
   Future<Team> getTeam(String uid) {

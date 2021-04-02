@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/redbacksFirebase.dart';
-import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/models/transfer.dart';
@@ -21,13 +20,22 @@ class LoggedInUser extends ChangeNotifier {
   double _teamValue;
   double _budget;
   List<Player> _playerDB;
-  bool _signingUp = true;
+  bool _signingUp = false;
 
   LoggedInUser();
 
   // Checks if user already logged in, then loads all appropriate details from DB
-  void initialiseUserLogin(BuildContext context) {
+
+  Future<void> initialiseUser() async {
+    print("SIGNING UP VALUE: ${this.signingUp}");
+    this.signingUp
+        ? initialiseUserSignup(teamName)
+        : initialiseUserLogin().whenComplete(() => null);
+  }
+
+  Future<void> initialiseUserLogin() async {
     FirebaseAuth.instance.authStateChanges().listen((User user) {
+      // todo i think this sets up a listener...
       if (user != null) {
         this.email = user.email;
         this.uid = user.uid;
@@ -36,16 +44,16 @@ class LoggedInUser extends ChangeNotifier {
           print("Team is sorted");
           this.team = t;
           this.calculateTeamValue();
+          RedbacksFirebase()
+              .getMiscDetails(this.uid)
+              .then((DocumentSnapshot data) {
+            this.loadMiscDetailsFromDB(data);
+            print(
+                "Loaded user successfully ${this.uid}. Should proceed to home page");
+            this.signingUp = false; // safety ensured check
+            notifyListeners();
+          });
         });
-        RedbacksFirebase()
-            .getMiscDetails(this.uid)
-            .then((DocumentSnapshot data) {
-          this.loadMiscDetailsFromDB(data);
-        });
-        print(
-            "Loaded user successfully ${this.uid}. Should proceed to home page");
-        this.signingUp = false; //if you've got this far, this should be false
-        notifyListeners();
       } else {
         print('User is currently signed out! Continue with login');
       }
@@ -54,28 +62,24 @@ class LoggedInUser extends ChangeNotifier {
 
   // Initialises the user once signup is finalised
   void initialiseUserSignup(String teamName) {
-    FirebaseAuth.instance.authStateChanges().listen((User user) {
-      if (user != null) {
-        this.email = user.email;
-        this.uid = user.uid;
-        this.admin = admins.contains(this.email);
-        this.teamName = teamName;
-        this.gwPts = 0;
-        this.totalPts = 0;
-        this.setInitialTeam();
-        this.calculateTeamValue();
+    User user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      this.email = user.email;
+      this.uid = user.uid;
+      this.admin = admins.contains(this.email);
+      this.teamName = teamName;
+      this.gwPts = 0;
+      this.totalPts = 0;
+      this.setInitialTeam();
+      this.calculateTeamValue();
 
-        // push all details to DB now set
-        this.pushUserDetailsToDB();
-
-        print("User is all signed up and sent to DB ${this.uid}");
-        notifyListeners();
-        print("Is the above the culprit... ^");
-      } else {
-        print(
-            'User isn\'t signed in. Hopefully something went wrong that\'s fixable');
-      }
-    });
+      // push all details to DB now set
+      this.userDetailsPushDB();
+      print("User is all signed up and sent to DB ${this.uid}");
+    } else {
+      print(
+          'User isn\'t signed in. Hopefully something went wrong that\'s fixable');
+    }
   }
 
   void setInitialTeam() {
@@ -113,11 +117,8 @@ class LoggedInUser extends ChangeNotifier {
     return false;
   }
 
-  Future<bool> isLoggedIn() {
-    FirebaseAuth.instance.authStateChanges().listen((User user) {
-      return user != null;
-    }).onError((error, stack) => false);
-    
+  bool isLoggedIn() {
+    return FirebaseAuth.instance.currentUser != null;
   }
 
   void calculateTeamValue() {
@@ -129,7 +130,7 @@ class LoggedInUser extends ChangeNotifier {
     RedbacksFirebase().getPlayers(this.playerDB);
   }
 
-  void pushUserDetailsToDB() {
+  void userDetailsPushDB() {
     // new user in users if needed
     print("adding user to db");
     RedbacksFirebase().checkUserInDB(this.uid);

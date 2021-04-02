@@ -26,7 +26,7 @@ class _LoginViewState extends State<LoginView> {
     // For persistent logins todo
     isLoggedIn().then((bool isSignedIn) => isSignedIn
         ? SchedulerBinding.instance.addPostFrameCallback((_) {
-            Navigator.pushReplacementNamed(context, Routes.Home);
+            Navigator.pushReplacementNamed(context, Routes.Loading);
           })
         : null);
 

@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/router.dart';
@@ -15,6 +14,7 @@ class _LoginFormState extends State<LoginForm> {
   FirebaseAuth auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormBuilderState>();
   LoggedInUser user;
+  bool _loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +39,7 @@ class _LoginFormState extends State<LoginForm> {
           child: Image.asset('assets/logo.png'),
           onDoubleTap: attemptLoginOnFirebaseAdmin,
         ),
+        _loading ? CircularProgressIndicator() : Container(),
         FormBuilder(
           key: _formKey,
           child: Column(
@@ -86,15 +87,17 @@ class _LoginFormState extends State<LoginForm> {
   void attemptLoginOnFirebase() async {
     try {
       print("attempting user find? ${_formKey.currentState.value}");
-      UserCredential userCredential = await this
-          .auth
+      _loading = true;
+      this.auth
           .signInWithEmailAndPassword(
               email: _formKey.currentState.value["email"],
-              password: _formKey.currentState.value["pwd"]);
-      print("Successful User Login for ${userCredential.user.email}");
-      this.user.initialiseUserLogin(context);
-
+              password: _formKey.currentState.value["pwd"])
+          .then((userCredentials) {
+        print("Successful User Login for ${userCredentials.user.email}");
+        Navigator.pushReplacementNamed(context, Routes.Loading);
+      });
     } on FirebaseAuthException catch (e) {
+      String message = "";
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
       } else if (e.code == 'wrong-password') {
@@ -102,36 +105,57 @@ class _LoginFormState extends State<LoginForm> {
       } else {
         print("Something else went wrong: ${e}");
       }
-    }
-  }
-
-  void attemptLoginOnFirebaseAdmin() async {
-    try {
-      print("Attempting admin hack for joel.smith2226");
-      this
-          .auth
-          .signInWithEmailAndPassword(
-              email: "joel.smith2226@gmail.com", password: "password")
-          .then((UserCredential userCredential) {
-        print("Successful login ADMIN PLS: ${userCredential.user.uid}");
-        this.user.initialiseUserLogin(context);
-        SchedulerBinding.instance.addPostFrameCallback((_) {
-          Navigator.pushReplacementNamed(context, Routes.Home);
-        });
-      });
-    } on FirebaseAuthException catch (e) {
-      var message;
-      if (e.code == 'user-not-found') {
-        message = 'No user found for that email.';
-      } else if (e.code == 'wrong-password') {
-        message = 'Wrong password provided for that user.';
-      } else {
-        message = "Something else went wrong: ${e}";
-      }
       var sb = SnackBar(
         content: Text(message),
       );
       ScaffoldMessenger.of(context).showSnackBar(sb);
     }
+  }
+
+  void attemptLoginOnFirebaseAdmin() async {
+    print("Attempting admin hack for joel.smith2226");
+    this
+        .auth
+        .signInWithEmailAndPassword(
+            email: "joel.smith2226@gmail.com", password: "password")
+        .then((UserCredential userCredential) {
+      print("Successful login ADMIN PLS: ${userCredential.user.uid}");
+      Navigator.pushReplacementNamed(context, Routes.Loading);
+    }).onError((error, stackTrace) {
+      _errorHandler(error);
+      return null;
+    });
+  }
+
+  void _errorHandler(error) {
+    print("Here no???????");
+    var errorMessage;
+    switch (error.code) {
+      case "ERROR_INVALID_EMAIL":
+        errorMessage = "Your email address appears to be malformed.";
+        break;
+      case "ERROR_WRONG_PASSWORD":
+        errorMessage = "Your password is wrong.";
+        break;
+      case "ERROR_USER_NOT_FOUND":
+        errorMessage = "User with this email doesn't exist.";
+        break;
+      case "ERROR_USER_DISABLED":
+        errorMessage = "User with this email has been disabled.";
+        break;
+      case "ERROR_TOO_MANY_REQUESTS":
+        errorMessage = "Too many requests. Try again later.";
+        break;
+      case "ERROR_OPERATION_NOT_ALLOWED":
+        errorMessage = "Signing in with Email and Password is not enabled.";
+        break;
+      default:
+        errorMessage = "An undefined Error happened.";
+    }
+    var sb = SnackBar(
+      content: Text(errorMessage),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(sb);
+    _loading = false;
   }
 }
