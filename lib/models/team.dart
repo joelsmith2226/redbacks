@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/transfer.dart';
 
@@ -65,5 +64,12 @@ class Team {
       }
     });
     return true;
+  }
+
+  void benchPlayer(Player benchwarmer) {
+    int index =
+        this.players.indexWhere((player) => player.name == benchwarmer.name);
+    this.players[index] = this.players[5];
+    this.players[5] = benchwarmer;
   }
 }

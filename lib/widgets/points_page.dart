@@ -22,7 +22,7 @@ class PointsPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           PointsSummary(),
-          TeamWidget(user.team, "points", bench: true,),
+          TeamWidget(user.team, bench: true, mode: "points"),
         ],
       ),
     );

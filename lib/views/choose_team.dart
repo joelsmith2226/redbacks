@@ -36,7 +36,7 @@ class _ChooseTeamViewState extends State<ChooseTeamView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ChooseTeamSummary(),
-              Expanded(child: TeamWidget(team, "money", bench: false)),
+              Expanded(child: TeamWidget(team, mode: "money", bench: false)),
               Container(
                 margin: EdgeInsets.all(20),
                 child: MaterialButton(

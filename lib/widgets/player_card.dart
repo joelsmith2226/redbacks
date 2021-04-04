@@ -10,8 +10,10 @@ class PlayerCard {
   Player player;
   AlertDialog pc;
   BuildContext context;
+  String mode;
+  VoidCallback callback;
 
-  PlayerCard({this.player, this.context}) {
+  PlayerCard({this.player, this.context, this.mode, this.callback}) {
     this.pc = AlertDialog(
       title: Text(
         'Player Card',
@@ -27,28 +29,77 @@ class PlayerCard {
             Text(
                 'Name: ${this.player.name}\nValue: \$${this.player.price}\nTotal Points: ${this.player.totalPts}\n'),
           ]),
-      actions: [
-        MaterialButton(
-          textColor: Color(0xFF6200EE),
-          onPressed: () {
-            LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-            user.beginTransfer(this.player);
-            Navigator.pop(context);
-            // Navigator.pushNamed(context, Routes.Transfer);
-            PlayerSelectorCard psc = PlayerSelectorCard(outgoingPlayer: this.player, context: context);
-            psc.displayCard();
-          },
-          child: Text('Replace'),
-        ),
-        MaterialButton(
-          textColor: Color(0xFF6200EE),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('OK'),
-        ),
-      ],
+      actions: cardActions(),
     );
+  }
+
+  List<Widget> cardActions(){
+    switch (this.mode) {
+      case "points":
+        return pointsActions();
+      case "pick":
+        return pickActions();
+      case "money":
+        return transferActions();
+    }
+  }
+
+  List<Widget> pickActions(){
+    return [
+      MaterialButton(
+        textColor: Color(0xFF6200EE),
+        onPressed: () {
+          LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+          user.benchPlayer(this.player);
+          Navigator.pop(context);
+          //this.callback();
+        },
+        child: Text('Bench'),
+      ),
+      MaterialButton(
+        textColor: Color(0xFF6200EE),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: Text('OK'),
+      ),
+    ];
+  }
+
+  List<Widget> pointsActions(){
+    return [
+      MaterialButton(
+        textColor: Color(0xFF6200EE),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: Text('OK'),
+      ),
+    ];
+  }
+
+  List<Widget> transferActions(){
+    return [
+      MaterialButton(
+        textColor: Color(0xFF6200EE),
+        onPressed: () {
+          LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+          user.beginTransfer(this.player);
+          Navigator.pop(context);
+          // Navigator.pushNamed(context, Routes.Transfer);
+          PlayerSelectorCard psc = PlayerSelectorCard(outgoingPlayer: this.player, context: context);
+          psc.displayCard();
+        },
+        child: Text('Replace'),
+      ),
+      MaterialButton(
+        textColor: Color(0xFF6200EE),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: Text('OK'),
+      ),
+    ];
   }
 
   void displayCard() {

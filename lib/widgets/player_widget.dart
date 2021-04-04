@@ -5,10 +5,11 @@ import 'package:redbacks/widgets/player_card.dart';
 
 class PlayerWidget extends StatefulWidget {
   Player player;
-  String secondaryValue;
+  String mode;
   bool benched = false;
+  VoidCallback callback = () => null;
 
-  PlayerWidget(this.player, this.secondaryValue, {this.benched = false});
+  PlayerWidget(this.player, this.mode, {this.benched = false, this.callback});
 
   @override
   _PlayerWidgetState createState() => _PlayerWidgetState();
@@ -17,7 +18,7 @@ class PlayerWidget extends StatefulWidget {
 class _PlayerWidgetState extends State<PlayerWidget> {
   @override
   Widget build(BuildContext context) {
-    PlayerCard pc = PlayerCard(player: widget.player, context: context);
+    PlayerCard pc = PlayerCard(player: widget.player, context: context, mode: widget.mode, callback: widget.callback);
     var showPlayerCard = () => pc.displayCard();
     var widthMultiplier = widget.benched ? 0.15 : 0.25;
 
@@ -37,7 +38,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                     .width * widthMultiplier,
               ),
               NameTag(),
-              SecondaryTag(widget.secondaryValue),
+              SecondaryTag(_getSecondaryValue()),
             ],
           ),
           // CaptainsArmband(widget.player.rank),
@@ -111,5 +112,16 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black),
       // child: Text(rank, style: TextStyle(color: Colors.white)),
     );
+  }
+
+  String _getSecondaryValue() {
+    switch (widget.mode) {
+      case "points":
+        return "${widget.player.currPts}pts";
+      case "pick":
+        return widget.player.position;
+      case "money":
+        return "\$${widget.player.price}m";
+    }
   }
 }

@@ -232,4 +232,9 @@ class LoggedInUser extends ChangeNotifier {
     this.teamName = data.get("team-name");
     this.budget = data.get("budget");
   }
+
+  void benchPlayer(Player player) {
+    this.team.benchPlayer(player);
+    notifyListeners();
+  }
 }

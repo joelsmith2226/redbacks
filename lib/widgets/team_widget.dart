@@ -7,10 +7,10 @@ import 'bench.dart';
 
 class TeamWidget extends StatefulWidget {
   Team team;
-  String secondaryValueType;
+  String mode;
   bool bench = false;
 
-  TeamWidget(this.team, this.secondaryValueType, {this.bench});
+  TeamWidget(this.team, {this.mode, this.bench});
 
   @override
   _TeamWidgetState createState() => _TeamWidgetState();
@@ -41,11 +41,8 @@ class _TeamWidgetState extends State<TeamWidget> {
     List<PlayerWidget> widgets = [];
 
     players.forEach((p) {
-      widgets.add(PlayerWidget(
-          p,
-          widget.secondaryValueType == "money"
-              ? "${p.price}"
-              : "${p.currPts}"));
+      widgets
+          .add(PlayerWidget(p, widget.mode, callback: () => setState(() {})));
     });
     return widgets;
   }
@@ -72,7 +69,7 @@ class _TeamWidgetState extends State<TeamWidget> {
           ? Bench(
               player: (PlayerWidget(
                 this.benchPlayer,
-                "benched",
+                widget.mode,
                 benched: true,
               )),
             )

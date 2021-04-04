@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:redbacks/models/team.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:redbacks/widgets/points_summary.dart';
 import 'package:redbacks/widgets/team_widget.dart';
-import 'package:redbacks/widgets/transfers_summary.dart';
 
-class TransfersPage extends StatefulWidget {
-  @override
-  _TransfersPageState createState() => _TransfersPageState();
-}
 
-class _TransfersPageState extends State<TransfersPage> {
+class SubstitutePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
@@ -25,15 +20,8 @@ class _TransfersPageState extends State<TransfersPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          TransfersSummary(),
-          TeamWidget(
-            user.team,
-            mode: "money",
-            bench: false,
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.1,
-          ),
+          PointsSummary(),
+          TeamWidget(user.team, bench: true, mode: "sub"),
         ],
       ),
     );

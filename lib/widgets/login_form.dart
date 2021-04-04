@@ -97,18 +97,7 @@ class _LoginFormState extends State<LoginForm> {
         Navigator.pushReplacementNamed(context, Routes.Loading);
       });
     } on FirebaseAuthException catch (e) {
-      String message = "";
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
-      } else {
-        print("Something else went wrong: ${e}");
-      }
-      var sb = SnackBar(
-        content: Text(message),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(sb);
+      _errorHandler(e);
     }
   }
 

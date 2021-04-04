@@ -104,6 +104,7 @@ class _SignupFormState extends State<SignupForm> {
       // Set user to signup mode
       LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
       user.signingUp = true;
+      user.teamName = this.teamName;
       Navigator.pushReplacementNamed(context, Routes.Loading);
     } on FirebaseAuthException catch (e) {
       var message = "";
