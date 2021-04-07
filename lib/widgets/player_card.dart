@@ -24,7 +24,7 @@ class PlayerCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset("assets/avatar-nobg.png",
+            Image.asset("assets/profilepics/${player.pic}",
                 width: MediaQuery.of(context).size.width * 0.3),
             SizedBox(height: 30),
             Text(
@@ -41,11 +41,11 @@ class PlayerCard extends StatelessWidget {
 
   List<Widget> cardActions(){
     switch (this.mode) {
-      case "points":
+      case POINTS:
         return pointsActions();
-      case "pick":
+      case PICK:
         return pickActions();
-      case "money":
+      case PRICE:
         return transferActions();
     }
   }
@@ -92,9 +92,17 @@ class PlayerCard extends StatelessWidget {
         textColor: Color(0xFF6200EE),
         onPressed: () {
           LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+          user.removePlayer(this.player);
+          Navigator.pushNamed(context, Routes.ChooseTeam);
+        },
+        child: Text(this.player.removed ? 'Restore' : 'Remove'),
+      ),
+      MaterialButton(
+        textColor: Color(0xFF6200EE),
+        onPressed: () {
+          LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
           user.beginTransfer(this.player);
           Navigator.pop(context);
-          // Navigator.pushNamed(context, Routes.Transfer);
           PlayerSelectorCard psc = PlayerSelectorCard(outgoingPlayer: this.player, context: context);
           psc.displayCard();
         },

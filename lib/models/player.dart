@@ -8,6 +8,8 @@ class Player {
   String _rank = "";
   String _position;
   String _flagged = "";
+  bool _removed = false;
+  String _pic = "";
 
   Player.blank(){
     this._name = "";
@@ -43,6 +45,7 @@ class Player {
     this.rank = "";
     this.position = data["position"];
     this.flagged = data["flagged"];
+    this.pic = data["picture"];
   }
 
   Player.initial(String name, double value, String position){
@@ -112,5 +115,15 @@ class Player {
     _position = value;
   }
 
+  bool get removed => _removed;
 
+  set removed(bool value) {
+    _removed = value;
+  }
+
+  String get pic => _pic;
+
+  set pic(String value) {
+    _pic = value;
+  }
 }

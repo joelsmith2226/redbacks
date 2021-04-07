@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/homepage_summary.dart';
 import 'package:redbacks/widgets/summary_container.dart';
 
@@ -10,15 +12,17 @@ class TransfersSummary extends StatefulWidget {
 class _TransfersSummaryState extends State<TransfersSummary> {
   @override
   Widget build(BuildContext context) {
+    LoggedInUser user = Provider.of<LoggedInUser>(context);
+
     return HomepageSummary(
       body: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TransfersSummaryContainer("Free Transfers", "1"),
+          TransfersSummaryContainer("Free Transfers", "${user.freeTransfers}"),
           TransfersSummaryContainer("Wild Card", "Available"),
           TransfersSummaryContainer("Cost", "0"),
-          TransfersSummaryContainer("Bank", "\$1.2m"),
+          TransfersSummaryContainer("Bank", "\$${user.budget}m"),
         ],
       )
     );

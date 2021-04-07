@@ -16,11 +16,12 @@ class LoggedInUser extends ChangeNotifier {
   Team _team;
   int _totalPts;
   int _gwPts;
-  Transfer _pendingTransfer;
+  List<Transfer> _pendingTransfers = [];
   double _teamValue;
   double _budget;
   List<Player> _playerDB;
   bool _signingUp = false;
+  int _freeTransfers;
 
   LoggedInUser();
 
@@ -69,6 +70,7 @@ class LoggedInUser extends ChangeNotifier {
       this.teamName = teamName;
       this.gwPts = 0;
       this.totalPts = 0;
+      this.freeTransfers = 100;
       this.setInitialTeam();
       this.calculateTeamValue();
 
@@ -87,14 +89,17 @@ class LoggedInUser extends ChangeNotifier {
   }
 
   void beginTransfer(Player outgoing) {
-    this.pendingTransfer = Transfer();
-    this.pendingTransfer.outgoing = outgoing;
+    this.pendingTransfer.add(Transfer());
+    this.pendingTransfer.last.outgoing = outgoing;
   }
 
-  bool completeTransfer(Player incoming) {
-    this.pendingTransfer.incoming = incoming;
-    if (this.team.transfer(this.pendingTransfer)) {
-      if (this.adjustBudget()) {
+  bool completeTransfer(Player outgoing, Player incoming) {
+    Transfer currTransfer = this
+        .pendingTransfer
+        .firstWhere((t) => t.outgoing.name == outgoing.name);
+    currTransfer.incoming = incoming;
+    if (this.team.transfer(currTransfer)) {
+      if (this.adjustBudget(currTransfer)) {
         notifyListeners();
         return true;
       }
@@ -105,9 +110,9 @@ class LoggedInUser extends ChangeNotifier {
 // Checks if user can afford to make the pending transfer
 // Assumes only runs after confirming that both players are viable
 // for transfer
-  bool adjustBudget() {
-    Player incoming = this.pendingTransfer.incoming;
-    Player outgoing = this.pendingTransfer.outgoing;
+  bool adjustBudget(Transfer currTransfer) {
+    Player incoming = currTransfer.incoming;
+    Player outgoing = currTransfer.outgoing;
     if (this.budget - incoming.price + outgoing.price >= 0) {
       this.budget -= incoming.price;
       this.budget += outgoing.price;
@@ -139,7 +144,7 @@ class LoggedInUser extends ChangeNotifier {
     RedbacksFirebase().pushTeamToDB(this.team, this.uid);
     // // new/update other fields required to track
     RedbacksFirebase().pushMiscFieldsToDB(this.uid, this.budget, this.teamValue,
-        this.email, this.gwPts, this.totalPts, this.teamName);
+        this.email, this.gwPts, this.totalPts, this.teamName, this.freeTransfers);
   }
 
   void pushTeamToDB() {
@@ -189,10 +194,10 @@ class LoggedInUser extends ChangeNotifier {
     _email = value;
   }
 
-  Transfer get pendingTransfer => _pendingTransfer;
+  List<Transfer> get pendingTransfer => _pendingTransfers;
 
-  set pendingTransfer(Transfer value) {
-    _pendingTransfer = value;
+  set pendingTransfer(List<Transfer> value) {
+    _pendingTransfers = value;
   }
 
   double get budget => _budget;
@@ -230,6 +235,7 @@ class LoggedInUser extends ChangeNotifier {
     this.gwPts = data.get("gw-pts");
     this.teamName = data.get("team-name");
     this.budget = data.get("budget");
+    this.freeTransfers = data.get("free-transfers");
   }
 
   void benchPlayer(Player player) {
@@ -240,5 +246,24 @@ class LoggedInUser extends ChangeNotifier {
   void updateCaptaincy(Player player, String rank) {
     this.team.updateCaptaincy(player, rank);
     notifyListeners();
+  }
+
+  void removePlayer(Player player) {
+    player.removed = !player.removed;
+    print("Removed ${player.name}");
+    notifyListeners();
+  }
+
+  void resetRemovedPlayers() {
+    print("Reinstating removed players");
+    this.team.players.forEach((element) {
+      element.removed = false;
+    });
+  }
+
+  int get freeTransfers => _freeTransfers;
+
+  set freeTransfers(int value) {
+    _freeTransfers = value;
   }
 }

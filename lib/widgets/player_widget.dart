@@ -34,7 +34,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
           Column(
             children: [
               Image.asset(
-                widget.player.name == ""
+                (widget.player.name == "" || widget.player.removed == true)
                     ? "assets/avatar-nobg-unset.png"
                     : "assets/avatar-nobg.png",
                 width: MediaQuery.of(context).size.width * widthMultiplier,

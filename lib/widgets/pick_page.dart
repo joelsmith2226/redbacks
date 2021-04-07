@@ -12,12 +12,6 @@ class PickPage extends StatelessWidget {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
 
     return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage("assets/background.jpeg"),
-          fit: BoxFit.fill,
-        ),
-      ),
       height: MediaQuery.of(context).size.height,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

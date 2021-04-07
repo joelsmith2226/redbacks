@@ -7,7 +7,7 @@ import 'package:redbacks/widgets/error_dialog.dart';
 
 class PlayerListTile extends StatefulWidget {
   Player player;
-  bool outgoing;
+  Player outgoing;
 
   PlayerListTile({this.player, this.outgoing});
 
@@ -23,11 +23,12 @@ class _PlayerListTileState extends State<PlayerListTile> {
         LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
         Navigator.pop(context);
         // on error after attempting transfer
-        if(!user.completeTransfer(widget.player)){
+        if(!user.completeTransfer(widget.outgoing, widget.player)){
           var sb = SnackBar(content: Text("Transfer fail: Not enough budget or can't find players"));
           ScaffoldMessenger.of(context).showSnackBar(sb);
         } else {
-          Navigator.pushReplacementNamed(context, Routes.ChooseTeam);
+          user.signingUp ? Navigator.pushReplacementNamed(context, Routes.ChooseTeam) :
+          Navigator.pushNamed(context, Routes.ChooseTeam) ;
         }
       },
       leading: Text("${widget.player.position}"),

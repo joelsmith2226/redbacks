@@ -19,7 +19,7 @@ class _TransferViewState extends State<TransferView> {
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-    Player outgoing = user.pendingTransfer.outgoing;
+    Player outgoing = user.pendingTransfer.last.outgoing;
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(

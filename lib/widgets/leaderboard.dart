@@ -9,12 +9,6 @@ class _LeaderboardState extends State<Leaderboard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage("assets/background.jpeg"),
-          fit: BoxFit.fill,
-        ),
-      ),
       child: Container(
         alignment: Alignment.center,
         margin: EdgeInsets.all(20),

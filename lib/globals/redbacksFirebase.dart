@@ -141,7 +141,7 @@ class RedbacksFirebase {
   }
 
   Future<void> pushMiscFieldsToDB(String uid, double budget, double teamValue,
-      String email, int gwPts, int totalPts, String teamName) {
+      String email, int gwPts, int totalPts, String teamName, int freeTransfers) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference user = firestore.collection('users');
 
@@ -154,6 +154,7 @@ class RedbacksFirebase {
           "gw-pts": gwPts,
           "total-pts": totalPts,
           "team-name": teamName,
+          "free-transfers": freeTransfers,
         })
         .then((value) => print("User Misc Details Added: ${uid}"))
         .catchError(

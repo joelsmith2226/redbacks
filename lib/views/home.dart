@@ -39,7 +39,15 @@ class _HomeViewState extends State<HomeView> {
 
     return Scaffold(
       key: _scaffoldKey,
-      body: loaded ? _pages[_selectedIndex] : CircularProgressIndicator(),
+      body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/background.jpeg"),
+              fit: BoxFit.fill,
+            ),
+          ),
+        child: loaded ? _pages[_selectedIndex] : CircularProgressIndicator()
+      ),
       appBar: AppBar(
         title: Text(
           titles[_selectedIndex],

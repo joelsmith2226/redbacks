@@ -4,8 +4,9 @@ import 'package:redbacks/widgets/player_list_tile.dart';
 
 class PlayerList extends StatelessWidget {
   List<Player> players;
+  Player outgoingPlayer;
 
-  PlayerList({this.players});
+  PlayerList({this.players, this.outgoingPlayer});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,7 @@ class PlayerList extends StatelessWidget {
               margin: EdgeInsets.all(0.2),
               child: PlayerListTile(
                 player: players[index],
-                outgoing: false,
+                outgoing: this.outgoingPlayer,
               ));
         },
       ),

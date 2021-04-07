@@ -13,12 +13,6 @@ class PointsPage extends StatelessWidget {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
 
     return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage("assets/background.jpeg"),
-          fit: BoxFit.fill,
-        ),
-      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

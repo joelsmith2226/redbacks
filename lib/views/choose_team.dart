@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
@@ -22,7 +23,7 @@ class _ChooseTeamViewState extends State<ChooseTeamView> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("Choose Team", style: GoogleFonts.merriweatherSans()),
+        title: Text(user.signingUp ? "Choose Team" : "Transfers", style: GoogleFonts.merriweatherSans()),
         centerTitle: true,
       ),
       body: Container(
@@ -36,7 +37,7 @@ class _ChooseTeamViewState extends State<ChooseTeamView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ChooseTeamSummary(),
-              Expanded(child: TeamWidget(team, mode: "money", bench: false)),
+              Expanded(child: TeamWidget(team, mode: PRICE, bench: false)),
               Container(
                 margin: EdgeInsets.all(20),
                 child: MaterialButton(

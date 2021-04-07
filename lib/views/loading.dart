@@ -12,6 +12,7 @@ class LoadingView extends StatefulWidget {
 
 class _LoadingViewState extends State<LoadingView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool loginOnce = true;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,15 @@ class _LoadingViewState extends State<LoadingView> {
 
     return Scaffold(
       key: _scaffoldKey,
-      body: CircularProgressIndicator(),
+      body: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/background.jpeg"),
+              fit: BoxFit.fill,
+            ),
+          ),
+          child: CircularProgressIndicator()),
       appBar: AppBar(
         title: Text(
           "Loading",
@@ -43,14 +52,16 @@ class _LoadingViewState extends State<LoadingView> {
 
   void _initialiseLogin() async {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
-    await user.initialiseUserLogin().whenComplete(() {
-      print("Finished Loading, user should be fully initialised");
-      Navigator.pushReplacementNamed(context, Routes.Home);
-    }).onError((error, stackTrace) {
-      ErrorDialog err =
-          ErrorDialog(body: "Error in loading user");
-      err.displayCard();
-      return;
-    });
+    if (this.loginOnce) {
+      this.loginOnce = false;
+      await user.initialiseUserLogin().whenComplete(() {
+        print("Finished Loading, user should be fully initialised");
+        Navigator.pushReplacementNamed(context, Routes.Home);
+      }).onError((error, stackTrace) {
+        ErrorDialog err = ErrorDialog(body: "Error in loading user");
+        err.displayCard();
+        return;
+      });
+    }
   }
 }
