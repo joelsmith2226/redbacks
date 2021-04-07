@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:redbacks/views/admin.dart';
 import 'package:redbacks/views/choose_team.dart';
 import 'package:redbacks/views/home.dart';
 import 'package:redbacks/views/loading.dart';
@@ -14,6 +15,7 @@ class Routes {
   static const String Home = '/home';
   static const String Transfer = '/transfer';
   static const String Loading = '/loading';
+  static const String Admin = '/admin';
 
   /// The map used to define our routes, needs to be supplied to [MaterialApp]
   static Map<String, WidgetBuilder> getRoutes() {
@@ -24,6 +26,7 @@ class Routes {
       Routes.ChooseTeam: (context) => ChooseTeamView(),
       Routes.Transfer: (context) => TransferView(),
       Routes.Loading: (context) => LoadingView(),
+      Routes.Admin: (context) => AdminView(),
     };
   }
 }

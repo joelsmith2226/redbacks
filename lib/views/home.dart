@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/leaderboard.dart';
 import 'package:redbacks/widgets/pick_page.dart';
@@ -46,8 +47,7 @@ class _HomeViewState extends State<HomeView> {
               fit: BoxFit.fill,
             ),
           ),
-        child: loaded ? _pages[_selectedIndex] : CircularProgressIndicator()
-      ),
+          child: loaded ? _pages[_selectedIndex] : CircularProgressIndicator()),
       appBar: AppBar(
         title: Text(
           titles[_selectedIndex],
@@ -56,29 +56,52 @@ class _HomeViewState extends State<HomeView> {
         centerTitle: true,
       ),
       drawer: Container(
-        decoration: BoxDecoration(
-          color: Colors.black.withAlpha(100),
-        ),
         width: MediaQuery.of(context).size.width * 0.35,
-        child: Drawer(
-          child: Container(
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            // Set the transparency here
+            canvasColor: Colors.black.withAlpha(
+                180), //or any other color you want. e.g Colors.blue.withOpacity(0.5)
+          ),
+          child: Drawer(
             child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-              MaterialButton(
-                  color: Theme.of(context).accentColor,
-                  child: Text("Settings"),
-                  onPressed: () {
-                    // Navigator.pushReplacementNamed(context, "/login");
-                  }),
-              MaterialButton(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                MaterialButton(
+                    color: Theme.of(context).accentColor,
+                    child: Text("Admin"),
+                    onPressed: () {
+                      if (!user.admin) {
+                        var sb = SnackBar(
+                            content: Text(
+                                "Yeah nah laddie, you don't have admin access"));
+                        ScaffoldMessenger.of(context).showSnackBar(sb);
+                        Navigator.pop(context);
+                      } else {
+                        Navigator.pushNamed(context, Routes.Admin);
+                      }
+                    }),
+                MaterialButton(
+                    color: Theme.of(context).accentColor,
+                    child: Text("Settings"),
+                    onPressed: () {
+                      var sb = SnackBar(
+                          content: Text(
+                              "Yeah look would've loved to add settings but ran out of time"));
+                      ScaffoldMessenger.of(context).showSnackBar(sb);
+                      Navigator.pop(context);
+                    }),
+                MaterialButton(
                   color: Theme.of(context).accentColor,
                   child: Text("Logout"),
                   onPressed: () async {
                     await FirebaseAuth.instance.signOut();
                     Navigator.pushReplacementNamed(context, "/login");
-                  })
-            ]),
+                  },
+                )
+              ],
+            ),
           ),
         ),
       ),
