@@ -6,7 +6,7 @@ import 'package:redbacks/models/transfer.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/player_selector_card.dart';
 
-class PlayerCard {
+class PlayerCard extends StatelessWidget {
   Player player;
   AlertDialog pc;
   BuildContext context;
@@ -33,6 +33,11 @@ class PlayerCard {
     );
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return this.pc;
+  }
+
   List<Widget> cardActions(){
     switch (this.mode) {
       case "points":
@@ -52,7 +57,7 @@ class PlayerCard {
           LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
           user.benchPlayer(this.player);
           Navigator.pop(context);
-          //this.callback();
+          this.callback();
         },
         child: Text('Bench'),
       ),

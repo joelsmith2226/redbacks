@@ -34,7 +34,7 @@ class LoggedInUser extends ChangeNotifier {
   }
 
   Future<void> initialiseUserLogin() async {
-    FirebaseAuth.instance.authStateChanges().listen((User user) {
+    FirebaseAuth.instance.authStateChanges().listen((User user) { // this keeps repeating on login
       // todo i think this sets up a listener...
       if (user != null) {
         this.email = user.email;

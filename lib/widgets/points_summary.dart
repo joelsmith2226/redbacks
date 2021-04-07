@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/homepage_summary.dart';
 import 'package:redbacks/widgets/summary_container.dart';
 
@@ -12,15 +14,16 @@ class _PointsSummaryState extends State<PointsSummary> {
   @override
   Widget build(BuildContext context) {
     var style = GoogleFonts.merriweatherSans();
+    LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
 
     return HomepageSummary(
         body: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SummaryContainer(
-            body: PointsText("GW", "12", Theme.of(context).primaryColor, Colors.white)),
+            body: PointsText("GW", "1", Theme.of(context).primaryColor, Colors.white)),
         SummaryContainer(
-            body: PointsText("25", "pts", Colors.white, Theme.of(context).primaryColor)),
+            body: PointsText("${user.gwPts}", "pts", Colors.white, Theme.of(context).primaryColor)),
       ],
     ));
   }
