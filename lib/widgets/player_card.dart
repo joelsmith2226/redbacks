@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/transfer.dart';
@@ -51,6 +52,8 @@ class PlayerCard extends StatelessWidget {
 
   List<Widget> pickActions(){
     return [
+      rankCheckBox(CAPTAIN),
+      rankCheckBox(VICE),
       MaterialButton(
         textColor: Color(0xFF6200EE),
         onPressed: () {
@@ -114,5 +117,25 @@ class PlayerCard extends StatelessWidget {
         return this.pc;
       },
     );
+  }
+
+  Widget rankCheckBox(rank) {
+    return Container(
+      child: Column(
+        children: [
+          Checkbox(value: this.player.rank == rank, onChanged: (value) => updateCaptaincy(value, rank)),
+          Text(rank)
+        ]
+      )
+    );
+  }
+
+  void updateCaptaincy(bool value, String rank) {
+    if (!value){
+      return;
+    }
+    LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+    user.updateCaptaincy(this.player, rank);
+    Navigator.pop(context);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/team_widget.dart';
@@ -28,7 +29,7 @@ class _TransfersPageState extends State<TransfersPage> {
           TransfersSummary(),
           TeamWidget(
             user.team,
-            mode: "money",
+            mode: PRICE,
             bench: false,
           ),
           SizedBox(

@@ -34,33 +34,32 @@ class LoggedInUser extends ChangeNotifier {
   }
 
   Future<void> initialiseUserLogin() async {
-    FirebaseAuth.instance.authStateChanges().listen((User user) { // this keeps repeating on login
-      // todo i think this sets up a listener...
-      if (user != null) {
-        this.email = user.email;
-        this.uid = user.uid;
-        this.admin = admins.contains(this.email);
-        RedbacksFirebase().getTeam(this.uid).then((Team t) {
-          print("Team is sorted");
-          this.team = t;
-          this.calculateTeamValue();
-          RedbacksFirebase()
-              .getMiscDetails(this.uid)
-              .then((DocumentSnapshot data) {
-            this.loadMiscDetailsFromDB(data);
-            print(
-                "Loaded user successfully ${this.uid}. Should proceed to home page");
-            this.signingUp = false; // safety ensured check
-            notifyListeners();
-          });
+    User user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      this.email = user.email;
+      this.uid = user.uid;
+      this.admin = admins.contains(this.email);
+      RedbacksFirebase().getTeam(this.uid).then((Team t) {
+        print("Team is sorted");
+        this.team = t;
+        this.calculateTeamValue();
+        RedbacksFirebase()
+            .getMiscDetails(this.uid)
+            .then((DocumentSnapshot data) {
+          this.loadMiscDetailsFromDB(data);
+          print(
+              "Loaded user successfully ${this.uid}. Should proceed to home page");
+          this.signingUp = false; // safety ensured check
+          this.team.checkCaptain();
+          notifyListeners();
         });
-      } else {
-        print('User is currently signed out! Continue with login');
-      }
-    });
+      });
+    } else {
+      print('User is currently signed out! Continue with login');
+    }
   }
 
-  // Initialises the user once signup is finalised
+// Initialises the user once signup is finalised
   void initialiseUserSignup(String teamName) {
     User user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -103,9 +102,9 @@ class LoggedInUser extends ChangeNotifier {
     return false;
   }
 
-  // Checks if user can afford to make the pending transfer
-  // Assumes only runs after confirming that both players are viable
-  // for transfer
+// Checks if user can afford to make the pending transfer
+// Assumes only runs after confirming that both players are viable
+// for transfer
   bool adjustBudget() {
     Player incoming = this.pendingTransfer.incoming;
     Player outgoing = this.pendingTransfer.outgoing;
@@ -147,7 +146,7 @@ class LoggedInUser extends ChangeNotifier {
     RedbacksFirebase().pushTeamToDB(this.team, this.uid);
   }
 
-  // GETTERS & SETTERS
+// GETTERS & SETTERS
   int get gwPts => _gwPts;
 
   set gwPts(int value) {
@@ -235,6 +234,11 @@ class LoggedInUser extends ChangeNotifier {
 
   void benchPlayer(Player player) {
     this.team.benchPlayer(player);
+    notifyListeners();
+  }
+
+  void updateCaptaincy(Player player, String rank) {
+    this.team.updateCaptaincy(player, rank);
     notifyListeners();
   }
 }

@@ -48,7 +48,7 @@ class _LoadingViewState extends State<LoadingView> {
       Navigator.pushReplacementNamed(context, Routes.Home);
     }).onError((error, stackTrace) {
       ErrorDialog err =
-          ErrorDialog(body: "Error in loading user", context: context);
+          ErrorDialog(body: "Error in loading user");
       err.displayCard();
       return;
     });

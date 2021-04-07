@@ -15,3 +15,11 @@ Map<int, Color> colorSwatch =
 };
 
 const List<String> admins = ["joel.smith2226@gmail.com"];
+
+const String CAPTAIN = "cap";
+const String VICE = "vice";
+const String POINTS = "points";
+const String PRICE = "price";
+const String TRANSFER = "transfers";
+const String PICK = "pick";
+const String SUB = "sub";

@@ -50,30 +50,33 @@ class _TeamWidgetState extends State<TeamWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        child:
-            Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-      Row(
-        children: playersToWidgets(r1Players),
-        mainAxisAlignment: MainAxisAlignment.center,
-      ),
-      Row(
-        children: playersToWidgets(r2Players),
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: playersToWidgets(r1Players),
+            mainAxisAlignment: MainAxisAlignment.center,
+          ),
+          Row(
+            children: playersToWidgets(r2Players),
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
+          Row(
+            children: playersToWidgets(r3Players),
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+          ),
+          SizedBox(height: 15),
+          widget.bench
+              ? Bench(
+                  player: (PlayerWidget(
+                    this.benchPlayer,
+                    widget.mode,
+                    benched: true,
+                  )),
+                )
+              : Container(),
+        ],
       ),
-      Row(
-        children: playersToWidgets(r3Players),
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-      ),
-      SizedBox(height: 15),
-      widget.bench
-          ? Bench(
-              player: (PlayerWidget(
-                this.benchPlayer,
-                widget.mode,
-                benched: true,
-              )),
-            )
-          : Container(),
-    ]));
+    );
   }
 }

@@ -19,8 +19,9 @@ class _BenchState extends State<Bench> {
       height: MediaQuery.of(context).size.height * 0.15,
       color: Colors.black.withAlpha(100),
       child: Stack(
+        alignment: Alignment.center,
         children: [
-          Icon(Icons.event_seat, size: 80, color: Colors.white,),
+          Icon(Icons.event_seat, size: 100, color: Colors.white,),
           widget.player,
         ],
       ),
