@@ -23,3 +23,5 @@ const String PRICE = "price";
 const String TRANSFER = "transfers";
 const String PICK = "pick";
 const String SUB = "sub";
+const String CAROUSEL = "carousel";
+const int NUM_PLAYERS = 15;

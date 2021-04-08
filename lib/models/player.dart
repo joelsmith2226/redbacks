@@ -1,3 +1,5 @@
+import 'package:redbacks/providers/gameweek.dart';
+
 class Player {
   String _name;
   double _price;
@@ -10,8 +12,9 @@ class Player {
   String _flagged = "";
   bool _removed = false;
   String _pic = "";
+  Map<String, Gameweek> _gwResults = Map<String, Gameweek>();
 
-  Player.blank(){
+  Player.blank() {
     this._name = "";
     this._price = 0;
     this._transferredIn = 0;
@@ -23,7 +26,7 @@ class Player {
     this._flagged = "";
   }
 
-  Player.template(){
+  Player.template() {
     this._name = "Cameron James";
     this._price = 37.5;
     this._transferredIn = 0;
@@ -48,14 +51,14 @@ class Player {
     this.pic = data["picture"];
   }
 
-  Player.initial(String name, double value, String position){
+  Player.initial(String name, double value, String position) {
     this._name = name;
     this._price = value;
     this._position = position;
   }
 
-  String getLastName(){
-    if (this.name == ""){
+  String getLastName() {
+    if (this.name == "") {
       return "?";
     }
     return this._name.split(' ')[1];
@@ -125,5 +128,11 @@ class Player {
 
   set pic(String value) {
     _pic = value;
+  }
+
+  Map<String, Gameweek> get gwResults => _gwResults;
+
+  set gwResults(Map<String, Gameweek> value) {
+    _gwResults = value;
   }
 }

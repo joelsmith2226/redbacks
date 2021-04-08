@@ -19,17 +19,43 @@ class PlayerWidget extends StatefulWidget {
 class _PlayerWidgetState extends State<PlayerWidget> {
   @override
   Widget build(BuildContext context) {
+    switch (widget.mode) {
+      case CAROUSEL:
+        return CarouselPlayer();
+      default:
+        return PointPricePickPlayer();
+    }
+  }
+
+  Widget CarouselPlayer() {
+    return Container(
+      child: InkWell(
+        child: Column(
+          children: [
+            Image.asset(
+              "assets/avatar-nobg.png",
+              width: MediaQuery.of(context).size.width * 0.15,
+            ),
+            NameTag(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget PointPricePickPlayer() {
     PlayerCard pc = PlayerCard(
         player: widget.player,
         context: context,
         mode: widget.mode,
         callback: widget.callback);
     var showPlayerCard = () => pc.displayCard();
-    var widthMultiplier = widget.benched ? 0.15 : 0.25;
+    bool smallMode = widget.benched || widget.mode == CAROUSEL;
+    var widthMultiplier = smallMode ? 0.15 : 0.25;
 
     return Container(
       child: InkWell(
-        onTap: showPlayerCard,
+        onTap: widget.mode != CAROUSEL ? showPlayerCard : null,
         child: Stack(alignment: Alignment.center, children: [
           Column(
             children: [
@@ -40,7 +66,9 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                 width: MediaQuery.of(context).size.width * widthMultiplier,
               ),
               NameTag(),
-              SecondaryTag(_getSecondaryValue()),
+              widget.mode != CAROUSEL
+                  ? SecondaryTag(_getSecondaryValue())
+                  : Container(),
             ],
           ),
           CaptainsArmband(widget.player.rank),

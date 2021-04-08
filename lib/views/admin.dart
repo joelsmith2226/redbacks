@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/router.dart';
+import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:redbacks/widgets/gameweek_form.dart';
 
 class AdminView extends StatefulWidget {
   @override
@@ -33,30 +35,36 @@ class _AdminViewState extends State<AdminView> {
   @override
   Widget build(BuildContext context) {
     List<String> titles = [
-      "Enter GW Pts",
+      "Enter New GW",
       "Edit Past GWs",
       "Back To User Mode"
     ];
     LoggedInUser user = Provider.of<LoggedInUser>(context);
     bool loaded = true;
     this._pages = [
-      Text("Enter GW pts here"),
+      ChangeNotifierProvider(
+          create: (context) => Gameweek(user.playerDB),
+          child: GameweekForm()),
       Text("Edit past gws?"),
       Text("Edit past gws?"),
     ];
 
     return Scaffold(
       key: _scaffoldKey,
-      body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/background.jpeg"),
-              fit: BoxFit.fill,
-            ),
-          ),
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: loaded ? _pages[_selectedIndex] : CircularProgressIndicator()),
+      body: Stack(
+        children: [
+          Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/background.jpeg"),
+                  fit: BoxFit.fill,
+                ),
+              ),
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width),
+          loaded ? _pages[_selectedIndex] : CircularProgressIndicator(),
+        ],
+      ),
       appBar: AppBar(
         title: Text(
           titles[_selectedIndex],
