@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:redbacks/models/player.dart';
 
 class PlayerGameweek {
@@ -18,6 +20,7 @@ class PlayerGameweek {
   int _gwPts = 0;
   bool _saved = false;
   Player _player;
+  final GlobalKey<FormBuilderState> key = GlobalKey<FormBuilderState>();
 
   PlayerGameweek(Player p) {
     this.id = p.name;

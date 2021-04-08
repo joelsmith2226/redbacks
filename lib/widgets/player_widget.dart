@@ -117,7 +117,6 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   }
 
   Widget CaptainsArmband(String rank) {
-    print("${widget.player.name} : ${widget.player.rank}");
     if (rank == "") {
       return Container();
     }
