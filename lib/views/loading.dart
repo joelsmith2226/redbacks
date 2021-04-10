@@ -43,19 +43,19 @@ class _LoadingViewState extends State<LoadingView> {
 
   void _loadUser() {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
-    Timer(Duration(seconds: 1), () {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Bear with me for a sec, taking longer than normal')));
-      Timer(Duration(seconds: 1), () {
-        ErrorDialog errorDialog = ErrorDialog(
-            body: "Loading took too long, retry?",
-            context: context,
-            btn1: "Retry",
-            btn2: "Wait",
-            fn1: () => setState((){}));
-        errorDialog.displayCard();
-      });
-    });
+    // Timer(Duration(seconds: 1), () {
+    //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    //       content: Text('Bear with me for a sec, taking longer than normal')));
+    //   Timer(Duration(seconds: 1), () {
+    //     ErrorDialog errorDialog = ErrorDialog(
+    //         body: "Loading took too long, retry?",
+    //         context: context,
+    //         btn1: "Retry",
+    //         btn2: "Wait",
+    //         fn1: () => setState((){}));
+    //     errorDialog.displayCard();
+    //   });
+    // });
     user.signingUp ? _initialiseSignup() : _initialiseLogin();
   }
 

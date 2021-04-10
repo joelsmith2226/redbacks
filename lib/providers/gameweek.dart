@@ -78,6 +78,7 @@ class Gameweek extends ChangeNotifier {
       curr.redCards = ifValidReturn(currentState, RED, 0);
       curr.bonus = int.parse(ifValidReturn(currentState, BONUS, "0"));
       setClean(currentState, curr);
+      curr.calculatePoints();
     }
     curr.saved = true;
     notifyListeners();

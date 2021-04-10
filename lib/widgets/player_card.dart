@@ -29,7 +29,7 @@ class PlayerCard extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.3),
             SizedBox(height: 30),
             Text(
-                'Name: ${this.player.name}\nValue: \$${this.player.price}\nTotal Points: ${this.player.totalPts}\n'),
+                'Name: ${this.player.name}\nValue: \$${this.player.price}\nGW Pts: ${this.player.currPts}\nTotal Points: ${this.player.totalPts}\n'),
           ]),
       actions: cardActions(),
     );

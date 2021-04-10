@@ -127,4 +127,13 @@ class Team {
     });
     return removalBudget;
   }
+
+  double teamPoints(){
+    double teamPoints = 0;
+    this.players.forEach((p) {
+      print(p.name);
+      teamPoints += p.currPts;
+    });
+    return teamPoints;
+  }
 }

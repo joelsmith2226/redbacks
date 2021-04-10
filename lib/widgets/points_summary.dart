@@ -21,9 +21,9 @@ class _PointsSummaryState extends State<PointsSummary> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SummaryContainer(
-            body: PointsText("GW", "1", Theme.of(context).primaryColor, Colors.white)),
+            body: PointsText("GW", "${user.currGW}", Theme.of(context).primaryColor, Colors.white)),
         SummaryContainer(
-            body: PointsText("${user.gwPts}", "pts", Colors.white, Theme.of(context).primaryColor)),
+            body: PointsText("${user.team.teamPoints().round()}", "pts", Colors.white, Theme.of(context).primaryColor)),
       ],
     ));
   }

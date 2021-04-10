@@ -5,6 +5,7 @@ import 'package:redbacks/models/playerGameweek.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/providers/gameweek.dart';
+import 'package:redbacks/providers/logged_in_user.dart';
 
 class RedbacksFirebase {
   // make instance accessible via constructor
@@ -246,16 +247,17 @@ class RedbacksFirebase {
   Future<void> addPlayerGW(PlayerGameweek gw, int gwNumber) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference gwHistoryDB = firestore.collection('gw-history');
-
     return gwHistoryDB
         .doc('gw-${gwNumber}')
         .collection('player-gameweeks')
         .doc(gw.id)
         .set({
+          'appearance':gw.appearance,
           'position': gw.position,
           'goals': gw.goals,
           'assists': gw.assists,
           'saves': gw.saves,
+          'goals-conceded': gw.goalsConceded,
           'quarter-clean': gw.quarterClean,
           'half-clean': gw.halfClean,
           'full-clean': gw.fullClean,
@@ -265,8 +267,20 @@ class RedbacksFirebase {
           'pens': gw.penaltiesMissed,
           'bonus': gw.bonus,
           'saved': gw.saved,
+          'gw-pts': gw.gwPts,
         })
         .then((value) => print("Player GW Added: ${gw.id}"))
         .catchError((error) => print("Failed to add player GW: $error"));
+  }
+
+  // GLOBAL ADMIN INFO
+  Future<void> getAdminInfo(LoggedInUser user) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference users = firestore.collection('users');
+    return users.doc('admin').get().then((DocumentSnapshot docs) {
+      user.currGW = docs.data()["curr-gw"];
+    }).onError((error, stackTrace) {
+      print("Error in getting admin data: ${error}");
+    });
   }
 }

@@ -19,9 +19,11 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     this.user = Provider.of<LoggedInUser>(context);
     // Be sneaky and load players here
-    if (user.playerDB == null) {
+    // if (user.playerDB == null) {
       user.loadInPlayerAndGWHistoryDB();
-    }
+    // }
+
+    this.user.getAdminInfo();
 
     // For persistent logins todo
     isLoggedIn().then((bool isSignedIn) => isSignedIn

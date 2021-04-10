@@ -28,6 +28,7 @@ class LoggedInUser extends ChangeNotifier {
   int _freeTransfers;
   List<Gameweek> _gwHistory;
   OriginalModels _originalModels;
+  int _currGW;
 
   LoggedInUser();
 
@@ -48,10 +49,11 @@ class LoggedInUser extends ChangeNotifier {
       this.admin = admins.contains(this.email);
       this.pendingTransfer = []; //Resets any residual transfers
       RedbacksFirebase().getTeam(this.uid, this.playerDB).then((Team t) {
+        this.calculatePoints();
         print("Team is sorted");
         this.team = t;
         //this.calculateTeamValue();
-        RedbacksFirebase()
+        return RedbacksFirebase()
             .getMiscDetails(this.uid)
             .then((DocumentSnapshot data) {
           this.loadMiscDetailsFromDB(data);
@@ -103,9 +105,8 @@ class LoggedInUser extends ChangeNotifier {
 
   String completeTransfer(TeamPlayer outgoing, TeamPlayer incoming) {
     try {
-      Transfer currTransfer = this
-          .pendingTransfer
-          .firstWhere((t) => (t.outgoing == outgoing));
+      Transfer currTransfer =
+          this.pendingTransfer.firstWhere((t) => (t.outgoing == outgoing));
       currTransfer.incoming = incoming;
       String result = this.adjustBudget(currTransfer);
       if (result == "") {
@@ -145,7 +146,8 @@ class LoggedInUser extends ChangeNotifier {
   Future<void> loadInPlayerAndGWHistoryDB() async {
     this.playerDB = [];
     await RedbacksFirebase().getPlayers(this.playerDB);
-    return this.loadInGWHistory();
+    await this.loadInGWHistory();
+    return;
   }
 
   void loadInGWHistory() {
@@ -173,7 +175,7 @@ class LoggedInUser extends ChangeNotifier {
           this.totalPts,
           this.teamName,
           this.freeTransfers);
-    } catch (e){
+    } catch (e) {
       print("Error in pushing details to DB: ${e}");
     }
   }
@@ -321,5 +323,26 @@ class LoggedInUser extends ChangeNotifier {
     this.team = this.originalModels.team;
     this.budget = this.originalModels.budget;
     this.freeTransfers = this.originalModels.freeTransfers;
+  }
+
+  int get currGW => _currGW;
+
+  set currGW(int value) {
+    _currGW = value;
+  }
+
+  void getAdminInfo() {
+    RedbacksFirebase().getAdminInfo(this);
+  }
+
+  void calculatePoints() {
+    this.totalPts = 0;
+    this.playerDB.forEach((p) {
+      p.currPts = p.gwResults[this.currGW-1].playerGameweeks[0].gwPts;
+      p.gwResults.forEach((gw) {
+        print(gw.playerGameweeks[0].gwPts);
+        // if (gw.id <= this.currGW) p.totalPts += gw.playerGameweeks[0].gwPts;
+      });
+    });
   }
 }

@@ -20,6 +20,7 @@ class TeamPlayer {
   List<Gameweek> _gwResults = [];
   int _transferredIn = 0;
   int _transferredOut = 0;
+  Player player;
 
   TeamPlayer.blank(int index) {
     this.name = "";
@@ -32,6 +33,7 @@ class TeamPlayer {
     this.boughtPrice = data["bought-price"];
     this.rank = data["rank"];
     this.index = index;
+    this.player = p;
 
     this.loadPlayerModelFields(p);
   }

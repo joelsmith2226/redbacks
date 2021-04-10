@@ -37,7 +37,6 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
   int _stage;
 
   BuildContext context;
-
   @override
   Widget build(BuildContext context) {
     this.user = Provider.of<LoggedInUser>(context);
@@ -224,6 +223,7 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
 
   Widget dropdownForm(String name, String label, List<String> options,
       {String initial = ""}) {
+
     return FormBuilderChoiceChip(
       alignment: WrapAlignment.center,
       initialValue: initial,

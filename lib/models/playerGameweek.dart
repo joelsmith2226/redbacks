@@ -36,6 +36,7 @@ class PlayerGameweek {
     this.goals = data["goals"];
     this.assists = data["assists"];
     this.saves = data["saves"];
+    this.goalsConceded = data["goals-conceded"];
     this.quarterClean = data["quarter-clean"];
     this.halfClean = data["half-clean"];
     this.fullClean = data["full-clean"];
@@ -44,29 +45,35 @@ class PlayerGameweek {
     this.ownGoals = data["owns"];
     this.penaltiesMissed = data["pens"];
     this.bonus = data["bonus"];
+    if (data["gw-pts"] == null) {
+      this.calculatePoints();
+    } else {
+      data["gw-pts"];
+    }
     this.saved = true;
     this.player = p;
   }
 
   void calculatePoints() {
+    this.gwPts = 0;
     switch (this.position) {
       case "DEF":
-        this.gwPts = defenderPoints();
+        defenderPoints();
         break;
       case "FWD":
-        this.gwPts = forwardPoints();
+        forwardPoints();
         break;
       case "MID":
-        this.gwPts = midPoints();
+        midPoints();
         break;
       case "GKP":
-        this.gwPts = gkpPoints();
+        gkpPoints();
         break;
     }
   }
 
   int defenderPoints() {
-    if (this.appearance){
+    if (this.appearance) {
       gwPts += 2;
       gwPts += this.goals * 8;
       gwPts += this.assists * 4;
@@ -82,7 +89,7 @@ class PlayerGameweek {
   }
 
   int midPoints() {
-    if (this.appearance){
+    if (this.appearance) {
       gwPts += 2;
       gwPts += this.goals * 6;
       gwPts += this.assists * 3;
@@ -96,7 +103,7 @@ class PlayerGameweek {
   }
 
   int forwardPoints() {
-    if (this.appearance){
+    if (this.appearance) {
       gwPts += 2;
       gwPts += this.goals * 4;
       gwPts += this.assists * 2;
@@ -109,7 +116,7 @@ class PlayerGameweek {
   }
 
   int gkpPoints() {
-    if (this.appearance){
+    if (this.appearance) {
       gwPts += 2;
       gwPts += this.goals * 10;
       gwPts += this.assists * 5;
