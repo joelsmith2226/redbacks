@@ -8,13 +8,10 @@ import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/choose_team_summary.dart';
 import 'package:redbacks/widgets/team_widget.dart';
 
-class ChooseTeamView extends StatefulWidget {
-  @override
-  _ChooseTeamViewState createState() => _ChooseTeamViewState();
-}
-
-class _ChooseTeamViewState extends State<ChooseTeamView> {
+class ChooseTeamView extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  ChooseTeamView();
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +20,22 @@ class _ChooseTeamViewState extends State<ChooseTeamView> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(user.signingUp ? "Choose Team" : "Transfers", style: GoogleFonts.merriweatherSans()),
-        centerTitle: true,
-      ),
+          title: Text(user.signingUp ? "Choose Team" : "Transfers",
+              style: GoogleFonts.merriweatherSans()),
+          centerTitle: true,
+          leading: user.signingUp
+              ? Container()
+              : MaterialButton(
+                  onPressed: () {
+                    user.team = user.originalTeam;
+                    user.originalTeam = null; // resets originalTeam
+                    Navigator.of(context).pushReplacementNamed(Routes.Home);
+                  },
+                  child: Icon(
+                    Icons.keyboard_backspace,
+                    color: Colors.white,
+                  ),
+                )),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -43,13 +53,23 @@ class _ChooseTeamViewState extends State<ChooseTeamView> {
                 child: MaterialButton(
                   padding: EdgeInsets.all(20),
                   color: Theme.of(context).canvasColor,
-                  onPressed: team.isComplete()
-                      ? () {
-                          user.userDetailsPushDB();
-                          user.signingUp = false;
-                          Navigator.pushReplacementNamed(context, Routes.Home);
-                        }
-                      : null,
+                  onPressed: () {
+                    String errMsg = "";
+                    print("team: ${team.isComplete()}");
+                    if (!team.isComplete()) {
+                      errMsg =
+                          "Team is incomplete! Make sure no ? players left";
+                    } else if (user.budget <= 0) {
+                      errMsg = "Not enough budget for this team!";
+                    } else {
+                      user.userDetailsPushDB();
+                      user.signingUp = false;
+                      Navigator.pushReplacementNamed(context, Routes.Home);
+                      return;
+                    }
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text(errMsg)));
+                  },
                   child: Text('Confirm'),
                 ),
               ),

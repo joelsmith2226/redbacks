@@ -17,7 +17,23 @@ class Gameweek extends ChangeNotifier {
     }
   }
 
+  Gameweek.fromData(Map<String, dynamic> data) {
+    this.id = data["gw-number"];
+    this.gameScore = data["score"];
+    this.opposition = data["opposition"];
+  }
+
+  Gameweek.singlePlayer(Gameweek gw, PlayerGameweek pgw) {
+    this.id = gw.id;
+    this.opposition = gw.opposition;
+    this.gameScore = gw.gameScore;
+    this.playerGameweeks = [pgw];
+  }
+
+
   List<PlayerGameweek> get playerGameweeks => _playerGameweeks;
+
+  bool get allPlayersSaved => this.playerGameweeks.every((pgw) => pgw.saved);
 
   set playerGameweeks(List<PlayerGameweek> value) {
     _playerGameweeks = value;
@@ -51,13 +67,13 @@ class Gameweek extends ChangeNotifier {
   void saveDataToGWObject(FormBuilderState currentState) {
     PlayerGameweek curr = this.playerGameweeks[this.currPlayerIndex];
     curr.position = ifValidReturn(currentState, POSITION, "DEF");
-    curr.assists = int.parse(ifValidReturn(currentState, ASSISTS, "0"));
-    curr.ownGoals = int.parse(ifValidReturn(currentState, OWNS, "0"));
-    curr.penaltiesMissed = int.parse(ifValidReturn(currentState, PENS, "0"));
-    curr.goals = int.parse(ifValidReturn(currentState, GOALS, "0"));
-    curr.saves = int.parse(ifValidReturn(currentState, SAVES, "0"));
-    curr.yellowCards = int.parse(ifValidReturn(currentState, YELLOW, "0"));
-    curr.redCards = int.parse(ifValidReturn(currentState, RED, "0"));
+    curr.assists = ifValidReturn(currentState, ASSISTS, 0);
+    curr.ownGoals = ifValidReturn(currentState, OWNS, 0);
+    curr.penaltiesMissed = ifValidReturn(currentState, PENS, 0);
+    curr.goals = ifValidReturn(currentState, GOALS, 0);
+    curr.saves = ifValidReturn(currentState, SAVES, 0);
+    curr.yellowCards = ifValidReturn(currentState, YELLOW, 0);
+    curr.redCards = ifValidReturn(currentState, RED, 0);
     curr.bonus = int.parse(ifValidReturn(currentState, BONUS, "0"));
     setClean(currentState, curr);
     curr.saved = true;
@@ -66,9 +82,9 @@ class Gameweek extends ChangeNotifier {
 
   dynamic ifValidReturn(
       FormBuilderState currentState, String field, dynamic fallback) {
-    return currentState.fields[field].value == null
+    return currentState.value[field] == null
         ? fallback
-        : currentState.fields[field].value;
+        : currentState.value[field];
   }
 
   void setClean(FormBuilderState currentState, PlayerGameweek curr){

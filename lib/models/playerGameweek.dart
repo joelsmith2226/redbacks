@@ -28,6 +28,24 @@ class PlayerGameweek {
     this.player = p;
   }
 
+  PlayerGameweek.fromData(Map<String, dynamic> data, String name, Player p) {
+    this.id = name;
+    this.position = data["position"];
+    this.goals = data["goals"];
+    this.assists = data["assists"];
+    this.saves = data["saves"];
+    this.quarterClean = data["quarter-clean"];
+    this.halfClean = data["half-clean"];
+    this.fullClean = data["full-clean"];
+    this.yellowCards = data["yellow"];
+    this.redCards = data["red"];
+    this.ownGoals = data["owns"];
+    this.penaltiesMissed = data["pens"];
+    this.bonus = data["bonus"];
+    this.saved = true;
+    this.player = p;
+  }
+
   int get bonus => _bonus;
 
   set bonus(int value) {
@@ -128,5 +146,8 @@ class PlayerGameweek {
 
   set player(Player value) {
     _player = value;
+  }
+
+  void loadKey() {
   }
 }

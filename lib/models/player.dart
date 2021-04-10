@@ -1,6 +1,7 @@
 import 'package:redbacks/providers/gameweek.dart';
 
 class Player {
+  String _uid = ""; // Hopefully will never not be set from DB.. or its a team version player... :|
   String _name;
   double _price;
   int _transferredIn = 0;
@@ -12,7 +13,7 @@ class Player {
   String _flagged = "";
   bool _removed = false;
   String _pic = "";
-  Map<String, Gameweek> _gwResults = Map<String, Gameweek>();
+  List<Gameweek> _gwResults = [];
 
   Player.blank() {
     this._name = "";
@@ -38,7 +39,8 @@ class Player {
     this._flagged = "";
   }
 
-  Player.fromData(Map<String, dynamic> data) {
+  Player.fromData(Map<String, dynamic> data, {String uid = ""}) {
+    this.uid = uid;
     this.name = data["name"];
     this.price = data["price"];
     this.transferredIn = data["transferredIn"];
@@ -130,9 +132,15 @@ class Player {
     _pic = value;
   }
 
-  Map<String, Gameweek> get gwResults => _gwResults;
+  List<Gameweek> get gwResults => _gwResults;
 
-  set gwResults(Map<String, Gameweek> value) {
+  set gwResults(List<Gameweek> value) {
     _gwResults = value;
+  }
+
+  String get uid => _uid;
+
+  set uid(String value) {
+    _uid = value;
   }
 }

@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:redbacks/models/player.dart';
+import 'package:redbacks/models/playerGameweek.dart';
 import 'package:redbacks/models/team.dart';
+import 'package:redbacks/models/team_player.dart';
+import 'package:redbacks/providers/gameweek.dart';
 
 class RedbacksFirebase {
   // make instance accessible via constructor
@@ -12,17 +15,17 @@ class RedbacksFirebase {
     return FirebaseAuth.instance.currentUser;
   }
 
-  Future<Team> getTeam(String uid) {
+  Future<Team> getTeam(String uid, List<Player> players) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     DocumentReference user = firestore.collection('users').doc(uid);
     return user
         .collection("Team")
         .get()
-        .then((QuerySnapshot playerData) => 
-        Team.fromData(playerData.docs))
-    .onError((error, stackTrace) {
+        .then((QuerySnapshot playerData) => Team.fromData(playerData.docs, players))
+        .onError((error, stackTrace) {
       print("Error! ${error}");
-      return null;});
+      return null;
+    });
   }
 
   // Player Management
@@ -45,13 +48,13 @@ class RedbacksFirebase {
         .catchError((error) => print("Failed to add player: $error"));
   }
 
-  void getPlayers(List<Player> playerModels) {
+  Future<void> getPlayers(List<Player> playerModels) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference players = firestore.collection('players');
     print("Going into getPlayers");
-    players.get().then((QuerySnapshot querySnapshot) {
+    return players.get().then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        playerModels.add(Player.fromData(doc.data()));
+        playerModels.add(Player.fromData(doc.data(), uid: doc.id));
         print("Player ${doc.data()["name"]} added to list");
       });
     }).onError((error, stackTrace) {
@@ -77,23 +80,20 @@ class RedbacksFirebase {
   }
 
   Future<void> addPlayerToTeamInDB(
-      Player p, int index, DocumentReference user) {
+      TeamPlayer p, int index, DocumentReference user) {
     return user
         .collection("Team")
         .doc("Player-${index}")
         .set({
           'name': p.name,
-          'price': p.price,
-          'position': p.position,
-          'flagged': p.flagged,
-          'transferredIn': p.transferredIn,
-          'transferredOut': p.transferredOut,
-          'gwPts': p.currPts,
-          'totalPts': p.totalPts,
+          'bought-price': p.boughtPrice,
+          'rank': p.rank,
         })
         .then((value) => print("Team Updated with player ${p.name}"))
         .catchError((error) => print("Failed to update team: $error"));
   }
+
+  //---- Manage USERS ----//
 
   Future<void> checkUserInDB(String uid) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -123,7 +123,7 @@ class RedbacksFirebase {
         .catchError((error) => print("Failed to add user: $error"));
   }
 
-  Future<void> addGWHistoryToDB(String uid) {
+  Future<void> addUserGWHistoryToDB(String uid) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     DocumentReference user = firestore.collection('users').doc(uid);
 
@@ -140,8 +140,15 @@ class RedbacksFirebase {
         .catchError((error) => print("Failed to add gw history: $error"));
   }
 
-  Future<void> pushMiscFieldsToDB(String uid, double budget, double teamValue,
-      String email, int gwPts, int totalPts, String teamName, int freeTransfers) {
+  Future<void> pushMiscFieldsToDB(
+      String uid,
+      double budget,
+      double teamValue,
+      String email,
+      int gwPts,
+      int totalPts,
+      String teamName,
+      int freeTransfers) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference user = firestore.collection('users');
 
@@ -165,11 +172,101 @@ class RedbacksFirebase {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference user = firestore.collection('users');
 
-    return user
-        .doc(uid)
-        .get()
-        .then((data) { return data;})
-        .catchError(
-            (error) => print("Failed to add user misc details: $error"));
+    return user.doc(uid).get().then((data) {
+      return data;
+    }).catchError((error) => print("Failed to add user misc details: $error"));
+  }
+
+  // GW History Management
+
+  void getGWHistory(List<Gameweek> gwHistory, List<Player> players) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference gwHistoryDB = firestore.collection('gw-history');
+    print("Going into getGWHistory");
+    gwHistoryDB.get().then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        gwHistory.add(Gameweek.fromData(doc.data()));
+        this.getPlayerGWs(gwHistory.last, doc, players);
+        print("Gameweek ${doc.data()["name"]} added to list");
+      });
+    }).onError((error, stackTrace) {
+      print("Error in getGWHistory: ${error}");
+    });
+  }
+
+  void getPlayerGWs(
+      Gameweek gwModel, QueryDocumentSnapshot gwDoc, List<Player> players) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference playerGWs = firestore
+        .collection('gw-history')
+        .doc(gwDoc.id)
+        .collection('player-gameweeks');
+
+    playerGWs.get().then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        //Obtain correct player
+        Player curr = players.firstWhere((p) => p.name == doc.id);
+        gwModel.playerGameweeks
+            .add(PlayerGameweek.fromData(doc.data(), doc.id, curr));
+        curr.gwResults
+            .add(Gameweek.singlePlayer(gwModel, gwModel.playerGameweeks.last));
+        print("Player GW Added ${doc.id} added to list");
+      });
+    }).onError((error, stackTrace) {
+      print("Error in getGWHistory: ${error}");
+    });
+  }
+
+  void addGWToDB(Gameweek gw) {
+    this.addGW(gw);
+    this.addAllPlayerGWs(gw);
+  }
+
+  Future<void> addGW(Gameweek gw) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference gwHistoryDB = firestore.collection('gw-history');
+
+    return gwHistoryDB
+        .doc("gw-${gw.id}")
+        .set({
+          'gw-number': gw.id,
+          'score': gw.gameScore,
+          'opposition': gw.opposition,
+        })
+        .then((value) => print("GW Added: GW${gw.id}"))
+        .catchError((error) => print("Failed to add GW: $error"));
+  }
+
+  void addAllPlayerGWs(Gameweek gw) {
+    gw.playerGameweeks.forEach((pgw) {
+      this.addPlayerGW(pgw, gw.id);
+    });
+  }
+
+  Future<void> addPlayerGW(PlayerGameweek gw, int gwNumber) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference gwHistoryDB = firestore.collection('gw-history');
+
+    return gwHistoryDB
+        .doc('gw-${gwNumber}')
+        .collection('player-gameweeks')
+        .doc(gw.id)
+        .set({
+          'position': gw.position,
+          'goals': gw.goals,
+          'assists': gw.assists,
+          'saves': gw.saves,
+          'quarter-clean': gw.quarterClean,
+          'half-clean': gw.halfClean,
+          'full-clean': gw.fullClean,
+          'yellow': gw.yellowCards,
+          'red': gw.redCards,
+          'owns': gw.ownGoals,
+          'pens': gw.penaltiesMissed,
+          'bonus': gw.bonus,
+          'saved': gw.saved,
+        })
+        .then((value) => print("Player GW Added: ${gw.id}"))
+        .catchError((error) => print("Failed to add player GW: $error"));
   }
 }

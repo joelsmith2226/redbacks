@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -41,6 +43,19 @@ class _LoadingViewState extends State<LoadingView> {
 
   void _loadUser() {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
+    Timer(Duration(seconds: 1), () {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Bear with me for a sec, taking longer than normal')));
+      Timer(Duration(seconds: 1), () {
+        ErrorDialog errorDialog = ErrorDialog(
+            body: "Loading took too long, retry?",
+            context: context,
+            btn1: "Retry",
+            btn2: "Wait",
+            fn1: () => setState((){}));
+        errorDialog.displayCard();
+      });
+    });
     user.signingUp ? _initialiseSignup() : _initialiseLogin();
   }
 
@@ -54,6 +69,10 @@ class _LoadingViewState extends State<LoadingView> {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
     if (this.loginOnce) {
       this.loginOnce = false;
+      if (user.playerDB == null) {
+        await user
+            .loadInPlayerAndGWHistoryDB(); // ensures player DB loaded before init
+      }
       await user.initialiseUserLogin().whenComplete(() {
         print("Finished Loading, user should be fully initialised");
         Navigator.pushReplacementNamed(context, Routes.Home);

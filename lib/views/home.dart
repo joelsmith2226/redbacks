@@ -35,8 +35,10 @@ class _HomeViewState extends State<HomeView> {
     List<String> titles = ["Transfers", "Points", "Pick Team", "Leaderboard"];
     LoggedInUser user = Provider.of<LoggedInUser>(context);
     bool loaded = user.team != null;
-    if (loaded)
+    if (loaded) {
+      user.team.checkCaptain();
       this._pages = [TransfersPage(), PointsPage(), PickPage(), Leaderboard()];
+    }
 
     return Scaffold(
       key: _scaffoldKey,

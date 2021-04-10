@@ -15,10 +15,10 @@ class _ChooseTeamSummaryState extends State<ChooseTeamSummary> {
   Widget build(BuildContext context) {
     var style = GoogleFonts.merriweatherSans();
     LoggedInUser user = Provider.of<LoggedInUser>(context);
-
+    double removalBudget = user.team.removalBudget();
     return HomepageSummary(
       body: SummaryContainer(
-          body: ChooseTeamSummaryContainer("Budget Left:", "\$${user.budget}m",)),
+          body: ChooseTeamSummaryContainer("Budget Left:", "\$${user.budget + removalBudget}m",)),
     );
   }
 

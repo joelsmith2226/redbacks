@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/redbacksFirebase.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team.dart';
+import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/models/transfer.dart';
+import 'package:redbacks/providers/gameweek.dart';
 
 class LoggedInUser extends ChangeNotifier {
   String _email;
@@ -22,6 +25,8 @@ class LoggedInUser extends ChangeNotifier {
   List<Player> _playerDB;
   bool _signingUp = false;
   int _freeTransfers;
+  List<Gameweek> _gwHistory;
+  Team _originalTeam;
 
   LoggedInUser();
 
@@ -40,10 +45,11 @@ class LoggedInUser extends ChangeNotifier {
       this.email = user.email;
       this.uid = user.uid;
       this.admin = admins.contains(this.email);
-      RedbacksFirebase().getTeam(this.uid).then((Team t) {
+      this.pendingTransfer = []; //Resets any residual transfers
+      RedbacksFirebase().getTeam(this.uid, this.playerDB).then((Team t) {
         print("Team is sorted");
         this.team = t;
-        this.calculateTeamValue();
+        //this.calculateTeamValue();
         RedbacksFirebase()
             .getMiscDetails(this.uid)
             .then((DocumentSnapshot data) {
@@ -71,8 +77,9 @@ class LoggedInUser extends ChangeNotifier {
       this.gwPts = 0;
       this.totalPts = 0;
       this.freeTransfers = 100;
+      this.pendingTransfer = []; //Resets any residual transfers
       this.setInitialTeam();
-      this.calculateTeamValue();
+      //this.calculateTeamValue();
 
       // push all details to DB now set
       this.userDetailsPushDB();
@@ -88,37 +95,43 @@ class LoggedInUser extends ChangeNotifier {
     this.budget = 100.0;
   }
 
-  void beginTransfer(Player outgoing) {
+  void beginTransfer(TeamPlayer outgoing) {
     this.pendingTransfer.add(Transfer());
     this.pendingTransfer.last.outgoing = outgoing;
+    print("STARTING TRANSFER: OUTGOING IS: ${outgoing.index}");
   }
 
-  bool completeTransfer(Player outgoing, Player incoming) {
-    Transfer currTransfer = this
-        .pendingTransfer
-        .firstWhere((t) => t.outgoing.name == outgoing.name);
-    currTransfer.incoming = incoming;
-    if (this.team.transfer(currTransfer)) {
-      if (this.adjustBudget(currTransfer)) {
-        notifyListeners();
-        return true;
+  String completeTransfer(TeamPlayer outgoing, TeamPlayer incoming) {
+    try {
+      Transfer currTransfer = this
+          .pendingTransfer
+          .firstWhere((t) => (t.outgoing == outgoing));
+      currTransfer.incoming = incoming;
+      String result = this.adjustBudget(currTransfer);
+      if (result == "") {
+        result = this.team.transfer(currTransfer);
+        //Remove pending transfer regardless of outcome
+        this.pendingTransfer.remove(currTransfer);
+        if (result == "") {
+          notifyListeners();
+          return result;
+        }
       }
+      return "${result}";
+    } catch (e) {
+      return "${e}";
     }
-    return false;
   }
 
 // Checks if user can afford to make the pending transfer
 // Assumes only runs after confirming that both players are viable
 // for transfer
-  bool adjustBudget(Transfer currTransfer) {
-    Player incoming = currTransfer.incoming;
-    Player outgoing = currTransfer.outgoing;
-    if (this.budget - incoming.price + outgoing.price >= 0) {
-      this.budget -= incoming.price;
-      this.budget += outgoing.price;
-      return true;
-    }
-    return false;
+  String adjustBudget(Transfer currTransfer) {
+    TeamPlayer incoming = currTransfer.incoming;
+    TeamPlayer outgoing = currTransfer.outgoing;
+    this.budget -= incoming.boughtPrice;
+    this.budget += outgoing.currPrice;
+    return "";
   }
 
   bool isLoggedIn() {
@@ -129,9 +142,17 @@ class LoggedInUser extends ChangeNotifier {
     this.teamValue = this.team.teamValue(); // todo seems bad style
   }
 
-  void loadInCurrentPlayerDatabase() {
+  Future<void> loadInPlayerAndGWHistoryDB() async {
     this.playerDB = [];
-    RedbacksFirebase().getPlayers(this.playerDB);
+    await RedbacksFirebase().getPlayers(this.playerDB);
+    return this.loadInGWHistory();
+  }
+
+  void loadInGWHistory() {
+    this.gwHistory = [];
+    print(
+        "SO Player db SHOULD be done at this point... players: ${this.playerDB.length}");
+    RedbacksFirebase().getGWHistory(this.gwHistory, this.playerDB);
   }
 
   void userDetailsPushDB() {
@@ -139,12 +160,19 @@ class LoggedInUser extends ChangeNotifier {
     print("adding user to db");
     RedbacksFirebase().checkUserInDB(this.uid);
     // new gw history in users/{user}/gw history if needed
-    RedbacksFirebase().addGWHistoryToDB(this.uid);
+    RedbacksFirebase().addUserGWHistoryToDB(this.uid);
     // // new/update team in users/{user}/team
     RedbacksFirebase().pushTeamToDB(this.team, this.uid);
     // // new/update other fields required to track
-    RedbacksFirebase().pushMiscFieldsToDB(this.uid, this.budget, this.teamValue,
-        this.email, this.gwPts, this.totalPts, this.teamName, this.freeTransfers);
+    RedbacksFirebase().pushMiscFieldsToDB(
+        this.uid,
+        this.budget,
+        this.teamValue,
+        this.email,
+        this.gwPts,
+        this.totalPts,
+        this.teamName,
+        this.freeTransfers);
   }
 
   void pushTeamToDB() {
@@ -238,17 +266,17 @@ class LoggedInUser extends ChangeNotifier {
     this.freeTransfers = data.get("free-transfers");
   }
 
-  void benchPlayer(Player player) {
+  void benchPlayer(TeamPlayer player) {
     this.team.benchPlayer(player);
     notifyListeners();
   }
 
-  void updateCaptaincy(Player player, String rank) {
+  void updateCaptaincy(TeamPlayer player, String rank) {
     this.team.updateCaptaincy(player, rank);
     notifyListeners();
   }
 
-  void removePlayer(Player player) {
+  void removePlayer(TeamPlayer player) {
     player.removed = !player.removed;
     print("Removed ${player.name}");
     notifyListeners();
@@ -265,5 +293,23 @@ class LoggedInUser extends ChangeNotifier {
 
   set freeTransfers(int value) {
     _freeTransfers = value;
+  }
+
+  List<Gameweek> get gwHistory => _gwHistory;
+
+  set gwHistory(List<Gameweek> value) {
+    _gwHistory = value;
+  }
+
+  List<Transfer> get pendingTransfers => _pendingTransfers;
+
+  set pendingTransfers(List<Transfer> value) {
+    _pendingTransfers = value;
+  }
+
+  Team get originalTeam => _originalTeam;
+
+  set originalTeam(Team value) {
+    _originalTeam = value;
   }
 }

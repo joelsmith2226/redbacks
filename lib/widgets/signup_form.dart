@@ -31,7 +31,7 @@ class _SignupFormState extends State<SignupForm> {
     );
   }
 
-  Widget SignupTextForm(String name, String label, bool pwd) {
+  Widget SignupTextForm(String name, String label, bool pwd, {String initial = ""}) {
     var validators = [FormBuilderValidators.required(context),
       FormBuilderValidators.max(context, 70)];
     // if (name == "conPwd") {
@@ -40,6 +40,7 @@ class _SignupFormState extends State<SignupForm> {
     return Container(
       width: MediaQuery.of(context).size.width * 0.75,
       child: FormBuilderTextField(
+        initialValue: initial,
         name: name,
         obscureText: pwd,
         decoration: InputDecoration(
@@ -60,10 +61,10 @@ class _SignupFormState extends State<SignupForm> {
         key: _formKey,
         child: Column(
           children: <Widget>[
-            SignupTextForm("teamName", "Enter Team Name", false),
-            SignupTextForm("email", "Enter Email", false),
-            SignupTextForm("pwd", "Enter Password", true),
-            SignupTextForm("conPwd", "Confirm Password", true),
+            SignupTextForm("teamName", "Enter Team Name", false, initial: "LADmin"),
+            SignupTextForm("email", "Enter Email", false, initial: "joel.smith2226@gmail.com"),
+            SignupTextForm("pwd", "Enter Password", true, initial: "password"),
+            SignupTextForm("conPwd", "Confirm Password", true, initial: "password"),
           ],
         ),
       ),

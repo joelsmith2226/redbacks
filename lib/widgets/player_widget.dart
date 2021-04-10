@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/models/player.dart';
+import 'package:redbacks/models/team_player.dart';
+import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/player_card.dart';
+import 'package:redbacks/widgets/player_selector_card.dart';
 
 class PlayerWidget extends StatefulWidget {
+  TeamPlayer teamPlayer;
   Player player;
   String mode;
   bool benched = false;
   VoidCallback callback = () => null;
 
   PlayerWidget(this.player, this.mode, {this.benched = false, this.callback});
+
+  PlayerWidget.fromTeamPlayer(this.teamPlayer, this.mode,
+      {this.benched = false, this.callback});
 
   @override
   _PlayerWidgetState createState() => _PlayerWidgetState();
@@ -19,6 +27,10 @@ class PlayerWidget extends StatefulWidget {
 class _PlayerWidgetState extends State<PlayerWidget> {
   @override
   Widget build(BuildContext context) {
+    if (widget.player == null) {
+      LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+      widget.player = widget.teamPlayer.playerFromTeamPlayer(user.playerDB);
+    }
     switch (widget.mode) {
       case CAROUSEL:
         return CarouselPlayer();
@@ -44,37 +56,48 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   }
 
   Widget PointPricePickPlayer() {
-    PlayerCard pc = PlayerCard(
-        player: widget.player,
-        context: context,
-        mode: widget.mode,
-        callback: widget.callback);
-    var showPlayerCard = () => pc.displayCard();
-    bool smallMode = widget.benched || widget.mode == CAROUSEL;
+    bool smallMode = widget.benched;
     var widthMultiplier = smallMode ? 0.15 : 0.25;
 
     return Container(
       child: InkWell(
-        onTap: widget.mode != CAROUSEL ? showPlayerCard : null,
+        onTap: showPlayerCardFn(),
         child: Stack(alignment: Alignment.center, children: [
           Column(
             children: [
               Image.asset(
-                (widget.player.name == "" || widget.player.removed == true)
+                (widget.teamPlayer.name == "" ||
+                        widget.teamPlayer.removed == true)
                     ? "assets/avatar-nobg-unset.png"
                     : "assets/avatar-nobg.png",
                 width: MediaQuery.of(context).size.width * widthMultiplier,
               ),
               NameTag(),
-              widget.mode != CAROUSEL
-                  ? SecondaryTag(_getSecondaryValue())
-                  : Container(),
+              SecondaryTag(_getSecondaryValue())
             ],
           ),
-          CaptainsArmband(widget.player.rank),
+          widget.mode == PRICE
+              ? Container()
+              : CaptainsArmband(widget.teamPlayer.rank),
         ]),
       ),
     );
+  }
+
+  Function showPlayerCardFn() {
+    if (widget.teamPlayer.name != "") {
+      PlayerCard pc = PlayerCard(
+          player: widget.player,
+          teamPlayer: widget.teamPlayer,
+          context: context,
+          mode: widget.mode,
+          callback: widget.callback);
+      return () => pc.displayCard();
+    } else {
+      PlayerSelectorCard psc = PlayerSelectorCard(
+          outgoingPlayer: widget.teamPlayer, context: context);
+      return () => psc.displayCard();
+    }
   }
 
   Widget NameTag() {
@@ -120,13 +143,14 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     if (rank == "") {
       return Container();
     }
+    print("${this.widget.teamPlayer.name} : ${widget.teamPlayer.rank}");
     return Positioned(
       right: 1,
       bottom: 40,
       child: Container(
         width: MediaQuery.of(context).size.width * 0.08,
         child: Image.asset(
-          widget.player.rank == CAPTAIN
+          widget.teamPlayer.rank == CAPTAIN
               ? "assets/captain.png"
               : "assets/vice.png",
           alignment: Alignment.bottomRight,

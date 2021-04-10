@@ -1,8 +1,8 @@
-import 'package:redbacks/models/player.dart';
+import 'package:redbacks/models/team_player.dart';
 
 class Transfer {
-  Player incoming;
-  Player outgoing;
+  TeamPlayer incoming;
+  TeamPlayer outgoing;
 
   Transfer();
 }

@@ -4,6 +4,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_touch_spin/flutter_touch_spin.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/constants.dart';
+import 'package:redbacks/globals/redbacksFirebase.dart';
 import 'package:redbacks/models/playerGameweek.dart';
 import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
@@ -29,21 +30,14 @@ class _GameweekFormState extends State<GameweekForm> {
   GlobalKey<FormBuilderState> _currKey;
 
   @override
-  void initState() {
-    this.user = Provider.of<LoggedInUser>(context, listen: false);
-    this.user.playerDB.forEach((player) {
-      final GlobalKey<FormBuilderState> key = GlobalKey<FormBuilderState>();
-      _playerFormKeys.add(key);
-    });
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     this.user = Provider.of<LoggedInUser>(context);
     this.GW = Provider.of<Gameweek>(context);
     this.currPlayerGW = this.GW.playerGameweeks[this.GW.currPlayerIndex];
-    this._currKey = this._playerFormKeys[this.GW.currPlayerIndex];
+    this._currKey = this.currPlayerGW.key;
+    if(this.currPlayerGW.saved){
+      this.currPlayerGW.loadKey();
+    }
 
     List<Widget> forms = [gameScoreForm(), playerForm()];
     List<Widget> actions = [gameScoreActions(), playerFormActions()];
@@ -175,6 +169,10 @@ class _GameweekFormState extends State<GameweekForm> {
             onPressed: () {
               saveStateToGWObject();
               print("Player saved");
+              // Shift to next available index
+              if (this.GW.currPlayerIndex < this.GW.playerGameweeks.length - 1){
+                this.GW.currPlayerIndex += 1;
+              }
             },
           ),
           MaterialButton(
@@ -184,7 +182,8 @@ class _GameweekFormState extends State<GameweekForm> {
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () {
-              print("SUBMIT saved");
+              AlertDialog confirmDB = confirmPushToDB();
+              showDialog(context: context, builder: (context) => confirmDB);
             },
           ),
         ],
@@ -229,7 +228,7 @@ class _GameweekFormState extends State<GameweekForm> {
               iconSize: 15.0,
               onChanged: (val) {
                 field.setValue(val);
-                saveCurrPlayerGWState();
+                saveCurrPlayerGWState(this._stage == 0 ? this._gameFormKey : this._currKey);
               },
             );
           },
@@ -256,15 +255,14 @@ class _GameweekFormState extends State<GameweekForm> {
         FormBuilderFieldOption(value: options[3], child: Text(options[3])),
       ],
       onChanged: (val) {
-        saveCurrPlayerGWState();
+        saveCurrPlayerGWState(this._currKey);
       },
     );
   }
 
-  void saveCurrPlayerGWState() {
-    this._currKey.currentState.save();
-    print(
-        "State Saved ${this.GW.currPlayerIndex}. ${this._currKey.currentState.value}");
+  void saveCurrPlayerGWState(GlobalKey<FormBuilderState> key) {
+    key.currentState.save();
+    print("State Saved ${key.currentState.value}");
   }
 
   dynamic loadCurrStateValue(String label, dynamic alternative) {
@@ -306,6 +304,44 @@ class _GameweekFormState extends State<GameweekForm> {
               NumberForm(0, PENS, "Penalties Missed"),
             ])
           ]),
+    );
+  }
+
+  AlertDialog confirmPushToDB() {
+    return AlertDialog(
+      title: Text(
+        'Are you sure?',
+        textAlign: TextAlign.center,
+      ),
+      content: Text("Are you sure you are happy to overwrite current GW in DB?"),
+      actions: [
+        MaterialButton(
+          textColor: Color(0xFF6200EE),
+          onPressed: () {
+            Navigator.pop(context);
+            String message = "";
+            if(this.GW.allPlayersSaved) {
+              try {
+                RedbacksFirebase().addGWToDB(this.GW);
+                message = "Successfully added GW${this.GW.id} to DB!";
+              } catch (e) {
+                message = "Something went wrong in submitting to db: ${e}";
+              }
+            } else {
+              message = "Not all players are saved!";
+            }
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+          },
+          child: Text('Yes'),
+        ),
+        MaterialButton(
+          textColor: Color(0xFF6200EE),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('No'),
+        ),
+      ],
     );
   }
 }

@@ -1,54 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team.dart';
+import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/widgets/player_widget.dart';
 
 import 'bench.dart';
 
-class TeamWidget extends StatefulWidget {
+class TeamWidget extends StatelessWidget {
   Team team;
   String mode;
   bool bench = false;
 
-  TeamWidget(this.team, {this.mode, this.bench});
-
-  @override
-  _TeamWidgetState createState() => _TeamWidgetState();
-}
-
-class _TeamWidgetState extends State<TeamWidget> {
-  List<PlayerWidget> playerWidgets = [];
-  List<Player> r1Players = [];
-  List<Player> r2Players = [];
-  List<Player> r3Players = [];
-  Player benchPlayer;
-
-  @override
-  void initState() {
-    List<Player> players = widget.team.players;
+  TeamWidget(this.team, {this.mode, this.bench}) {
+    List<TeamPlayer> players = this.team.players;
     r1Players.add(players[0]);
     r2Players.addAll([players[1], players[2]]);
     r3Players.addAll([players[3], players[4]]);
-    if (!widget.bench) {
+    if (!this.bench) {
       r2Players.add(players[5]);
     } else {
       benchPlayer = players[5];
     }
-    super.initState();
   }
 
-  List<PlayerWidget> playersToWidgets(List<Player> players) {
+  List<PlayerWidget> playerWidgets = [];
+  List<TeamPlayer> r1Players = [];
+  List<TeamPlayer> r2Players = [];
+  List<TeamPlayer> r3Players = [];
+  TeamPlayer benchPlayer;
+
+
+  List<PlayerWidget> playersToWidgets(List<TeamPlayer> players) {
     List<PlayerWidget> widgets = [];
 
     players.forEach((p) {
-      widgets
-          .add(PlayerWidget(p, widget.mode, callback: () => setState(() {})));
+      widgets.add(PlayerWidget.fromTeamPlayer(p, this.mode));
     });
     return widgets;
   }
 
   @override
   Widget build(BuildContext context) {
+    print("rebuilt team widg");
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -66,11 +58,11 @@ class _TeamWidgetState extends State<TeamWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
           ),
           SizedBox(height: 15),
-          widget.bench
+          this.bench
               ? Bench(
-                  player: (PlayerWidget(
+                  player: (PlayerWidget.fromTeamPlayer(
                     this.benchPlayer,
-                    widget.mode,
+                    this.mode,
                     benched: true,
                   )),
                 )

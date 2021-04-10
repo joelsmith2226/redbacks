@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:redbacks/models/player.dart';
+import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/widgets/player_list_tile.dart';
 
 class PlayerList extends StatelessWidget {
   List<Player> players;
-  Player outgoingPlayer;
+  TeamPlayer outgoingPlayer;
 
   PlayerList({this.players, this.outgoingPlayer});
 

@@ -3,18 +3,19 @@ import 'package:provider/provider.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/player.dart';
-import 'package:redbacks/models/transfer.dart';
+import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/player_selector_card.dart';
 
 class PlayerCard extends StatelessWidget {
   Player player;
+  TeamPlayer teamPlayer; // player is data from DB. teamPlayer is data from team
   AlertDialog pc;
   BuildContext context;
   String mode;
   VoidCallback callback;
 
-  PlayerCard({this.player, this.context, this.mode, this.callback}) {
+  PlayerCard({this.player, this.context, this.mode, this.callback, this.teamPlayer}) {
     this.pc = AlertDialog(
       title: Text(
         'Player Card',
@@ -58,7 +59,7 @@ class PlayerCard extends StatelessWidget {
         textColor: Color(0xFF6200EE),
         onPressed: () {
           LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-          user.benchPlayer(this.player);
+          user.benchPlayer(this.teamPlayer);
           Navigator.pop(context);
           this.callback();
         },
@@ -92,18 +93,20 @@ class PlayerCard extends StatelessWidget {
         textColor: Color(0xFF6200EE),
         onPressed: () {
           LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-          user.removePlayer(this.player);
-          Navigator.pushNamed(context, Routes.ChooseTeam);
+          user.removePlayer(this.teamPlayer);
+          if (!user.signingUp && ModalRoute.of(context).settings.name != Routes.ChooseTeam) {
+            Navigator.pushNamed(context, Routes.ChooseTeam);
+          } else {
+            Navigator.pop(context);
+          }
         },
-        child: Text(this.player.removed ? 'Restore' : 'Remove'),
+        child: Text(this.teamPlayer.removed ? 'Restore' : 'Remove'),
       ),
       MaterialButton(
         textColor: Color(0xFF6200EE),
         onPressed: () {
-          LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-          user.beginTransfer(this.player);
           Navigator.pop(context);
-          PlayerSelectorCard psc = PlayerSelectorCard(outgoingPlayer: this.player, context: context);
+          PlayerSelectorCard psc = PlayerSelectorCard(outgoingPlayer: this.teamPlayer, context: context);
           psc.displayCard();
         },
         child: Text('Replace'),
@@ -143,7 +146,7 @@ class PlayerCard extends StatelessWidget {
       return;
     }
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-    user.updateCaptaincy(this.player, rank);
+    user.updateCaptaincy(this.teamPlayer, rank);
     Navigator.pop(context);
   }
 }

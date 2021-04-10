@@ -6,17 +6,14 @@ import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/team_widget.dart';
 import 'package:redbacks/widgets/transfers_summary.dart';
 
-class TransfersPage extends StatefulWidget {
-  @override
-  _TransfersPageState createState() => _TransfersPageState();
-}
-
-class _TransfersPageState extends State<TransfersPage> {
+class TransfersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
-    user.resetRemovedPlayers(); // incase removed then returned
-
+    if (user.originalTeam == null) {
+      user.originalTeam = Team(new List.from(user.team.players));
+    }
+    user.originalTeam.players.forEach((element) {print(element.name);});
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

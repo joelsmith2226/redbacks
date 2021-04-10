@@ -20,15 +20,15 @@ class _LoginViewState extends State<LoginView> {
     this.user = Provider.of<LoggedInUser>(context);
     // Be sneaky and load players here
     if (user.playerDB == null) {
-      user.loadInCurrentPlayerDatabase();
+      user.loadInPlayerAndGWHistoryDB();
     }
 
-    // For persistent logins todo
-    isLoggedIn().then((bool isSignedIn) => isSignedIn
-        ? SchedulerBinding.instance.addPostFrameCallback((_) {
-            Navigator.pushReplacementNamed(context, Routes.Loading);
-          })
-        : null);
+    // // For persistent logins todo
+    // isLoggedIn().then((bool isSignedIn) => isSignedIn
+    //     ? SchedulerBinding.instance.addPostFrameCallback((_) {
+    //         Navigator.pushReplacementNamed(context, Routes.Loading);
+    //       })
+    //     : null);
 
     return Scaffold(
       key: _scaffoldKey,

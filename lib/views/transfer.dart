@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team.dart';
+import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/choose_team_summary.dart';
 import 'package:redbacks/widgets/player_list.dart';
@@ -19,7 +20,7 @@ class _TransferViewState extends State<TransferView> {
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-    Player outgoing = user.pendingTransfer.last.outgoing;
+    TeamPlayer outgoing = user.pendingTransfer.last.outgoing;
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
