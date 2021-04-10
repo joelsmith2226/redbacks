@@ -143,7 +143,6 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     if (rank == "") {
       return Container();
     }
-    print("${this.widget.teamPlayer.name} : ${widget.teamPlayer.rank}");
     return Positioned(
       right: 1,
       bottom: 40,

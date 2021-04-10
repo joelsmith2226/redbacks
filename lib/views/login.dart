@@ -23,12 +23,12 @@ class _LoginViewState extends State<LoginView> {
       user.loadInPlayerAndGWHistoryDB();
     }
 
-    // // For persistent logins todo
-    // isLoggedIn().then((bool isSignedIn) => isSignedIn
-    //     ? SchedulerBinding.instance.addPostFrameCallback((_) {
-    //         Navigator.pushReplacementNamed(context, Routes.Loading);
-    //       })
-    //     : null);
+    // For persistent logins todo
+    isLoggedIn().then((bool isSignedIn) => isSignedIn
+        ? SchedulerBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushReplacementNamed(context, Routes.Loading);
+          })
+        : null);
 
     return Scaffold(
       key: _scaffoldKey,

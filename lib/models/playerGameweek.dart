@@ -5,6 +5,7 @@ import 'package:redbacks/models/player.dart';
 class PlayerGameweek {
   String _id;
   String _position;
+  bool _appearance;
   int _goals = 0;
   int _assists = 0;
   int _saves = 0;
@@ -30,6 +31,7 @@ class PlayerGameweek {
 
   PlayerGameweek.fromData(Map<String, dynamic> data, String name, Player p) {
     this.id = name;
+    this.appearance = data["appearance"];
     this.position = data["position"];
     this.goals = data["goals"];
     this.assists = data["assists"];
@@ -44,6 +46,90 @@ class PlayerGameweek {
     this.bonus = data["bonus"];
     this.saved = true;
     this.player = p;
+  }
+
+  void calculatePoints() {
+    switch (this.position) {
+      case "DEF":
+        this.gwPts = defenderPoints();
+        break;
+      case "FWD":
+        this.gwPts = forwardPoints();
+        break;
+      case "MID":
+        this.gwPts = midPoints();
+        break;
+      case "GKP":
+        this.gwPts = gkpPoints();
+        break;
+    }
+  }
+
+  int defenderPoints() {
+    if (this.appearance){
+      gwPts += 2;
+      gwPts += this.goals * 8;
+      gwPts += this.assists * 4;
+      gwPts += this.halfClean ? 2 : 0;
+      gwPts += this.fullClean ? 5 : 0;
+      gwPts -= this.goalsConceded;
+      gwPts -= this.yellowCards;
+      gwPts -= this.redCards * 4;
+      gwPts -= this.ownGoals * 2;
+      gwPts -= this.penaltiesMissed * 2;
+      gwPts += this.bonus;
+    }
+  }
+
+  int midPoints() {
+    if (this.appearance){
+      gwPts += 2;
+      gwPts += this.goals * 6;
+      gwPts += this.assists * 3;
+      gwPts += this.fullClean ? 1 : 0;
+      gwPts -= this.yellowCards;
+      gwPts -= this.redCards * 4;
+      gwPts -= this.ownGoals * 2;
+      gwPts -= this.penaltiesMissed * 2;
+      gwPts += this.bonus;
+    }
+  }
+
+  int forwardPoints() {
+    if (this.appearance){
+      gwPts += 2;
+      gwPts += this.goals * 4;
+      gwPts += this.assists * 2;
+      gwPts -= this.yellowCards;
+      gwPts -= this.redCards * 4;
+      gwPts -= this.ownGoals * 2;
+      gwPts -= this.penaltiesMissed * 2;
+      gwPts += this.bonus;
+    }
+  }
+
+  int gkpPoints() {
+    if (this.appearance){
+      gwPts += 2;
+      gwPts += this.goals * 10;
+      gwPts += this.assists * 5;
+      gwPts += this.saves;
+      gwPts += this.quarterClean ? 1 : 0;
+      gwPts += this.halfClean ? 2 : 0;
+      gwPts += this.fullClean ? 5 : 0;
+      gwPts -= this.goalsConceded;
+      gwPts -= this.yellowCards;
+      gwPts -= this.redCards * 4;
+      gwPts -= this.ownGoals * 2;
+      gwPts -= this.penaltiesMissed * 2;
+      gwPts += this.bonus;
+    }
+  }
+
+  bool get appearance => _appearance;
+
+  set appearance(bool value) {
+    _appearance = value;
   }
 
   int get bonus => _bonus;
@@ -148,6 +234,5 @@ class PlayerGameweek {
     _player = value;
   }
 
-  void loadKey() {
-  }
+  void loadKey() {}
 }

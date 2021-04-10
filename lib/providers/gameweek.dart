@@ -10,6 +10,7 @@ class Gameweek extends ChangeNotifier {
   String _gameScore;
   List<PlayerGameweek> _playerGameweeks = [];
   int _currPlayerIndex = 0;
+  int _stage = 0;
 
   Gameweek(List<Player> players) {
     for (int i = 0; i < players.length; i++) {
@@ -29,7 +30,6 @@ class Gameweek extends ChangeNotifier {
     this.gameScore = gw.gameScore;
     this.playerGameweeks = [pgw];
   }
-
 
   List<PlayerGameweek> get playerGameweeks => _playerGameweeks;
 
@@ -66,16 +66,19 @@ class Gameweek extends ChangeNotifier {
 
   void saveDataToGWObject(FormBuilderState currentState) {
     PlayerGameweek curr = this.playerGameweeks[this.currPlayerIndex];
-    curr.position = ifValidReturn(currentState, POSITION, "DEF");
-    curr.assists = ifValidReturn(currentState, ASSISTS, 0);
-    curr.ownGoals = ifValidReturn(currentState, OWNS, 0);
-    curr.penaltiesMissed = ifValidReturn(currentState, PENS, 0);
-    curr.goals = ifValidReturn(currentState, GOALS, 0);
-    curr.saves = ifValidReturn(currentState, SAVES, 0);
-    curr.yellowCards = ifValidReturn(currentState, YELLOW, 0);
-    curr.redCards = ifValidReturn(currentState, RED, 0);
-    curr.bonus = int.parse(ifValidReturn(currentState, BONUS, "0"));
-    setClean(currentState, curr);
+    curr.appearance = currentState.value[APPEARANCE] == "Yes";
+    if (curr.appearance) {
+      curr.position = ifValidReturn(currentState, POSITION, "DEF");
+      curr.assists = ifValidReturn(currentState, ASSISTS, 0);
+      curr.ownGoals = ifValidReturn(currentState, OWNS, 0);
+      curr.penaltiesMissed = ifValidReturn(currentState, PENS, 0);
+      curr.goals = ifValidReturn(currentState, GOALS, 0);
+      curr.saves = ifValidReturn(currentState, SAVES, 0);
+      curr.yellowCards = ifValidReturn(currentState, YELLOW, 0);
+      curr.redCards = ifValidReturn(currentState, RED, 0);
+      curr.bonus = int.parse(ifValidReturn(currentState, BONUS, "0"));
+      setClean(currentState, curr);
+    }
     curr.saved = true;
     notifyListeners();
   }
@@ -87,12 +90,12 @@ class Gameweek extends ChangeNotifier {
         : currentState.value[field];
   }
 
-  void setClean(FormBuilderState currentState, PlayerGameweek curr){
+  void setClean(FormBuilderState currentState, PlayerGameweek curr) {
     // Set all cleans to false;
     curr.fullClean = false;
     curr.halfClean = false;
     curr.quarterClean = false;
-    switch (currentState.fields[CLEANS].value){
+    switch (currentState.fields[CLEANS].value) {
       case NO_CLEAN:
         break;
       case QUARTER_CLEAN:
@@ -105,5 +108,12 @@ class Gameweek extends ChangeNotifier {
         curr.fullClean = true;
         break;
     }
+  }
+
+  int get stage => _stage;
+
+  set stage(int value) {
+    _stage = value;
+    notifyListeners();
   }
 }

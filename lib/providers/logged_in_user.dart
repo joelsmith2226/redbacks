@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/redbacksFirebase.dart';
+import 'package:redbacks/models/original_models.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/models/team_player.dart';
@@ -26,7 +27,7 @@ class LoggedInUser extends ChangeNotifier {
   bool _signingUp = false;
   int _freeTransfers;
   List<Gameweek> _gwHistory;
-  Team _originalTeam;
+  OriginalModels _originalModels;
 
   LoggedInUser();
 
@@ -98,7 +99,6 @@ class LoggedInUser extends ChangeNotifier {
   void beginTransfer(TeamPlayer outgoing) {
     this.pendingTransfer.add(Transfer());
     this.pendingTransfer.last.outgoing = outgoing;
-    print("STARTING TRANSFER: OUTGOING IS: ${outgoing.index}");
   }
 
   String completeTransfer(TeamPlayer outgoing, TeamPlayer incoming) {
@@ -157,22 +157,25 @@ class LoggedInUser extends ChangeNotifier {
 
   void userDetailsPushDB() {
     // new user in users if needed
-    print("adding user to db");
-    RedbacksFirebase().checkUserInDB(this.uid);
-    // new gw history in users/{user}/gw history if needed
-    RedbacksFirebase().addUserGWHistoryToDB(this.uid);
-    // // new/update team in users/{user}/team
-    RedbacksFirebase().pushTeamToDB(this.team, this.uid);
-    // // new/update other fields required to track
-    RedbacksFirebase().pushMiscFieldsToDB(
-        this.uid,
-        this.budget,
-        this.teamValue,
-        this.email,
-        this.gwPts,
-        this.totalPts,
-        this.teamName,
-        this.freeTransfers);
+    try {
+      RedbacksFirebase().checkUserInDB(this.uid);
+      // new gw history in users/{user}/gw history if needed
+      RedbacksFirebase().addUserGWHistoryToDB(this.uid);
+      // // new/update team in users/{user}/team
+      RedbacksFirebase().pushTeamToDB(this.team, this.uid);
+      // // new/update other fields required to track
+      RedbacksFirebase().pushMiscFieldsToDB(
+          this.uid,
+          this.budget,
+          this.teamValue,
+          this.email,
+          this.gwPts,
+          this.totalPts,
+          this.teamName,
+          this.freeTransfers);
+    } catch (e){
+      print("Error in pushing details to DB: ${e}");
+    }
   }
 
   void pushTeamToDB() {
@@ -273,6 +276,7 @@ class LoggedInUser extends ChangeNotifier {
 
   void updateCaptaincy(TeamPlayer player, String rank) {
     this.team.updateCaptaincy(player, rank);
+    RedbacksFirebase().pushTeamToDB(team, uid);
     notifyListeners();
   }
 
@@ -307,9 +311,15 @@ class LoggedInUser extends ChangeNotifier {
     _pendingTransfers = value;
   }
 
-  Team get originalTeam => _originalTeam;
+  OriginalModels get originalModels => _originalModels;
 
-  set originalTeam(Team value) {
-    _originalTeam = value;
+  set originalModels(OriginalModels value) {
+    _originalModels = value;
+  }
+
+  void restoreOriginals() {
+    this.team = this.originalModels.team;
+    this.budget = this.originalModels.budget;
+    this.freeTransfers = this.originalModels.freeTransfers;
   }
 }

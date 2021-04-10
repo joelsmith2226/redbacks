@@ -4,11 +4,10 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_touch_spin/flutter_touch_spin.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/constants.dart';
-import 'package:redbacks/globals/redbacksFirebase.dart';
 import 'package:redbacks/models/playerGameweek.dart';
 import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
-import 'package:redbacks/widgets/player_carousel.dart';
+import 'package:redbacks/widgets/player_gameweek_form.dart';
 
 class GameweekForm extends StatefulWidget {
   @override
@@ -19,8 +18,7 @@ class _GameweekFormState extends State<GameweekForm> {
   FirebaseAuth auth = FirebaseAuth.instance;
   final GlobalKey<FormBuilderState> _gameFormKey =
       GlobalKey<FormBuilderState>();
-  List<GlobalKey<FormBuilderState>> _playerFormKeys = [];
-  final List<double> heightMultiplier = [0.4, 0.6];
+  final double heightMultiplier = 0.4;
 
   LoggedInUser user;
   bool _loading = false;
@@ -33,39 +31,46 @@ class _GameweekFormState extends State<GameweekForm> {
   Widget build(BuildContext context) {
     this.user = Provider.of<LoggedInUser>(context);
     this.GW = Provider.of<Gameweek>(context);
-    this.currPlayerGW = this.GW.playerGameweeks[this.GW.currPlayerIndex];
-    this._currKey = this.currPlayerGW.key;
-    if(this.currPlayerGW.saved){
-      this.currPlayerGW.loadKey();
-    }
+    _stage = this.GW.stage;
 
-    List<Widget> forms = [gameScoreForm(), playerForm()];
-    List<Widget> actions = [gameScoreActions(), playerFormActions()];
+    return this._stage == 0 ? GameweekForm() : PlayerGameweekForm();
+  }
 
+  Widget GameweekForm() {
     return Container(
       height: MediaQuery.of(context).size.height,
       child: Column(
         children: [
-          this._stage == 1 ? PlayerCarousel(gw: this.GW) : Container(),
           Container(
-            margin: EdgeInsets.all(20),
-            color: Colors.white,
-            alignment: Alignment.center,
-            height: MediaQuery.of(context).size.height *
-                heightMultiplier[this._stage],
-            child: forms[this._stage],
-          ),
-          actions[this._stage],
+              margin: EdgeInsets.all(20),
+              color: Colors.white,
+              alignment: Alignment.center,
+              height: MediaQuery.of(context).size.height * heightMultiplier,
+              child: gameScoreForm()),
+          gameScoreActions(),
         ],
       ),
     );
   }
 
   Widget gameScoreForm() {
+    String opposition = this.GW.opposition == null ? "" : this.GW.opposition;
+    List<String> score =
+        this.GW.gameScore == null ? ["", ""] : this.GW.gameScore.split("-");
+    if (score.length != 2) score = ["", ""];
     List<Widget> _formElements = <Widget>[
-      NumberForm(10, GAMEWEEK, "Gameweek #"),
-      TextForm(OPPOSITION, "Enter Opposition"),
-      TextForm(SCORE, "Enter the Score", req: true),
+      NumberForm(user.gwHistory.length + 1, GAMEWEEK, "Gameweek #"),
+      TextForm(OPPOSITION, "Enter Opposition", initial: opposition, width: 0.3),
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        TextForm(HOME, "Redbacks", req: true, initial: score[0], width: 0.3),
+        Text('-'),
+        TextForm(AWAY, "Opposition", req: true, initial: score[1], width: 0.3)
+      ]),
+      SizedBox(height: 15),
+      Text(
+        "Enter Score",
+        textAlign: TextAlign.center,
+      )
     ];
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -87,10 +92,13 @@ class _GameweekFormState extends State<GameweekForm> {
       onPressed: () {
         _gameFormKey.currentState.save();
         setState(() {
-          this.GW.gameScore = _gameFormKey.currentState.value[SCORE];
+          String home = _gameFormKey.currentState.value[HOME];
+          String away = _gameFormKey.currentState.value[AWAY];
+          print('_');
+          this.GW.gameScore = "${home}-${away}";
           this.GW.id = _gameFormKey.currentState.value[GAMEWEEK];
           this.GW.opposition = _gameFormKey.currentState.value[OPPOSITION];
-          this._stage = 1;
+          this.GW.stage = 1;
         });
         print("Gameweek saved");
       },
@@ -98,6 +106,10 @@ class _GameweekFormState extends State<GameweekForm> {
   }
 
   Widget _form(List<Widget> formElements, GlobalKey<FormBuilderState> key) {
+    String opposition = this.GW.opposition == null ? "" : this.GW.opposition;
+    List<String> score =
+        this.GW.gameScore == null ? ["", ""] : this.GW.gameScore.split("-");
+    if (score.length != 2) score = ["", ""];
     return FormBuilder(
       key: key,
       child: Expanded(
@@ -106,104 +118,46 @@ class _GameweekFormState extends State<GameweekForm> {
           child: ListView(
             physics: AlwaysScrollableScrollPhysics(),
             shrinkWrap: true,
-            children: formElements,
+            children: [
+              NumberForm(user.gwHistory.length + 1, GAMEWEEK, "Gameweek #"),
+              TextForm(OPPOSITION, "Enter Opposition", initial: opposition),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                TextForm(HOME, "Redbacks",
+                    req: true, initial: score[0], width: 0.3),
+                Text('-'),
+                TextForm(AWAY, "Opposition",
+                    req: true, initial: score[1], width: 0.3)
+              ]),
+              SizedBox(height: 15),
+              Text(
+                "Enter Score",
+                textAlign: TextAlign.center,
+              )
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget playerForm() {
-    List<Widget> formElements = <Widget>[
-      dropdownForm(POSITION, "Select Position", ["GKP", "DEF", "MID", "FWD"],
-          initial: this.currPlayerGW.player.position),
-      goalAssistSaves(),
-      Divider(
-        thickness: 1,
-      ),
-      dropdownForm(CLEANS, "Cleans kept",
-          [NO_CLEAN, QUARTER_CLEAN, HALF_CLEAN, FULL_CLEAN],
-          initial: "0"),
-      cardsOwnsPens(),
-      Divider(
-        thickness: 1,
-      ),
-      dropdownForm(BONUS, "Bonus Points", ["0", "1", "2", "3"], initial: "0"),
-    ];
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _loading ? CircularProgressIndicator() : Container(),
-        _form(formElements, _currKey),
-      ],
-    );
-  }
-
-  Widget playerFormActions() {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.04,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          MaterialButton(
-            color: Theme.of(context).primaryColor,
-            child: Text(
-              "Back",
-              style: TextStyle(color: Colors.white),
-            ),
-            onPressed: () {
-              setState(() {
-                this._stage = 0;
-              });
-              print("Go back");
-            },
-          ),
-          MaterialButton(
-            color: Theme.of(context).primaryColor,
-            child: Text(
-              "Save Player",
-              style: TextStyle(color: Colors.white),
-            ),
-            onPressed: () {
-              saveStateToGWObject();
-              print("Player saved");
-              // Shift to next available index
-              if (this.GW.currPlayerIndex < this.GW.playerGameweeks.length - 1){
-                this.GW.currPlayerIndex += 1;
-              }
-            },
-          ),
-          MaterialButton(
-            color: Theme.of(context).primaryColor,
-            child: Text(
-              "Submit to DB",
-              style: TextStyle(color: Colors.white),
-            ),
-            onPressed: () {
-              AlertDialog confirmDB = confirmPushToDB();
-              showDialog(context: context, builder: (context) => confirmDB);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget TextForm(String name, String label, {req = false}) {
+  Widget TextForm(String name, String label,
+      {req = false, String initial = "", double width = 0.75}) {
     var validators = [
       FormBuilderValidators.required(context),
     ];
+
     return Container(
-      width: MediaQuery.of(context).size.width * 0.75,
+      width: MediaQuery.of(context).size.width * width,
       child: FormBuilderTextField(
+        textAlign: TextAlign.center,
+        initialValue: initial,
         name: name,
         decoration: InputDecoration(
           labelText: label,
         ),
         validator: FormBuilderValidators.compose(validators),
         keyboardType: TextInputType.text,
+        onEditingComplete: () => saveCurrPlayerGWState(this._gameFormKey),
       ),
     );
   }
@@ -228,7 +182,8 @@ class _GameweekFormState extends State<GameweekForm> {
               iconSize: 15.0,
               onChanged: (val) {
                 field.setValue(val);
-                saveCurrPlayerGWState(this._stage == 0 ? this._gameFormKey : this._currKey);
+                saveCurrPlayerGWState(
+                    this._stage == 0 ? this._gameFormKey : this._currKey);
               },
             );
           },
@@ -248,12 +203,10 @@ class _GameweekFormState extends State<GameweekForm> {
         labelText: label,
       ),
       spacing: 15,
-      options: [
-        FormBuilderFieldOption(value: options[0], child: Text(options[0])),
-        FormBuilderFieldOption(value: options[1], child: Text(options[1])),
-        FormBuilderFieldOption(value: options[2], child: Text(options[2])),
-        FormBuilderFieldOption(value: options[3], child: Text(options[3])),
-      ],
+      options: List.generate(
+          options.length,
+          (index) => FormBuilderFieldOption(
+              value: options[index], child: Text(options[index]))),
       onChanged: (val) {
         saveCurrPlayerGWState(this._currKey);
       },
@@ -278,70 +231,5 @@ class _GameweekFormState extends State<GameweekForm> {
 
   void saveStateToGWObject() {
     this.GW.saveDataToGWObject(this._currKey.currentState);
-  }
-
-  Widget goalAssistSaves() {
-    return Row(children: [
-      NumberForm(loadCurrStateValue(GOALS, 0), GOALS, "Goals Scored"),
-      NumberForm(loadCurrStateValue(ASSISTS, 0), ASSISTS, "Assists Scored"),
-      NumberForm(loadCurrStateValue(SAVES, 0), SAVES, "2x Saves Scored"),
-    ]);
-  }
-
-  Widget cardsOwnsPens() {
-    return Container(
-      width: 300,
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Column(children: [
-              NumberForm(0, YELLOW, "Number of yellow cards"),
-              NumberForm(0, RED, "Red card received"),
-            ]),
-            Column(children: [
-              NumberForm(0, OWNS, "Own goals conceded"),
-              NumberForm(0, PENS, "Penalties Missed"),
-            ])
-          ]),
-    );
-  }
-
-  AlertDialog confirmPushToDB() {
-    return AlertDialog(
-      title: Text(
-        'Are you sure?',
-        textAlign: TextAlign.center,
-      ),
-      content: Text("Are you sure you are happy to overwrite current GW in DB?"),
-      actions: [
-        MaterialButton(
-          textColor: Color(0xFF6200EE),
-          onPressed: () {
-            Navigator.pop(context);
-            String message = "";
-            if(this.GW.allPlayersSaved) {
-              try {
-                RedbacksFirebase().addGWToDB(this.GW);
-                message = "Successfully added GW${this.GW.id} to DB!";
-              } catch (e) {
-                message = "Something went wrong in submitting to db: ${e}";
-              }
-            } else {
-              message = "Not all players are saved!";
-            }
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-          },
-          child: Text('Yes'),
-        ),
-        MaterialButton(
-          textColor: Color(0xFF6200EE),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('No'),
-        ),
-      ],
-    );
   }
 }

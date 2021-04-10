@@ -40,7 +40,6 @@ class TeamWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("rebuilt team widg");
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

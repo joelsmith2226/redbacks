@@ -16,6 +16,7 @@ class PlayerCarousel extends StatefulWidget {
 class _PlayerCarouselState extends State<PlayerCarousel> {
   @override
   Widget build(BuildContext context) {
+    widget.gw.playerGameweeks.sort((a, b) => a.position.compareTo(b.position));
     return Container(
       width: MediaQuery.of(context).size.width * 0.9,
       height: MediaQuery.of(context).size.height * 0.11,

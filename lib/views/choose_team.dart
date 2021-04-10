@@ -27,8 +27,7 @@ class ChooseTeamView extends StatelessWidget {
               ? Container()
               : MaterialButton(
                   onPressed: () {
-                    user.team = user.originalTeam;
-                    user.originalTeam = null; // resets originalTeam
+                    user.restoreOriginals();
                     Navigator.of(context).pushReplacementNamed(Routes.Home);
                   },
                   child: Icon(
@@ -59,11 +58,12 @@ class ChooseTeamView extends StatelessWidget {
                     if (!team.isComplete()) {
                       errMsg =
                           "Team is incomplete! Make sure no ? players left";
-                    } else if (user.budget <= 0) {
+                    } else if (user.budget < 0) {
                       errMsg = "Not enough budget for this team!";
                     } else {
                       user.userDetailsPushDB();
                       user.signingUp = false;
+                      user.originalModels = null; //resets incase required
                       Navigator.pushReplacementNamed(context, Routes.Home);
                       return;
                     }

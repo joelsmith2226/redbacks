@@ -31,7 +31,11 @@ const int NUM_PLAYERS = 15;
 
 // ADMIN
 const String OPPOSITION = "opposition";
+const String APPEARANCE = "appearance";
 const String SCORE = "score";
+const String CONCEDED = "conceded";
+const String HOME = "home";
+const String AWAY = "away";
 const String GAMEWEEK = "gw";
 const String POSITION = "position";
 const String GOALS = "goals";

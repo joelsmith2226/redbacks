@@ -31,8 +31,6 @@ class Team {
     try {
       TeamPlayer incoming = pendingTransfer.incoming;
       TeamPlayer outgoing = pendingTransfer.outgoing;
-      print(outgoing.index);
-      print(outgoing.name);
       if (outgoing.index == null) {
         return "Player doesn't exist"; // something went wrong, player doesn't exist
       } else {
@@ -96,8 +94,6 @@ class Team {
     // Ensure cap/vice set
     this.players[cap].rank = CAPTAIN;
     this.players[vice].rank = VICE;
-    print(
-        "Captain: ${this.players[cap].name}, Vice: ${this.players[vice].name}");
   }
 
   void updateCaptaincy(TeamPlayer updatePlayer, String rank) {
