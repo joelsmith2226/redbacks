@@ -58,7 +58,8 @@ class LoggedInUser extends ChangeNotifier {
             .then((DocumentSnapshot data) {
           this.loadMiscDetailsFromDB(data);
           print(
-              "Loaded user successfully ${this.uid}. Should proceed to home page");
+              "Loaded user successfully ${this
+                  .uid}. Should proceed to home page");
           this.signingUp = false; // safety ensured check
           this.team.checkCaptain();
           notifyListeners();
@@ -106,7 +107,7 @@ class LoggedInUser extends ChangeNotifier {
   String completeTransfer(TeamPlayer outgoing, TeamPlayer incoming) {
     try {
       Transfer currTransfer =
-          this.pendingTransfer.firstWhere((t) => (t.outgoing == outgoing));
+      this.pendingTransfer.firstWhere((t) => (t.outgoing == outgoing));
       currTransfer.incoming = incoming;
       String result = this.adjustBudget(currTransfer);
       if (result == "") {
@@ -154,10 +155,12 @@ class LoggedInUser extends ChangeNotifier {
     this.gwHistory = [];
     return RedbacksFirebase().getGWHistory(this.gwHistory, this.playerDB);
   }
-  void generalDBPull() async {
+
+  Future<void> generalDBPull() async {
     await RedbacksFirebase().getPlayers(this.playerDB);
     return this.loadInGWHistory();
   }
+
   void userDetailsPushDB() {
     // new user in users if needed
     try {
@@ -338,17 +341,24 @@ class LoggedInUser extends ChangeNotifier {
   }
 
   void calculatePoints() {
-    this.totalPts = 0;
-    this.playerDB.forEach((p) {
-      p.currPts = p.gwResults[this.currGW-1].playerGameweeks[0].gwPts;
-      p.totalPts = 0;
-      p.gwResults.forEach((gw) {
-        if (gw.id <= this.currGW) p.totalPts += gw.playerGameweeks[0].gwPts;
+    try {
+      this.totalPts = 0;
+      this.playerDB.forEach((p) {
+        p.currPts = p.gwResults[this.currGW - 1].playerGameweeks[0].gwPts;
+        p.totalPts = 0;
+        p.gwResults.forEach((gw) {
+          if (gw.id <= this.currGW) p.totalPts += gw.playerGameweeks[0].gwPts;
+        });
       });
-    });
-    this.gwPts = 0;
-    this.team.players.forEach((p) {
-      this.gwPts += p.currPts;
-    });
+      if (this.team != null) {
+        this.gwPts = 0;
+        this.team.players.forEach((p) {
+          this.gwPts += p.currPts;
+        });
+      }
+    }
+    catch (e) {
+      print("Something's wrong: ${e}");
+    }
   }
 }

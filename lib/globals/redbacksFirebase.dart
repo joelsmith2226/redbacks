@@ -183,18 +183,18 @@ class RedbacksFirebase {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference gwHistoryDB = firestore.collection('gw-history');
     print("Going into getGWHistory");
-    return gwHistoryDB.get().then((QuerySnapshot querySnapshot) {
+    gwHistoryDB.get().then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         gwHistory.add(Gameweek.fromData(doc.data()));
-        this.getPlayerGWs(gwHistory.last, doc, players);
-        print("Gameweek ${doc.data()["name"]} added to list");
+        print("Gameweek ${doc.data()["gw-number"]} added to list");
+        return this.getPlayerGWs(gwHistory.last, doc, players);
       });
     }).onError((error, stackTrace) {
       print("Error in getGWHistory: ${error}");
     });
   }
 
-  void getPlayerGWs(
+  Future<void> getPlayerGWs(
       Gameweek gwModel, QueryDocumentSnapshot gwDoc, List<Player> players) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference playerGWs = firestore
@@ -212,6 +212,7 @@ class RedbacksFirebase {
             .add(Gameweek.singlePlayer(gwModel, gwModel.playerGameweeks.last));
         print("Player GW Added ${doc.id} added to list");
       });
+      return;
     }).onError((error, stackTrace) {
       print("Error in getGWHistory: ${error}");
     });
@@ -281,5 +282,18 @@ class RedbacksFirebase {
     }).onError((error, stackTrace) {
       print("Error in getting admin data: ${error}");
     });
+  }
+
+  void updateUsersGW(Gameweek gwHistory) {
+    // get list of users
+    // update user-GW-history with 1) gwpts achieved
+  }
+
+  void deadlineButton() {
+    // get a list of users
+    // create a GW-History with 1) locked in team (with cap/vice)
+    // 2) num transfers/hits
+    // 3) chips used
+    // 4) shift admin curr gameweek ++
   }
 }

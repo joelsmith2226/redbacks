@@ -44,9 +44,11 @@ class _PointsPageState extends State<PointsPage> {
     );
   }
 
-  void _onLoading(LoggedInUser user) {
+  void _onLoading(LoggedInUser user) async {
     try {
-      user.generalDBPull();
+      print("await");
+      await user.generalDBPull();
+      print("my soul");
     } catch (e) {
       _onError(e);
     }
@@ -54,8 +56,10 @@ class _PointsPageState extends State<PointsPage> {
     return;
   }
 
-  void _onRefresh(LoggedInUser user) {
+  void _onRefresh(LoggedInUser user) async {
     try {
+      await user.generalDBPull();
+      print("Ok done right");
       user.calculatePoints();
     } catch (e) {
       _onError(e);

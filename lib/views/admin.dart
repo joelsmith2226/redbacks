@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:redbacks/widgets/edit_gameweeks.dart';
 import 'package:redbacks/widgets/gameweek_form.dart';
 
 class AdminView extends StatefulWidget {
@@ -18,7 +19,7 @@ class _AdminViewState extends State<AdminView> {
   List<Widget> _pages = [];
 
   void _onItemTapped(index) {
-    if (index == 2) {
+    if (index == 3) {
       AlertDialog alert = goBack();
       showDialog(
           context: context,
@@ -37,6 +38,7 @@ class _AdminViewState extends State<AdminView> {
     List<String> titles = [
       "Enter New GW",
       "Edit Past GWs",
+      "Various Actions",
       "Back To User Mode"
     ];
     LoggedInUser user = Provider.of<LoggedInUser>(context);
@@ -45,7 +47,8 @@ class _AdminViewState extends State<AdminView> {
       ChangeNotifierProvider(
           create: (context) => Gameweek(user.playerDB),
           child: GameweekForm()),
-      Text("Edit past gws?"),
+      EditGameweeks(),
+      Text("Admin Actions"),
       Text("Edit past gws?"),
     ];
 
@@ -113,7 +116,9 @@ class _AdminViewState extends State<AdminView> {
               icon: Icon(Icons.calculate), label: titles[0]),
           BottomNavigationBarItem(icon: Icon(Icons.history), label: titles[1]),
           BottomNavigationBarItem(
-              icon: Icon(Icons.keyboard_backspace_sharp), label: titles[2]),
+              icon: Icon(Icons.alt_route), label: titles[2]),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.keyboard_backspace_sharp), label: titles[3]),
         ],
         currentIndex: _selectedIndex,
         // selectedItemColor: Colors.amber[800],
