@@ -28,7 +28,7 @@ const String PICK = "pick";
 const String SUB = "sub";
 const String CAROUSEL = "carousel";
 const int NUM_PLAYERS = 15;
-
+const String PLAYERSTATS = "player-stats";
 // ADMIN
 const String OPPOSITION = "opposition";
 const String APPEARANCE = "appearance";

@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:redbacks/widgets/error_dialog.dart';
 import 'package:redbacks/widgets/leaderboard.dart';
 import 'package:redbacks/widgets/pick_page.dart';
 import 'package:redbacks/widgets/points_page.dart';
@@ -18,6 +21,7 @@ class _HomeViewState extends State<HomeView> {
   int _selectedIndex = 1;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Widget> _pages = [];
+  Timer loadingTimer;
 
   void _onItemTapped(index) {
     setState(() {
@@ -38,18 +42,32 @@ class _HomeViewState extends State<HomeView> {
     if (loaded) {
       user.team.checkCaptain();
       this._pages = [TransfersPage(), PointsPage(), PickPage(), Leaderboard()];
+      this.loadingTimer != null ? this.loadingTimer.cancel() : this.loadingTimer = null;
+    } else {
+      this.loadingTimer = Timer(Duration(seconds: 1), () {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text("Yeah this is taking too long, try logout/login")));
+      });
     }
 
     return Scaffold(
       key: _scaffoldKey,
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/background.jpeg"),
-            fit: BoxFit.fill,
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/background.jpeg"),
+                fit: BoxFit.fill,
+              ),
+            ),
           ),
-        ),
-        child: loaded ? _pages[_selectedIndex] : CircularProgressIndicator(),
+          loaded
+              ? _pages[_selectedIndex]
+              : Container(
+                  child: CircularProgressIndicator(),
+                  alignment: Alignment.center,
+                ),
+        ],
       ),
       appBar: AppBar(
         title: Text(
@@ -71,6 +89,13 @@ class _HomeViewState extends State<HomeView> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                MaterialButton(
+                    color: Theme.of(context).accentColor,
+                    child: Text("Player Stats"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, Routes.PlayerStats);
+                    }),
                 MaterialButton(
                     color: Theme.of(context).accentColor,
                     child: Text("Admin"),
@@ -128,5 +153,9 @@ class _HomeViewState extends State<HomeView> {
         },
       ),
     );
+  }
+  
+  void _loading(LoggedInUser user){
+    
   }
 }

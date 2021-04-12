@@ -53,6 +53,18 @@ class Player {
     this.pic = data["picture"];
   }
 
+  Map<String, dynamic> toMap(){
+    return {
+      "Name" : this.name,
+      "Pos" : this.position,
+      "Price": this.price,
+      "GW Pts": this.currPts,
+      "Total Pts": this.totalPts,
+      "In": this.transferredIn,
+      "Out": this.transferredOut,
+    };
+  }
+
   Player.initial(String name, double value, String position) {
     this._name = name;
     this._price = value;

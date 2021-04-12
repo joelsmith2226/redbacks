@@ -10,10 +10,13 @@ class PlayerSelectorCard {
   TeamPlayer incomingPlayer;
   AlertDialog psc;
   BuildContext context;
+  LoggedInUser user;
+  List<Player> playerDB;
+  double budget;
 
   PlayerSelectorCard({this.outgoingPlayer, this.context}) {
-    LoggedInUser user = Provider.of<LoggedInUser>(context, listen:false);
-    List<Player> playerDB = [];
+    user = Provider.of<LoggedInUser>(context, listen: false);
+    playerDB = [];
     user.playerDB.forEach((player) {
       if (!user.team.players
           .any((currPlayer) => player.name == currPlayer.name)) {
@@ -21,24 +24,34 @@ class PlayerSelectorCard {
       }
     });
     playerDB.sort((a, b) => a.position.compareTo(b.position));
-    double budget = user.budget + user.team.removalBudget();
+    budget = user.budget + user.team.removalBudget();
     if (!outgoingPlayer.removed) budget += outgoingPlayer.currPrice;
-    this.psc = dialog(user, playerDB, budget);
+    // this.psc = dialog(user, playerDB, budget);
   }
 
-  AlertDialog dialog (LoggedInUser user, List<Player> playerDB, double budget){
+  AlertDialog dialog(LoggedInUser user, List<Player> playerDB, double budget) {
     return AlertDialog(
+      insetPadding: EdgeInsets.all(15.0),
+      contentPadding: EdgeInsets.zero,
       title: Text(
         'Select New Player',
         textAlign: TextAlign.center,
       ),
-      content: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          // mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-                "Budget: ${budget}m"),
-            PlayerList(players: playerDB, outgoingPlayer: this.outgoingPlayer),
-          ]),
+      content: Builder(
+        builder: (context) {
+          return Container(
+            width: MediaQuery.of(context).size.width * 0.95,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Budget: ${budget}m"),
+                PlayerList(
+                    players: playerDB, outgoingPlayer: this.outgoingPlayer),
+              ],
+            ),
+          );
+        },
+      ),
       actions: [
         MaterialButton(
           textColor: Color(0xFF6200EE),
@@ -55,7 +68,7 @@ class PlayerSelectorCard {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return this.psc;
+        return Container(width: MediaQuery.of(context).size.width, child: dialog(user, playerDB, budget));
       },
     );
   }

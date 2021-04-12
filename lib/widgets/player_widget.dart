@@ -60,6 +60,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     var widthMultiplier = smallMode ? 0.15 : 0.25;
 
     return Container(
+      decoration: BoxDecoration(),
       child: InkWell(
         onTap: showPlayerCardFn(),
         child: Stack(alignment: Alignment.center, children: [
