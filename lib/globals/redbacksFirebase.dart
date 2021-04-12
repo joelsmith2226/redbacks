@@ -104,7 +104,6 @@ class RedbacksFirebase {
         .doc(uid)
         .get()
         .then((DocumentSnapshot doc) {
-          print("${uid} 1");
           if (!doc.exists) {
             addUserToDB(uid);
           }
@@ -180,11 +179,11 @@ class RedbacksFirebase {
 
   // GW History Management
 
-  void getGWHistory(List<Gameweek> gwHistory, List<Player> players) {
+  Future<void> getGWHistory(List<Gameweek> gwHistory, List<Player> players) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference gwHistoryDB = firestore.collection('gw-history');
     print("Going into getGWHistory");
-    gwHistoryDB.get().then((QuerySnapshot querySnapshot) {
+    return gwHistoryDB.get().then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         gwHistory.add(Gameweek.fromData(doc.data()));
         this.getPlayerGWs(gwHistory.last, doc, players);

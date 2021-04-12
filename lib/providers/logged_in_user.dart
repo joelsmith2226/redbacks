@@ -150,13 +150,14 @@ class LoggedInUser extends ChangeNotifier {
     return;
   }
 
-  void loadInGWHistory() {
+  Future<void> loadInGWHistory() {
     this.gwHistory = [];
-    print(
-        "SO Player db SHOULD be done at this point... players: ${this.playerDB.length}");
-    RedbacksFirebase().getGWHistory(this.gwHistory, this.playerDB);
+    return RedbacksFirebase().getGWHistory(this.gwHistory, this.playerDB);
   }
-
+  void generalDBPull() async {
+    await RedbacksFirebase().getPlayers(this.playerDB);
+    return this.loadInGWHistory();
+  }
   void userDetailsPushDB() {
     // new user in users if needed
     try {
@@ -180,7 +181,7 @@ class LoggedInUser extends ChangeNotifier {
     }
   }
 
-  void pushTeamToDB() {
+  void pushTeamToDB() async {
     RedbacksFirebase().pushTeamToDB(this.team, this.uid);
   }
 
@@ -323,6 +324,7 @@ class LoggedInUser extends ChangeNotifier {
     this.team = this.originalModels.team;
     this.budget = this.originalModels.budget;
     this.freeTransfers = this.originalModels.freeTransfers;
+    this.originalModels = null;
   }
 
   int get currGW => _currGW;
@@ -339,10 +341,14 @@ class LoggedInUser extends ChangeNotifier {
     this.totalPts = 0;
     this.playerDB.forEach((p) {
       p.currPts = p.gwResults[this.currGW-1].playerGameweeks[0].gwPts;
+      p.totalPts = 0;
       p.gwResults.forEach((gw) {
-        print(gw.playerGameweeks[0].gwPts);
-        // if (gw.id <= this.currGW) p.totalPts += gw.playerGameweeks[0].gwPts;
+        if (gw.id <= this.currGW) p.totalPts += gw.playerGameweeks[0].gwPts;
       });
+    });
+    this.gwPts = 0;
+    this.team.players.forEach((p) {
+      this.gwPts += p.currPts;
     });
   }
 }

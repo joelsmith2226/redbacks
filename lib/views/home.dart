@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
-import 'package:redbacks/widgets/error_dialog.dart';
 import 'package:redbacks/widgets/leaderboard.dart';
 import 'package:redbacks/widgets/pick_page.dart';
 import 'package:redbacks/widgets/points_page.dart';
@@ -22,6 +21,7 @@ class _HomeViewState extends State<HomeView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Widget> _pages = [];
   Timer loadingTimer;
+  LoggedInUser user;
 
   void _onItemTapped(index) {
     setState(() {
@@ -37,15 +37,18 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     List<String> titles = ["Transfers", "Points", "Pick Team", "Leaderboard"];
-    LoggedInUser user = Provider.of<LoggedInUser>(context);
+    user = Provider.of<LoggedInUser>(context);
     bool loaded = user.team != null;
     if (loaded) {
       user.team.checkCaptain();
       this._pages = [TransfersPage(), PointsPage(), PickPage(), Leaderboard()];
-      this.loadingTimer != null ? this.loadingTimer.cancel() : this.loadingTimer = null;
+      this.loadingTimer != null
+          ? this.loadingTimer.cancel()
+          : this.loadingTimer = null;
     } else {
       this.loadingTimer = Timer(Duration(seconds: 1), () {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text("Yeah this is taking too long, try logout/login")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Yeah this is taking too long, try logout/login")));
       });
     }
 
@@ -64,9 +67,9 @@ class _HomeViewState extends State<HomeView> {
           loaded
               ? _pages[_selectedIndex]
               : Container(
-                  child: CircularProgressIndicator(),
-                  alignment: Alignment.center,
-                ),
+            child: CircularProgressIndicator(),
+            alignment: Alignment.center,
+          ),
         ],
       ),
       appBar: AppBar(
@@ -77,7 +80,10 @@ class _HomeViewState extends State<HomeView> {
         centerTitle: true,
       ),
       drawer: Container(
-        width: MediaQuery.of(context).size.width * 0.35,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width * 0.35,
         child: Theme(
           data: Theme.of(context).copyWith(
             // Set the transparency here
@@ -86,55 +92,17 @@ class _HomeViewState extends State<HomeView> {
           ),
           child: Drawer(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                MaterialButton(
-                    color: Theme.of(context).accentColor,
-                    child: Text("Player Stats"),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, Routes.PlayerStats);
-                    }),
-                MaterialButton(
-                    color: Theme.of(context).accentColor,
-                    child: Text("Admin"),
-                    onPressed: () {
-                      if (!user.admin) {
-                        var sb = SnackBar(
-                            content: Text(
-                                "Yeah nah laddie, you don't have admin access"));
-                        ScaffoldMessenger.of(context).showSnackBar(sb);
-                        Navigator.pop(context);
-                      } else {
-                        Navigator.pushNamed(context, Routes.Admin);
-                      }
-                    }),
-                MaterialButton(
-                    color: Theme.of(context).accentColor,
-                    child: Text("Settings"),
-                    onPressed: () {
-                      var sb = SnackBar(
-                          content: Text(
-                              "Yeah look would've loved to add settings but ran out of time"));
-                      ScaffoldMessenger.of(context).showSnackBar(sb);
-                      Navigator.pop(context);
-                    }),
-                MaterialButton(
-                  color: Theme.of(context).accentColor,
-                  child: Text("Logout"),
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                    Navigator.pushReplacementNamed(context, "/login");
-                  },
-                )
-              ],
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: drawerActions(),
             ),
           ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Theme.of(context).accentColor,
+        selectedItemColor: Theme
+            .of(context)
+            .accentColor,
         unselectedItemColor: Colors.grey,
         unselectedLabelStyle: TextStyle(color: Colors.grey),
         items: [
@@ -154,8 +122,57 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
   }
-  
-  void _loading(LoggedInUser user){
-    
+
+  List<Widget> drawerActions() {
+    return [
+      actionBtn("Player Stats", _playerStatsFn),
+      actionBtn("Admin", _adminFn),
+      actionBtn("settings", _settingsFn),
+      actionBtn("logout", _logoutFn)
+    ];
+  }
+
+  void _adminFn() {
+    if (!user.admin) {
+      var sb = SnackBar(
+          content: Text(
+            "Yeah nah laddie, you don't have admin access",
+            style: TextStyle(color: Colors.white),
+          ));
+      ScaffoldMessenger.of(context).showSnackBar(sb);
+      Navigator.pop(context);
+    } else {
+      Navigator.pushNamed(context, Routes.Admin);
+    }
+  }
+
+  void _playerStatsFn() {
+    Navigator.pop(context);
+    Navigator.pushNamed(context, Routes.PlayerStats);
+  }
+
+  Widget actionBtn(String title, Function onPressed) {
+    return Container(
+        child: MaterialButton(
+          color: Theme
+              .of(context)
+              .accentColor,
+          child: Text(title, style: TextStyle(color: Colors.white),),
+          onPressed: onPressed,
+        )
+    );
+  }
+
+  Future<void> _logoutFn() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacementNamed(context, "/login");
+  }
+
+  void _settingsFn() {
+    var sb = SnackBar(
+        content: Text(
+            "Yeah look would've loved to add settings but ran out of time"));
+    ScaffoldMessenger.of(context).showSnackBar(sb);
+    Navigator.pop(context);
   }
 }

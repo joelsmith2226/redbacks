@@ -151,6 +151,7 @@ class PlayerCard extends StatelessWidget {
     }
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
     user.updateCaptaincy(this.teamPlayer, rank);
+    user.pushTeamToDB();
     Navigator.pop(context);
   }
 }

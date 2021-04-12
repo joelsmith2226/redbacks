@@ -12,13 +12,13 @@ class TransfersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
     if (user.originalModels == null) {
-      print("YO WHY");
       user.originalModels = OriginalModels(
           Team(new List.from(user.team.players)),
           user.budget,
           user.freeTransfers);
     }
     return Container(
+      height: MediaQuery.of(context).size.height,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -27,9 +27,6 @@ class TransfersPage extends StatelessWidget {
             user.team,
             mode: PRICE,
             bench: false,
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.1,
           ),
         ],
       ),
