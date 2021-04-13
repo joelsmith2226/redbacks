@@ -5,7 +5,7 @@ import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
-import 'package:redbacks/widgets/choose_team_summary.dart';
+import 'package:redbacks/widgets/pages/choose_team_summary.dart';
 import 'package:redbacks/widgets/team_widget.dart';
 
 class ChooseTeamView extends StatelessWidget {

@@ -5,7 +5,7 @@ import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
-import 'package:redbacks/widgets/player_card.dart';
+import 'package:redbacks/widgets/player/player_card.dart';
 
 class PlayerListTile extends StatefulWidget {
   Player player;

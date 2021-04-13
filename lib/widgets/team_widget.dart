@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/models/team_player.dart';
-import 'package:redbacks/widgets/player_widget.dart';
+import 'package:redbacks/widgets/player/player_widget.dart';
 
 import 'bench.dart';
 

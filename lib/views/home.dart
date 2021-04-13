@@ -6,10 +6,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
-import 'package:redbacks/widgets/leaderboard.dart';
-import 'package:redbacks/widgets/pick_page.dart';
-import 'package:redbacks/widgets/points_page.dart';
-import 'package:redbacks/widgets/transfers_page.dart';
+import 'package:redbacks/widgets/pages/leaderboard.dart';
+import 'package:redbacks/widgets/pages/pick_page.dart';
+import 'package:redbacks/widgets/pages/points_page.dart';
+import 'package:redbacks/widgets/pages/transfers_page.dart';
 
 class HomeView extends StatefulWidget {
   @override

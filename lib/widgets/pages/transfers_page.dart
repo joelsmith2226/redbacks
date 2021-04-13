@@ -4,9 +4,8 @@ import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/models/original_models.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:redbacks/widgets/pages/transfers_summary.dart';
 import 'package:redbacks/widgets/team_widget.dart';
-import 'package:redbacks/widgets/transfers_summary.dart';
-
 class TransfersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

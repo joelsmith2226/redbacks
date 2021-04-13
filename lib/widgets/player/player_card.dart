@@ -7,7 +7,7 @@ import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
-import 'package:redbacks/widgets/player_selector_card.dart';
+import 'package:redbacks/widgets/player/player_selector_card.dart';
 
 class PlayerCard extends StatelessWidget {
   Player player;

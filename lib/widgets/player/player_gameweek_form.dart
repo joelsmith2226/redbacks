@@ -8,7 +8,7 @@ import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
 import 'package:redbacks/models/player_gameweek.dart';
 import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
-import 'package:redbacks/widgets/player_carousel.dart';
+import 'package:redbacks/widgets/player/player_carousel.dart';
 
 class PlayerGameweekForm extends StatefulWidget {
   PlayerGameweekForm();

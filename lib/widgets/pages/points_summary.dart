@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
-import 'package:redbacks/widgets/homepage_summary.dart';
+import 'package:redbacks/widgets/pages/homepage_summary.dart';
 import 'package:redbacks/widgets/summary_container.dart';
 
 class PointsSummary extends StatefulWidget {

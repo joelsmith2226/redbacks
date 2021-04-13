@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team_player.dart';
-import 'package:redbacks/widgets/player_list_tile.dart';
+import 'package:redbacks/widgets/player/player_list_tile.dart';
 
 class PlayerList extends StatefulWidget {
   List<Player> players;

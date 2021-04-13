@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
-import 'package:redbacks/widgets/points_summary.dart';
+import 'package:redbacks/widgets/pages/points_summary.dart';
 import 'package:redbacks/widgets/team_widget.dart';
 
 class PointsPage extends StatefulWidget {

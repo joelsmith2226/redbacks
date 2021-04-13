@@ -7,7 +7,7 @@ import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/models/player_gameweek.dart';
 import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
-import 'package:redbacks/widgets/player_gameweek_form.dart';
+import 'package:redbacks/widgets/player/player_gameweek_form.dart';
 
 class GameweekForm extends StatefulWidget {
   @override

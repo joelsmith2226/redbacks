@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:redbacks/widgets/player_widget.dart';
+import 'package:redbacks/widgets/player/player_widget.dart';
 
 class Bench extends StatefulWidget {
   PlayerWidget player;

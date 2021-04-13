@@ -5,8 +5,7 @@ import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
-import 'package:redbacks/widgets/choose_team_summary.dart';
-import 'package:redbacks/widgets/player_list.dart';
+import 'package:redbacks/widgets/player/player_list.dart';
 import 'package:redbacks/widgets/team_widget.dart';
 
 class TransferView extends StatefulWidget {
