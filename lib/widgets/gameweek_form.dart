@@ -4,7 +4,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_touch_spin/flutter_touch_spin.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/constants.dart';
-import 'package:redbacks/models/playerGameweek.dart';
+import 'package:redbacks/models/player_gameweek.dart';
 import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/player_gameweek_form.dart';

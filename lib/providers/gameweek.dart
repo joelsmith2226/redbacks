@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/src/form_builder.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/models/player.dart';
-import 'package:redbacks/models/playerGameweek.dart';
+import 'package:redbacks/models/player_gameweek.dart';
 
 class Gameweek extends ChangeNotifier {
   int _id;

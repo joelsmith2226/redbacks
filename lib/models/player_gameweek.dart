@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/models/player.dart';
+import 'package:redbacks/models/point_breakdown.dart';
 
 class PlayerGameweek {
   String _id;
@@ -21,6 +23,8 @@ class PlayerGameweek {
   int _gwPts = 0;
   bool _saved = false;
   Player _player;
+  PointBreakdown _pointBreakdown;
+
   final GlobalKey<FormBuilderState> key = GlobalKey<FormBuilderState>();
 
   PlayerGameweek(Player p) {
@@ -48,88 +52,58 @@ class PlayerGameweek {
     if (data["gw-pts"] == null) {
       this.calculatePoints();
     } else {
-      data["gw-pts"];
+      this.gwPts = data["gw-pts"];
     }
     this.saved = true;
     this.player = p;
+    this.pointBreakdown = PointBreakdown.fromMap(data["point-breakdown"]);
   }
 
   void calculatePoints() {
     this.gwPts = 0;
-    switch (this.position) {
-      case "DEF":
-        defenderPoints();
-        break;
-      case "FWD":
-        forwardPoints();
-        break;
-      case "MID":
-        midPoints();
-        break;
-      case "GKP":
-        gkpPoints();
-        break;
+    if (this.appearance) {
+      gwPts += 2;
+      gwPts += this.goals * POINT_SYSTEM[position][GOALS];
+      gwPts += this.assists * POINT_SYSTEM[position][ASSISTS];
+      gwPts += this.saves * POINT_SYSTEM[position][SAVES];
+      gwPts += this.quarterClean ? POINT_SYSTEM[position][QUARTER_CLEAN] : 0;
+      gwPts += this.halfClean ? POINT_SYSTEM[position][HALF_CLEAN] : 0;
+      gwPts += this.fullClean ? POINT_SYSTEM[position][FULL_CLEAN] : 0;
+      gwPts -= this.goalsConceded * POINT_SYSTEM[position][CONCEDED];
+      gwPts -= this.yellowCards * POINT_SYSTEM[position][YELLOW];
+      gwPts -= this.redCards * POINT_SYSTEM[position][RED];
+      gwPts -= this.ownGoals * POINT_SYSTEM[position][OWNS];
+      gwPts -= this.penaltiesMissed * POINT_SYSTEM[position][PENS];
+      gwPts += this.bonus * POINT_SYSTEM[position][BONUS];
+    }
+    generatePointBreakdown();
+  }
+
+  void generatePointBreakdown() {
+    if (this.appearance) {
+      _addPointBreakdown(APPEARANCE, this.appearance);
+      _addPointBreakdown(GOALS, this.goals);
+      _addPointBreakdown(ASSISTS, this.assists);
+      _addPointBreakdown(GOALS, this.saves);
+      _addPointBreakdown(QUARTER_CLEAN, this.quarterClean);
+      _addPointBreakdown(HALF_CLEAN, this.halfClean);
+      _addPointBreakdown(FULL_CLEAN, this.fullClean);
+      _addPointBreakdown(CONCEDED, this.goalsConceded);
+      _addPointBreakdown(YELLOW, this.yellowCards);
+      _addPointBreakdown(RED, this.redCards);
+      _addPointBreakdown(OWNS, this.ownGoals);
+      _addPointBreakdown(PENS, this.penaltiesMissed);
+      _addPointBreakdown(BONUS, this.bonus);
     }
   }
 
-  int defenderPoints() {
-    if (this.appearance) {
-      gwPts += 2;
-      gwPts += this.goals * 8;
-      gwPts += this.assists * 4;
-      gwPts += this.halfClean ? 2 : 0;
-      gwPts += this.fullClean ? 5 : 0;
-      gwPts -= this.goalsConceded;
-      gwPts -= this.yellowCards;
-      gwPts -= this.redCards * 4;
-      gwPts -= this.ownGoals * 2;
-      gwPts -= this.penaltiesMissed * 2;
-      gwPts += this.bonus;
-    }
-  }
-
-  int midPoints() {
-    if (this.appearance) {
-      gwPts += 2;
-      gwPts += this.goals * 6;
-      gwPts += this.assists * 3;
-      gwPts += this.fullClean ? 1 : 0;
-      gwPts -= this.yellowCards;
-      gwPts -= this.redCards * 4;
-      gwPts -= this.ownGoals * 2;
-      gwPts -= this.penaltiesMissed * 2;
-      gwPts += this.bonus;
-    }
-  }
-
-  int forwardPoints() {
-    if (this.appearance) {
-      gwPts += 2;
-      gwPts += this.goals * 4;
-      gwPts += this.assists * 2;
-      gwPts -= this.yellowCards;
-      gwPts -= this.redCards * 4;
-      gwPts -= this.ownGoals * 2;
-      gwPts -= this.penaltiesMissed * 2;
-      gwPts += this.bonus;
-    }
-  }
-
-  int gkpPoints() {
-    if (this.appearance) {
-      gwPts += 2;
-      gwPts += this.goals * 10;
-      gwPts += this.assists * 5;
-      gwPts += this.saves;
-      gwPts += this.quarterClean ? 1 : 0;
-      gwPts += this.halfClean ? 2 : 0;
-      gwPts += this.fullClean ? 5 : 0;
-      gwPts -= this.goalsConceded;
-      gwPts -= this.yellowCards;
-      gwPts -= this.redCards * 4;
-      gwPts -= this.ownGoals * 2;
-      gwPts -= this.penaltiesMissed * 2;
-      gwPts += this.bonus;
+  void _addPointBreakdown(String key, dynamic value) {
+    if (value.runtimeType == bool && value){
+      this.pointBreakdown.addPointBreakdownRow(
+          key, 1, POINT_SYSTEM[position][key]);
+    } else if (value != 0) {
+      this.pointBreakdown.addPointBreakdownRow(
+          key, value, POINT_SYSTEM[position][key] * value);
     }
   }
 
@@ -241,5 +215,9 @@ class PlayerGameweek {
     _player = value;
   }
 
-  void loadKey() {}
+  PointBreakdown get pointBreakdown => _pointBreakdown;
+
+  set pointBreakdown(PointBreakdown value) {
+    _pointBreakdown = value;
+  }
 }

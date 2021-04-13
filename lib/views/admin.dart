@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:redbacks/widgets/admin_actions.dart';
 import 'package:redbacks/widgets/edit_gameweeks.dart';
 import 'package:redbacks/widgets/gameweek_form.dart';
 
@@ -48,7 +49,7 @@ class _AdminViewState extends State<AdminView> {
           create: (context) => Gameweek(user.playerDB),
           child: GameweekForm()),
       EditGameweeks(),
-      Text("Admin Actions"),
+      AdminActions(),
       Text("Edit past gws?"),
     ];
 

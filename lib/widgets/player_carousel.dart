@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/providers/gameweek.dart';
-import 'package:redbacks/models/playerGameweek.dart';
+import 'package:redbacks/models/player_gameweek.dart';
 import 'package:redbacks/widgets/player_widget.dart';
 
 class PlayerCarousel extends StatefulWidget {

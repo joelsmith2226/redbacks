@@ -5,7 +5,7 @@ import 'package:flutter_touch_spin/flutter_touch_spin.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/redbacksFirebase.dart';
-import 'package:redbacks/models/playerGameweek.dart';
+import 'package:redbacks/models/player_gameweek.dart';
 import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/player_carousel.dart';
@@ -43,9 +43,6 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
     this.GW = Provider.of<Gameweek>(context);
     this.currPlayerGW = this.GW.playerGameweeks[this.GW.currPlayerIndex];
     this._currKey = this.currPlayerGW.key;
-    if (this.currPlayerGW.saved) {
-      this.currPlayerGW.loadKey();
-    }
     this.context = context;
 
     return Container(

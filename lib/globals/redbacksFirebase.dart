@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:redbacks/models/player.dart';
-import 'package:redbacks/models/playerGameweek.dart';
+import 'package:redbacks/models/player_gameweek.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/providers/gameweek.dart';
@@ -22,7 +22,8 @@ class RedbacksFirebase {
     return user
         .collection("Team")
         .get()
-        .then((QuerySnapshot playerData) => Team.fromData(playerData.docs, players))
+        .then((QuerySnapshot playerData) =>
+            Team.fromData(playerData.docs, players))
         .onError((error, stackTrace) {
       print("Error! ${error}");
       return null;
@@ -252,7 +253,7 @@ class RedbacksFirebase {
         .collection('player-gameweeks')
         .doc(gw.id)
         .set({
-          'appearance':gw.appearance,
+          'appearance': gw.appearance,
           'position': gw.position,
           'goals': gw.goals,
           'assists': gw.assists,
@@ -289,8 +290,23 @@ class RedbacksFirebase {
     // update user-GW-history with 1) gwpts achieved
   }
 
-  void deadlineButton() {
+  Future<void> deadlineButton(int currGW) {
     // get a list of users
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference users = firestore.collection('users');
+    return users.get().then((QuerySnapshot users2) {
+      users2.docs.forEach((userDoc) {
+        userDoc.get('GW-History').collection('Team').set(userDoc.get('Team').data);
+        userDoc.get('GW-History').doc('GW-${currGW}')
+            .set({
+          'chips-used': 'no',
+          'hits-taken': 3,
+          'gw-pts': 0,
+          'total-pts': 999999,
+        });
+      });
+    }).catchError((error) => print("Couldn't load in users: ${error}"));
+
     // create a GW-History with 1) locked in team (with cap/vice)
     // 2) num transfers/hits
     // 3) chips used

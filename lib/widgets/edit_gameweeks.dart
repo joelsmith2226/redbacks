@@ -25,8 +25,8 @@ class _EditGameweeksState extends State<EditGameweeks> {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
     if (_loading) {
       _loadingFn(user);
-      print("YO");
     }
+
     return Container(
       alignment: Alignment.center,
       child: _loading
@@ -41,7 +41,7 @@ class _EditGameweeksState extends State<EditGameweeks> {
   }
 
   void _loadingFn(LoggedInUser user) async {
-    await user.loadInGWHistory();
+    // await user.loadInGWHistory(); // Need to make this blocking somehow but havent figured it out todo
     setState(() {
       _gwHistory = user.gwHistory;
       _loading = false;
