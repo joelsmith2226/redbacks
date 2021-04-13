@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/src/form_builder.dart';
 import 'package:redbacks/globals/constants.dart';
@@ -29,6 +30,17 @@ class Gameweek extends ChangeNotifier {
     this.opposition = gw.opposition;
     this.gameScore = gw.gameScore;
     this.playerGameweeks = [pgw];
+  }
+
+
+  int getTeamGWPts(QuerySnapshot teamCollection) {
+    int teamGWPts = 0;
+    print("In getTeamGWPts()");
+    this.playerGameweeks.where((pgw) => teamCollection.docs.any((doc) => doc.data()['name'] == pgw.id)).forEach((teamPlayerGameweeks) {
+      teamGWPts += teamPlayerGameweeks.gwPts;
+      print("${teamPlayerGameweeks.id} => ${teamPlayerGameweeks.gwPts}");
+    });
+    return teamGWPts;
   }
 
   List<PlayerGameweek> get playerGameweeks => _playerGameweeks;
@@ -117,4 +129,5 @@ class Gameweek extends ChangeNotifier {
     _stage = value;
     notifyListeners();
   }
+
 }

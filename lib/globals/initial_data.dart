@@ -1,7 +1,7 @@
 import 'package:redbacks/models/player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'redbacksFirebase.dart';
+import 'rFirebase/firebaseCore.dart';
 
 class InitialData {
   List<Player> players = [];
@@ -42,7 +42,7 @@ class InitialData {
     ]);
 
     //addAll Players to DB DO NOT RUN AGAIN
-    RedbacksFirebase rFirebase = RedbacksFirebase();
+    FirebaseCore rFirebase = FirebaseCore();
 
 
     // rFirebase.getPlayers().then((players) => players.forEach((element) {

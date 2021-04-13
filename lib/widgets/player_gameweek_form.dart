@@ -4,7 +4,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_touch_spin/flutter_touch_spin.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/constants.dart';
-import 'package:redbacks/globals/redbacksFirebase.dart';
+import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
 import 'package:redbacks/models/player_gameweek.dart';
 import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
@@ -264,9 +264,9 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
 
   Widget goalAssistSaves() {
     return Row(children: [
-      NumberForm(loadCurrStateValue(GOALS, 0), GOALS, "Goals Scored"),
-      NumberForm(loadCurrStateValue(ASSISTS, 0), ASSISTS, "Assists Scored"),
-      NumberForm(loadCurrStateValue(SAVES, 0), SAVES, "2x Saves Scored"),
+      NumberForm(0, GOALS, "Goals Scored"),
+      NumberForm(0, ASSISTS, "Assists Scored"),
+      NumberForm(0, SAVES, "2x Saves Scored"),
     ]);
   }
 
@@ -302,12 +302,13 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
       actions: [
         MaterialButton(
           textColor: Color(0xFF6200EE),
-          onPressed: () {
+          onPressed: () async {
             Navigator.pop(context);
             String message = "";
             if (this.GW.allPlayersSaved) {
               try {
-                RedbacksFirebase().addGWToDB(this.GW);
+                await FirebaseCore().addGWToDB(this.GW);
+                await FirebaseCore().updateUsersGW(this.GW);
                 message = "Successfully added GW${this.GW.id} to DB!";
               } catch (e) {
                 message = "Something went wrong in submitting to db: ${e}";

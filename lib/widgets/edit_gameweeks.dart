@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:redbacks/globals/redbacksFirebase.dart';
+import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
 import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 
@@ -41,7 +41,7 @@ class _EditGameweeksState extends State<EditGameweeks> {
   }
 
   void _loadingFn(LoggedInUser user) async {
-    // await user.loadInGWHistory(); // Need to make this blocking somehow but havent figured it out todo
+    await user.loadInGWHistory(); // Need to make this blocking somehow but havent figured it out todo
     setState(() {
       _gwHistory = user.gwHistory;
       _loading = false;
@@ -50,7 +50,7 @@ class _EditGameweeksState extends State<EditGameweeks> {
 
   Widget GWGrid() {
     return GridView.builder(
-      itemCount: _gwHistory.length * 5,
+      itemCount: _gwHistory.length,
       gridDelegate:
           SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
       itemBuilder: (context, index) {
@@ -75,10 +75,10 @@ class _EditGameweeksState extends State<EditGameweeks> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text("Gameweek-${_gwHistory[0].id}"),
-                  Text("Score: ${_gwHistory[0].gameScore}"),
+                  Text("Gameweek-${_gwHistory[index].id}"),
+                  Text("Score: ${_gwHistory[index].gameScore}"),
                   Text(
-                    "Opposition: ${_gwHistory[0].opposition}",
+                    "Opposition: ${_gwHistory[index].opposition}",
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -102,7 +102,7 @@ class _EditGameweeksState extends State<EditGameweeks> {
               child: Text("Update Users Pts", style: TextStyle(color: Colors.white),),
               color: Theme.of(context).primaryColor,
               onPressed: () {
-                RedbacksFirebase().updateUsersGW(_gwHistory[_currIndex]);
+                FirebaseCore().updateUsersGW(_gwHistory[_currIndex]);
               }),
           MaterialButton(
               child: Text("Edit GW", style: TextStyle(color: Colors.white),),

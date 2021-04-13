@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:redbacks/globals/constants.dart';
-import 'package:redbacks/globals/redbacksFirebase.dart';
+import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
 import 'package:redbacks/models/original_models.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team.dart';
@@ -52,12 +52,12 @@ class LoggedInUser extends ChangeNotifier {
       this.uid = user.uid;
       this.admin = admins.contains(this.email);
       this.pendingTransfer = []; //Resets any residual transfers
-      RedbacksFirebase().getTeam(this.uid, this.playerDB).then((Team t) {
+      FirebaseCore().getTeam(this.uid, this.playerDB).then((Team t) {
         this.calculatePoints();
         print("Team is sorted");
         this.team = t;
         //this.calculateTeamValue();
-        return RedbacksFirebase()
+        return FirebaseCore()
             .getMiscDetails(this.uid)
             .then((DocumentSnapshot data) {
           this.loadMiscDetailsFromDB(data);
@@ -153,36 +153,36 @@ class LoggedInUser extends ChangeNotifier {
 
   Future<void> loadInPlayerAndGWHistoryDB() async {
     this.playerDB = [];
-    await RedbacksFirebase().getPlayers(this.playerDB);
+    await FirebaseCore().getPlayers(this.playerDB);
     await this.loadInGWHistory();
     return;
   }
 
   Future<void> loadInGWHistory() {
     this.gwHistory = [];
-    return RedbacksFirebase().getGWHistory(this.gwHistory, this.playerDB);
+    return FirebaseCore().getGWHistory(this.gwHistory, this.playerDB);
   }
 
   Future<void> generalDBPull() async {
-    await RedbacksFirebase().getPlayers(this.playerDB);
+    await FirebaseCore().getPlayers(this.playerDB);
     return this.loadInGWHistory();
   }
 
   void userDetailsPushDB() {
     // new user in users if needed
     try {
-      RedbacksFirebase().checkUserInDB(this.uid);
+      FirebaseCore().checkUserInDB(this.uid);
       // // new/update team in users/{user}/team
-      RedbacksFirebase().pushTeamToDB(this.team, this.uid);
+      FirebaseCore().pushTeamToDB(this.team, this.uid);
       // // new/update other fields required to track
-      RedbacksFirebase().pushMiscFieldsToDB(this);
+      FirebaseCore().pushMiscFieldsToDB(this);
     } catch (e) {
       print("Error in pushing details to DB: ${e}");
     }
   }
 
   void pushTeamToDB() async {
-    RedbacksFirebase().pushTeamToDB(this.team, this.uid);
+    FirebaseCore().pushTeamToDB(this.team, this.uid);
   }
 
   void loadMiscDetailsFromDB(DocumentSnapshot data) {
@@ -201,7 +201,7 @@ class LoggedInUser extends ChangeNotifier {
 
   void updateCaptaincy(TeamPlayer player, String rank) {
     this.team.updateCaptaincy(player, rank);
-    RedbacksFirebase().pushTeamToDB(team, uid);
+    FirebaseCore().pushTeamToDB(team, uid);
     notifyListeners();
   }
 
@@ -226,7 +226,7 @@ class LoggedInUser extends ChangeNotifier {
 
 
   void getAdminInfo() {
-    RedbacksFirebase().getAdminInfo(this);
+    FirebaseCore().getAdminInfo(this);
   }
 
   void calculatePoints() {

@@ -18,7 +18,7 @@ class _GameweekFormState extends State<GameweekForm> {
   FirebaseAuth auth = FirebaseAuth.instance;
   final GlobalKey<FormBuilderState> _gameFormKey =
       GlobalKey<FormBuilderState>();
-  final double heightMultiplier = 0.4;
+  final double heightMultiplier = 0.3;
 
   LoggedInUser user;
   bool _loading = false;
@@ -38,8 +38,9 @@ class _GameweekFormState extends State<GameweekForm> {
 
   Widget GameweekForm() {
     return Container(
-      height: MediaQuery.of(context).size.height,
+      height: MediaQuery.of(context).size.height * 0.7,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
               margin: EdgeInsets.all(20),
@@ -91,16 +92,20 @@ class _GameweekFormState extends State<GameweekForm> {
       ),
       onPressed: () {
         _gameFormKey.currentState.save();
-        setState(() {
-          String home = _gameFormKey.currentState.value[HOME];
-          String away = _gameFormKey.currentState.value[AWAY];
-          print('_');
-          this.GW.gameScore = "${home}-${away}";
-          this.GW.id = _gameFormKey.currentState.value[GAMEWEEK];
-          this.GW.opposition = _gameFormKey.currentState.value[OPPOSITION];
-          this.GW.stage = 1;
-        });
-        print("Gameweek saved");
+        if (_gameFormKey.currentState.validate()) {
+          setState(() {
+            String home = _gameFormKey.currentState.value[HOME];
+            String away = _gameFormKey.currentState.value[AWAY];
+            this.GW.gameScore = "${home}-${away}";
+            this.GW.id = _gameFormKey.currentState.value[GAMEWEEK];
+            if (this.GW.id == null) this.GW.id = user.currGW;
+            this.GW.opposition = _gameFormKey.currentState.value[OPPOSITION];
+            this.GW.stage = 1;
+          });
+          print("Gameweek saved");
+        } else {
+          print("Invalid");
+        }
       },
     );
   }
@@ -123,10 +128,10 @@ class _GameweekFormState extends State<GameweekForm> {
               TextForm(OPPOSITION, "Enter Opposition", initial: opposition),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 TextForm(HOME, "Redbacks",
-                    req: true, initial: score[0], width: 0.3),
+                    req: true, initial: score[0], width: 0.3, numMode: true),
                 Text('-'),
                 TextForm(AWAY, "Opposition",
-                    req: true, initial: score[1], width: 0.3)
+                    req: true, initial: score[1], width: 0.3, numMode: true)
               ]),
               SizedBox(height: 15),
               Text(
@@ -141,7 +146,7 @@ class _GameweekFormState extends State<GameweekForm> {
   }
 
   Widget TextForm(String name, String label,
-      {req = false, String initial = "", double width = 0.75}) {
+      {req = false, String initial = "", double width = 0.75, bool numMode = false}) {
     var validators = [
       FormBuilderValidators.required(context),
     ];
@@ -156,7 +161,7 @@ class _GameweekFormState extends State<GameweekForm> {
           labelText: label,
         ),
         validator: FormBuilderValidators.compose(validators),
-        keyboardType: TextInputType.text,
+        keyboardType: numMode? TextInputType.number : TextInputType.text,
         onEditingComplete: () => saveCurrPlayerGWState(this._gameFormKey),
       ),
     );
@@ -215,18 +220,6 @@ class _GameweekFormState extends State<GameweekForm> {
 
   void saveCurrPlayerGWState(GlobalKey<FormBuilderState> key) {
     key.currentState.save();
-    print("State Saved ${key.currentState.value}");
-  }
-
-  dynamic loadCurrStateValue(String label, dynamic alternative) {
-    print("Loading for ${this.GW.currPlayerIndex}");
-    try {
-      var result = this._currKey.currentState.fields[label].value;
-      return result;
-    } catch (e) {
-      print("Error: ${e}");
-      return alternative;
-    }
   }
 
   void saveStateToGWObject() {

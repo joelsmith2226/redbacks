@@ -31,6 +31,7 @@ class PlayerGameweek {
     this.id = p.name;
     this.position = p.position;
     this.player = p;
+    this.pointBreakdown = PointBreakdown();
   }
 
   PlayerGameweek.fromData(Map<String, dynamic> data, String name, Player p) {
@@ -81,13 +82,13 @@ class PlayerGameweek {
 
   void generatePointBreakdown() {
     if (this.appearance) {
-      _addPointBreakdown(APPEARANCE, this.appearance);
+      _addPointBreakdownBool(APPEARANCE, this.appearance);
       _addPointBreakdown(GOALS, this.goals);
       _addPointBreakdown(ASSISTS, this.assists);
       _addPointBreakdown(GOALS, this.saves);
-      _addPointBreakdown(QUARTER_CLEAN, this.quarterClean);
-      _addPointBreakdown(HALF_CLEAN, this.halfClean);
-      _addPointBreakdown(FULL_CLEAN, this.fullClean);
+      _addPointBreakdownBool(QUARTER_CLEAN, this.quarterClean);
+      _addPointBreakdownBool(HALF_CLEAN, this.halfClean);
+      _addPointBreakdownBool(FULL_CLEAN, this.fullClean);
       _addPointBreakdown(CONCEDED, this.goalsConceded);
       _addPointBreakdown(YELLOW, this.yellowCards);
       _addPointBreakdown(RED, this.redCards);
@@ -97,13 +98,17 @@ class PlayerGameweek {
     }
   }
 
-  void _addPointBreakdown(String key, dynamic value) {
-    if (value.runtimeType == bool && value){
-      this.pointBreakdown.addPointBreakdownRow(
-          key, 1, POINT_SYSTEM[position][key]);
-    } else if (value != 0) {
+  void _addPointBreakdown(String key, int value) {
+      if (value != 0) {
       this.pointBreakdown.addPointBreakdownRow(
           key, value, POINT_SYSTEM[position][key] * value);
+    }
+  }
+
+  void _addPointBreakdownBool(String key, bool value) {
+    if (value) {
+      this.pointBreakdown.addPointBreakdownRow(
+          key, 1, POINT_SYSTEM[position][key]);
     }
   }
 
