@@ -2,7 +2,7 @@ class PointBreakdown{
   List<PointBreakdownRow> _pointBreakdownRows = [];
   PointBreakdown();
 
-  PointBreakdown.fromMap(Map<String, List<int>> map){
+  PointBreakdown.fromMap(Map<String, dynamic> map){
     map.forEach((key, value) {
       pointBreakdownRows.add(PointBreakdownRow(key, value[0], value[1]));
     });

@@ -7,6 +7,7 @@ import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:redbacks/widgets/player/player_point_breakdowns.dart';
 import 'package:redbacks/widgets/player/player_selector_card.dart';
 
 class PlayerCard extends StatelessWidget {
@@ -18,7 +19,9 @@ class PlayerCard extends StatelessWidget {
   VoidCallback callback;
 
   PlayerCard({this.player, this.context, this.mode, this.callback, this.teamPlayer}) {
+    LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
     this.pc = AlertDialog(
+      insetPadding: EdgeInsets.all(27.0),
       title: Text(
         'Player Card',
         textAlign: TextAlign.center,
@@ -31,7 +34,8 @@ class PlayerCard extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.3),
             SizedBox(height: 30),
             Text(
-                'Name: ${this.player.name}\nValue: \$${this.player.price}\nGW Pts: ${this.player.currPts}\nTotal Points: ${this.player.totalPts}\n'),
+                'Name: ${this.player.name}\nValue: \$${this.player.price}m\nTotal Points: ${this.player.totalPts}\n'),
+            PlayerPointBreakdowns(user.gwHistory, player),
           ]),
       actions: cardActions(),
     );

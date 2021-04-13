@@ -29,18 +29,16 @@ class FirebasePlayers{
         .catchError((error) => print("Failed to add player: $error"));
   }
 
-  Future<void> getPlayers(List<Player> playerModels) {
+  Future<void> getPlayers(List<Player> playerModels) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference players = firestore.collection('players');
     print("Going into getPlayers");
-    return players.get().then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
+    QuerySnapshot qs = await players.get();
+    qs.docs.forEach((doc) {
         playerModels.add(Player.fromData(doc.data(), uid: doc.id));
         print("Player ${doc.data()["name"]} added to list");
       });
-    }).onError((error, stackTrace) {
-      print("Error in getPlayers: ${error}");
-    });
+    return;
   }
 
   void addAllPlayers(List<Player> players) {

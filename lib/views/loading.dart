@@ -69,10 +69,7 @@ class _LoadingViewState extends State<LoadingView> {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
     if (this.loginOnce) {
       this.loginOnce = false;
-      if (user.playerDB == null) {
-        await user
-            .loadInPlayerAndGWHistoryDB(); // ensures player DB loaded before init
-      }
+      await user.loadInPlayerAndGWHistoryDB(); // ensures player DB loaded before init
       await user.initialiseUserLogin().whenComplete(() {
         print("Finished Loading, user should be fully initialised");
         Navigator.pushReplacementNamed(context, Routes.Home);
