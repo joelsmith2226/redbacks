@@ -21,6 +21,8 @@ class LoggedInUser extends ChangeNotifier {
   int _totalPts;
   int _gwPts;
   List<Transfer> _pendingTransfers = [];
+  List<Transfer> _completedTransfers = [];
+
   double _teamValue;
   double _budget;
   List<Player> _playerDB;
@@ -29,6 +31,8 @@ class LoggedInUser extends ChangeNotifier {
   List<Gameweek> _gwHistory;
   OriginalModels _originalModels;
   int _currGW;
+  int _hits;
+  List<Chip> _chips = [];
 
   LoggedInUser();
 
@@ -80,10 +84,10 @@ class LoggedInUser extends ChangeNotifier {
       this.teamName = teamName;
       this.gwPts = 0;
       this.totalPts = 0;
-      this.freeTransfers = 100;
       this.pendingTransfer = []; //Resets any residual transfers
+      this.completedTransfers = [];
       this.setInitialTeam();
-      //this.calculateTeamValue();
+      this.setInitialChips();
 
       // push all details to DB now set
       this.userDetailsPushDB();
@@ -97,6 +101,8 @@ class LoggedInUser extends ChangeNotifier {
   void setInitialTeam() {
     this.team = Team.blank();
     this.budget = 100.0;
+    this.freeTransfers = 100;
+    this.hits = 0;
   }
 
   void beginTransfer(TeamPlayer outgoing) {
@@ -115,6 +121,7 @@ class LoggedInUser extends ChangeNotifier {
         //Remove pending transfer regardless of outcome
         this.pendingTransfer.remove(currTransfer);
         if (result == "") {
+          this.completedTransfers.add(currTransfer);
           notifyListeners();
           return result;
         }
@@ -165,20 +172,10 @@ class LoggedInUser extends ChangeNotifier {
     // new user in users if needed
     try {
       RedbacksFirebase().checkUserInDB(this.uid);
-      // new gw history in users/{user}/gw history if needed
-      RedbacksFirebase().addUserGWHistoryToDB(this.uid);
       // // new/update team in users/{user}/team
       RedbacksFirebase().pushTeamToDB(this.team, this.uid);
       // // new/update other fields required to track
-      RedbacksFirebase().pushMiscFieldsToDB(
-          this.uid,
-          this.budget,
-          this.teamValue,
-          this.email,
-          this.gwPts,
-          this.totalPts,
-          this.teamName,
-          this.freeTransfers);
+      RedbacksFirebase().pushMiscFieldsToDB(this);
     } catch (e) {
       print("Error in pushing details to DB: ${e}");
     }
@@ -187,6 +184,90 @@ class LoggedInUser extends ChangeNotifier {
   void pushTeamToDB() async {
     RedbacksFirebase().pushTeamToDB(this.team, this.uid);
   }
+
+  void loadMiscDetailsFromDB(DocumentSnapshot data) {
+    this.totalPts = data.get("total-pts");
+    this.gwPts = data.get("gw-pts");
+    this.teamName = data.get("team-name");
+    this.budget = data.get("budget");
+    this.freeTransfers = data.get("free-transfers");
+
+  }
+
+  void benchPlayer(TeamPlayer player) {
+    this.team.benchPlayer(player);
+    notifyListeners();
+  }
+
+  void updateCaptaincy(TeamPlayer player, String rank) {
+    this.team.updateCaptaincy(player, rank);
+    RedbacksFirebase().pushTeamToDB(team, uid);
+    notifyListeners();
+  }
+
+  void removePlayer(TeamPlayer player) {
+    player.removed = !player.removed;
+    print("Removed ${player.name}");
+    notifyListeners();
+  }
+
+  void resetRemovedPlayers() {
+    print("Reinstating removed players");
+    this.team.players.forEach((element) {
+      element.removed = false;
+    });
+  }
+  void restoreOriginals() {
+    this.team = this.originalModels.team;
+    this.budget = this.originalModels.budget;
+    this.freeTransfers = this.originalModels.freeTransfers;
+    this.originalModels = null;
+  }
+
+
+  void getAdminInfo() {
+    RedbacksFirebase().getAdminInfo(this);
+  }
+
+  void calculatePoints() {
+    try {
+      this.totalPts = 0;
+      this.playerDB.forEach((p) {
+        p.currPts = p.gwResults[this.currGW - 1].playerGameweeks[0].gwPts;
+        p.totalPts = 0;
+        p.gwResults.forEach((gw) {
+          if (gw.id <= this.currGW) p.totalPts += gw.playerGameweeks[0].gwPts;
+        });
+      });
+      if (this.team != null) {
+        this.gwPts = 0;
+        this.team.players.forEach((p) {
+          this.gwPts += p.currPts;
+        });
+      }
+    }
+    catch (e) {
+      print("Something's wrong: ${e}");
+    }
+  }
+
+
+  Map<String, dynamic> completedTransfersAsMap() {
+    Map<String, dynamic> map = {};
+    map["number-transfers"] = this.completedTransfers.length;
+    print(this.completedTransfers);
+    this.completedTransfers.asMap().forEach((index, transfer) {
+      map["in-${index}"] = transfer.incoming.name;
+      map["out-${index}"] = transfer.outgoing.name;
+    });
+    return map;
+  }
+
+  void setInitialChips() {
+    this.chips = [];
+    // todo add chips when we get here
+  }
+
 
 // GETTERS & SETTERS
   int get gwPts => _gwPts;
@@ -267,37 +348,6 @@ class LoggedInUser extends ChangeNotifier {
     _signingUp = value;
   }
 
-  void loadMiscDetailsFromDB(DocumentSnapshot data) {
-    this.totalPts = data.get("total-pts");
-    this.gwPts = data.get("gw-pts");
-    this.teamName = data.get("team-name");
-    this.budget = data.get("budget");
-    this.freeTransfers = data.get("free-transfers");
-  }
-
-  void benchPlayer(TeamPlayer player) {
-    this.team.benchPlayer(player);
-    notifyListeners();
-  }
-
-  void updateCaptaincy(TeamPlayer player, String rank) {
-    this.team.updateCaptaincy(player, rank);
-    RedbacksFirebase().pushTeamToDB(team, uid);
-    notifyListeners();
-  }
-
-  void removePlayer(TeamPlayer player) {
-    player.removed = !player.removed;
-    print("Removed ${player.name}");
-    notifyListeners();
-  }
-
-  void resetRemovedPlayers() {
-    print("Reinstating removed players");
-    this.team.players.forEach((element) {
-      element.removed = false;
-    });
-  }
 
   int get freeTransfers => _freeTransfers;
 
@@ -323,42 +373,29 @@ class LoggedInUser extends ChangeNotifier {
     _originalModels = value;
   }
 
-  void restoreOriginals() {
-    this.team = this.originalModels.team;
-    this.budget = this.originalModels.budget;
-    this.freeTransfers = this.originalModels.freeTransfers;
-    this.originalModels = null;
-  }
-
   int get currGW => _currGW;
 
   set currGW(int value) {
     _currGW = value;
   }
 
-  void getAdminInfo() {
-    RedbacksFirebase().getAdminInfo(this);
+  int get hits => _hits;
+
+  set hits(int value) {
+    _hits = value;
   }
 
-  void calculatePoints() {
-    try {
-      this.totalPts = 0;
-      this.playerDB.forEach((p) {
-        p.currPts = p.gwResults[this.currGW - 1].playerGameweeks[0].gwPts;
-        p.totalPts = 0;
-        p.gwResults.forEach((gw) {
-          if (gw.id <= this.currGW) p.totalPts += gw.playerGameweeks[0].gwPts;
-        });
-      });
-      if (this.team != null) {
-        this.gwPts = 0;
-        this.team.players.forEach((p) {
-          this.gwPts += p.currPts;
-        });
-      }
-    }
-    catch (e) {
-      print("Something's wrong: ${e}");
-    }
+  List<Chip> get chips => _chips;
+
+  set chips(List<Chip> value) {
+    _chips = value;
   }
+
+
+  List<Transfer> get completedTransfers => _completedTransfers;
+
+  set completedTransfers(List<Transfer> value) {
+    _completedTransfers = value;
+  }
+
 }

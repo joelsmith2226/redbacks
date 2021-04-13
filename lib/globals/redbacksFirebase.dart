@@ -82,8 +82,8 @@ class RedbacksFirebase {
   }
 
   Future<void> addPlayerToTeamInDB(
-      TeamPlayer p, int index, DocumentReference user) {
-    return user
+      TeamPlayer p, int index, DocumentReference doc) {
+    return doc
         .collection("Team")
         .doc("Player-${index}")
         .set({
@@ -124,47 +124,60 @@ class RedbacksFirebase {
         .catchError((error) => print("Failed to add user: $error"));
   }
 
-  Future<void> addUserGWHistoryToDB(String uid) {
+  Future<void> addUserGWHistoryToDB(
+      QueryDocumentSnapshot doc, int currGw) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    DocumentReference user = firestore.collection('users').doc(uid);
+    DocumentReference user =
+        firestore.collection('users').doc(doc.reference.id);
+    var hits = doc.data().containsKey('hits') ? doc.data()['hits'] : 0;
+    var transfers = doc.data().containsKey('completed-transfers')
+        ? doc.data()['completed-transfers']
+        : 0;
+    DocumentReference gwHistoryDoc =
+        user.collection("GW-History").doc("GW-${currGw}");
 
-    return user
-        .collection("GW-History")
-        .doc("GW-0")
-        .set({
-          "gw-pts": 0,
-          "total-pts": 0,
-          "hits-taken": 0,
-          "chips-used": "",
-        })
-        .then((value) => print("GW history added"))
-        .catchError((error) => print("Failed to add gw history: $error"));
+    // Add misc details
+    await gwHistoryDoc.set({
+      "gw-pts": 0,
+      "total-pts": 0,
+      "transfers": transfers,
+      "hits": hits,
+      "chips-used": "",
+    }).catchError((error) => print("Failed to add gw history: $error"));
+
+    // add team details
+    CollectionReference submissionTeam = user.collection('Team');
+    await copyCollection(submissionTeam, gwHistoryDoc);
   }
 
-  Future<void> pushMiscFieldsToDB(
-      String uid,
-      double budget,
-      double teamValue,
-      String email,
-      int gwPts,
-      int totalPts,
-      String teamName,
-      int freeTransfers) {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    CollectionReference user = firestore.collection('users');
+  Future<void> copyCollection(
+      CollectionReference collection, DocumentReference target) {
+    print("Attempting to copy ${collection.id} into ${target.id}");
+    collection.get().then((QuerySnapshot query) {
+      query.docs.forEach((collectionDocToMove) {
+        target.collection(collection.id).doc(collectionDocToMove.id).set(collectionDocToMove.data());
+      });
+    }).catchError((error) => print("Failed to copy collection: ${error}"));
+  }
 
-    return user
-        .doc(uid)
+  Future<void> pushMiscFieldsToDB(LoggedInUser user) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference userCollection = firestore.collection('users');
+
+    return userCollection
+        .doc(user.uid)
         .set({
-          "email": email,
-          "budget": budget,
-          "team-value": teamValue,
-          "gw-pts": gwPts,
-          "total-pts": totalPts,
-          "team-name": teamName,
-          "free-transfers": freeTransfers,
+          "email": user.email,
+          "budget": user.budget,
+          "team-value": user.teamValue,
+          "gw-pts": user.gwPts,
+          "total-pts": user.totalPts,
+          "team-name": user.teamName,
+          "free-transfers": user.freeTransfers,
+          "completed-transfers": user.completedTransfersAsMap(),
+          "hits": user.hits,
         })
-        .then((value) => print("User Misc Details Added: ${uid}"))
+        .then((value) => print("User Misc Details Added: ${user.uid}"))
         .catchError(
             (error) => print("Failed to add user misc details: $error"));
   }
@@ -292,24 +305,23 @@ class RedbacksFirebase {
 
   Future<void> deadlineButton(int currGW) {
     // get a list of users
+    // create a GW-History with 1) locked in team (with cap/vice)
+    // 2) num transfers
+    // 3) hits/chips used todo
+    performMethodOnAllUsers((val) => addUserGWHistoryToDB(val, currGW));
+    // 4) shift admin curr gameweek ++
+
+  }
+
+  Future<void> performMethodOnAllUsers(Function fn) async {
+    // get a list of users
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference users = firestore.collection('users');
-    return users.get().then((QuerySnapshot users2) {
-      users2.docs.forEach((userDoc) {
-        userDoc.get('GW-History').collection('Team').set(userDoc.get('Team').data);
-        userDoc.get('GW-History').doc('GW-${currGW}')
-            .set({
-          'chips-used': 'no',
-          'hits-taken': 3,
-          'gw-pts': 0,
-          'total-pts': 999999,
-        });
-      });
+    users.get().then((QuerySnapshot user) {
+      return (user.docs.forEach((doc) {
+        if(doc.id != 'Admin')
+          fn(doc);
+      }));
     }).catchError((error) => print("Couldn't load in users: ${error}"));
-
-    // create a GW-History with 1) locked in team (with cap/vice)
-    // 2) num transfers/hits
-    // 3) chips used
-    // 4) shift admin curr gameweek ++
   }
 }

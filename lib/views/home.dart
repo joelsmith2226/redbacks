@@ -127,8 +127,8 @@ class _HomeViewState extends State<HomeView> {
     return [
       actionBtn("Player Stats", _playerStatsFn),
       actionBtn("Admin", _adminFn),
-      actionBtn("settings", _settingsFn),
-      actionBtn("logout", _logoutFn)
+      actionBtn("Settings", _settingsFn),
+      actionBtn("Logout", _logoutFn)
     ];
   }
 
@@ -153,6 +153,8 @@ class _HomeViewState extends State<HomeView> {
 
   Widget actionBtn(String title, Function onPressed) {
     return Container(
+        width: 150,
+        padding: EdgeInsets.all(10),
         child: MaterialButton(
           color: Theme
               .of(context)
@@ -169,6 +171,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void _settingsFn() {
+    user.completedTransfers = [];
     var sb = SnackBar(
         content: Text(
             "Yeah look would've loved to add settings but ran out of time"));

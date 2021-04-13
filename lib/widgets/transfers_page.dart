@@ -15,7 +15,9 @@ class TransfersPage extends StatelessWidget {
       user.originalModels = OriginalModels(
           Team(new List.from(user.team.players)),
           user.budget,
-          user.freeTransfers);
+          user.freeTransfers,
+          user.completedTransfers,
+      );
     }
     return Container(
       height: MediaQuery.of(context).size.height,
