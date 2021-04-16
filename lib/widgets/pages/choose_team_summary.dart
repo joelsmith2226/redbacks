@@ -14,6 +14,8 @@ class _ChooseTeamSummaryState extends State<ChooseTeamSummary> {
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
     double removalBudget = user.team.removalBudget();
+    print(user.hits);
+    int freshHits = (user.hits - user.originalModels.hits) * 4;
     return HomepageSummary(
       body: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -28,7 +30,7 @@ class _ChooseTeamSummaryState extends State<ChooseTeamSummary> {
         ),
         ChooseTeamSummaryContainer(
           "Cost",
-          "0",
+          "${freshHits}",
         ),
         ChooseTeamSummaryContainer(
           "Budget Left:",

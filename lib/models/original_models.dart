@@ -6,6 +6,7 @@ class OriginalModels {
   double budget;
   int freeTransfers;
   List<Transfer> completedTransfers;
+  int hits;
 
-  OriginalModels(this.team, this.budget, this.freeTransfers, this.completedTransfers);
+  OriginalModels(this.team, this.budget, this.freeTransfers, this.completedTransfers, this.hits);
 }

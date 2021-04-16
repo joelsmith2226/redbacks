@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/pages/leaderboard.dart';
@@ -20,6 +21,8 @@ class _HomeViewState extends State<HomeView> {
   int _selectedIndex = 1;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Widget> _pages = [];
+  RefreshController _refreshController =
+      new RefreshController(initialRefresh: false);
   Timer loadingTimer;
   LoggedInUser user;
 
@@ -65,11 +68,11 @@ class _HomeViewState extends State<HomeView> {
             ),
           ),
           loaded
-              ? _pages[_selectedIndex]
+              ? refresher(_pages[_selectedIndex])
               : Container(
-            child: CircularProgressIndicator(),
-            alignment: Alignment.center,
-          ),
+                  child: CircularProgressIndicator(),
+                  alignment: Alignment.center,
+                ),
         ],
       ),
       appBar: AppBar(
@@ -80,10 +83,7 @@ class _HomeViewState extends State<HomeView> {
         centerTitle: true,
       ),
       drawer: Container(
-        width: MediaQuery
-            .of(context)
-            .size
-            .width * 0.35,
+        width: MediaQuery.of(context).size.width * 0.35,
         child: Theme(
           data: Theme.of(context).copyWith(
             // Set the transparency here
@@ -92,17 +92,15 @@ class _HomeViewState extends State<HomeView> {
           ),
           child: Drawer(
             child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: drawerActions(),
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: drawerActions(),
             ),
           ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Theme
-            .of(context)
-            .accentColor,
+        selectedItemColor: Theme.of(context).accentColor,
         unselectedItemColor: Colors.grey,
         unselectedLabelStyle: TextStyle(color: Colors.grey),
         items: [
@@ -136,9 +134,9 @@ class _HomeViewState extends State<HomeView> {
     if (!user.admin) {
       var sb = SnackBar(
           content: Text(
-            "Yeah nah laddie, you don't have admin access",
-            style: TextStyle(color: Colors.white),
-          ));
+        "Yeah nah laddie, you don't have admin access",
+        style: TextStyle(color: Colors.white),
+      ));
       ScaffoldMessenger.of(context).showSnackBar(sb);
       Navigator.pop(context);
     } else {
@@ -156,13 +154,13 @@ class _HomeViewState extends State<HomeView> {
         width: 150,
         padding: EdgeInsets.all(10),
         child: MaterialButton(
-          color: Theme
-              .of(context)
-              .accentColor,
-          child: Text(title, style: TextStyle(color: Colors.white),),
+          color: Theme.of(context).accentColor,
+          child: Text(
+            title,
+            style: TextStyle(color: Colors.white),
+          ),
           onPressed: onPressed,
-        )
-    );
+        ));
   }
 
   Future<void> _logoutFn() async {
@@ -171,11 +169,50 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void _settingsFn() {
-    user.completedTransfers = [];
     var sb = SnackBar(
         content: Text(
             "Yeah look would've loved to add settings but ran out of time"));
     ScaffoldMessenger.of(context).showSnackBar(sb);
     Navigator.pop(context);
+  }
+
+  refresher(Widget page) {
+    return SmartRefresher(
+      enablePullDown: true,
+      header: WaterDropMaterialHeader(
+          // completeDuration: Duration(seconds: 4),
+          ),
+      controller: _refreshController,
+      onRefresh: () => _onRefresh(user),
+      onLoading: () => _onLoading(user),
+      child: page,
+    );
+  }
+
+  void _onLoading(LoggedInUser user) async {
+    try {
+      await user.generalDBPull();
+    } catch (e) {
+      _onError(e);
+    }
+    this._refreshController.loadComplete();
+    return;
+  }
+
+  void _onRefresh(LoggedInUser user) async {
+    try {
+      await user.generalDBPull();
+      user.calculatePoints();
+    } catch (e) {
+      _onError(e);
+    }
+    this._refreshController.refreshCompleted();
+    setState(() {});
+  }
+
+  void _onError(dynamic e) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text("Something went wrong: ${e}"),
+    ));
   }
 }

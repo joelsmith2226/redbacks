@@ -7,24 +7,21 @@ import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/player/player_card.dart';
 
-class PlayerListTile extends StatefulWidget {
+class PlayerListTile extends StatelessWidget {
   Player player;
   TeamPlayer outgoing;
   String mode;
+  BuildContext context;
 
   PlayerListTile({this.player, this.outgoing, this.mode = TRANSFER});
-
-  @override
-  _PlayerListTileState createState() => _PlayerListTileState();
-}
-
-class _PlayerListTileState extends State<PlayerListTile> {
+  
   @override
   Widget build(BuildContext context) {
+    this.context = context;
     return ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 10),
         onTap: () {
-          switch (widget.mode) {
+          switch (this.mode) {
             case TRANSFER:
               transferFn();
               break;
@@ -41,9 +38,9 @@ class _PlayerListTileState extends State<PlayerListTile> {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
     Navigator.pop(context);
     // on error after attempting transfer
-    user.beginTransfer(widget.outgoing);
-    String result = user.completeTransfer(widget.outgoing,
-        TeamPlayer.fromPlayer(widget.player, widget.outgoing.index));
+    user.beginTransfer(this.outgoing);
+    String result = user.completeTransfer(this.outgoing,
+        TeamPlayer.fromPlayer(this.player, this.outgoing.index));
     print(
         "Transfer was attempted and now removed: length - ${user.pendingTransfer.length}");
     if (result != "") {
@@ -51,13 +48,23 @@ class _PlayerListTileState extends State<PlayerListTile> {
           .showSnackBar(SnackBar(content: Text("Transfer fail: ${result}")));
     } else if (!user.signingUp &&
         ModalRoute.of(context).settings.name != Routes.ChooseTeam) {
-      Navigator.pushNamed(context, Routes.ChooseTeam);
+      //Pushes to choose team if required otherwise it doesnt
+      bool isNewRouteSameAsCurrent = false;
+      Navigator.popUntil(context, (route) {
+        if (route.settings.name == Routes.ChooseTeam) {
+          isNewRouteSameAsCurrent = true;
+        }
+        return true;
+      });
+      if (!isNewRouteSameAsCurrent) {
+        Navigator.pushNamed(context, Routes.ChooseTeam);
+      }
     }
   }
 
   void playerStatsFn() {
     PlayerCard pc =
-        PlayerCard(player: widget.player, context: context, mode: widget.mode);
+        PlayerCard(player: this.player, context: context, mode: this.mode);
     pc.displayCard();
   }
 
@@ -73,13 +80,13 @@ class _PlayerListTileState extends State<PlayerListTile> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          columnCell(widget.player.position, 0.1),
-          columnCell(widget.player.name, 0.28),
-          columnCell("\$${widget.player.price}m", 0.15),
-          columnCell("${widget.player.currPts}pts", 0.15),
-          columnCell("${widget.player.totalPts}pts", 0.15),
-          columnCell("${widget.player.transferredIn}", 0.1),
-          columnCell("${widget.player.transferredOut}", 0.1),
+          columnCell(this.player.position, 0.1),
+          columnCell(this.player.name, 0.28),
+          columnCell("\$${this.player.price}m", 0.15),
+          columnCell("${this.player.currPts}pts", 0.15),
+          columnCell("${this.player.totalPts}pts", 0.15),
+          columnCell("${this.player.transferredIn}", 0.1),
+          columnCell("${this.player.transferredOut}", 0.1),
         ],
       ),
     );

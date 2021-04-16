@@ -16,10 +16,10 @@ class TransfersPage extends StatelessWidget {
           user.budget,
           user.freeTransfers,
           user.completedTransfers,
+          user.hits,
       );
     }
     return Container(
-      height: MediaQuery.of(context).size.height,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

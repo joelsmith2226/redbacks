@@ -39,12 +39,9 @@ class TeamWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: AlwaysScrollableScrollPhysics(),
-      child: Container(
-      height: MediaQuery.of(context).size.height*0.7,
-      child: ListView(
-        shrinkWrap: true,
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.7,
+      child: Column(
         children: [
           Row(
             children: playersToWidgets(r1Players),
@@ -69,7 +66,7 @@ class TeamWidget extends StatelessWidget {
                 )
               : Container(),
         ],
-      ),)
+      ),
     );
   }
 }

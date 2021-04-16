@@ -86,7 +86,7 @@ class FirebaseUsers {
       "total-pts": user.totalPts,
       "team-name": user.teamName,
       "free-transfers": user.freeTransfers,
-      "completed-transfers": user.completedTransfersAsMap(),
+      "completed-transfers": user.completedTransferAsList(),
       "hits": user.hits,
     })
         .then((value) => print("User Misc Details Added: ${user.uid}"))

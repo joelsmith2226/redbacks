@@ -53,23 +53,15 @@ class LoggedInUser extends ChangeNotifier {
       this.uid = user.uid;
       this.admin = admins.contains(this.email);
       this.pendingTransfer = []; //Resets any residual transfers
-      FirebaseCore().getTeam(this.uid, this.playerDB).then((Team t) {
-        this.calculatePoints();
-        print("Team is sorted");
-        this.team = t;
-        //this.calculateTeamValue();
-        return FirebaseCore()
-            .getMiscDetails(this.uid)
-            .then((DocumentSnapshot data) {
-          this.loadMiscDetailsFromDB(data);
-          print(
-              "Loaded user successfully ${this
-                  .uid}. Should proceed to home page");
-          this.signingUp = false; // safety ensured check
-          this.team.checkCaptain();
-          notifyListeners();
-        });
-      });
+      this.team = await FirebaseCore().getTeam(this.uid, this.playerDB);
+      this.calculatePoints();
+      print("Team is sorted");
+      this.loadMiscDetailsFromDB();
+      print(
+          "Loaded user successfully ${this.uid}. Should proceed to home page");
+      this.signingUp = false; // safety ensured check
+      this.team.checkCaptain();
+      notifyListeners();
     } else {
       print('User is currently signed out! Continue with login');
     }
@@ -114,18 +106,16 @@ class LoggedInUser extends ChangeNotifier {
   String completeTransfer(TeamPlayer outgoing, TeamPlayer incoming) {
     try {
       Transfer currTransfer =
-      this.pendingTransfer.firstWhere((t) => (t.outgoing == outgoing));
+          this.pendingTransfer.firstWhere((t) => (t.outgoing == outgoing));
       currTransfer.incoming = incoming;
-      String result = this.adjustBudget(currTransfer);
+      this.adjustBudget(currTransfer);
+      String result = this.team.transfer(currTransfer);
+      //Remove pending transfer regardless of outcome
+      this.pendingTransfer.remove(currTransfer);
       if (result == "") {
-        result = this.team.transfer(currTransfer);
-        //Remove pending transfer regardless of outcome
-        this.pendingTransfer.remove(currTransfer);
-        if (result == "") {
-          this.completedTransfers.add(currTransfer);
-          notifyListeners();
-          return result;
-        }
+        this.adjustCompletedTransfers(currTransfer);
+        notifyListeners();
+        return result;
       }
       return "${result}";
     } catch (e) {
@@ -142,6 +132,16 @@ class LoggedInUser extends ChangeNotifier {
     this.budget -= incoming.boughtPrice;
     this.budget += outgoing.currPrice;
     return "";
+  }
+
+  // checks if making current transfer can be a free transfer otherwise adds a hit
+  // sign is either a -1 if reinstating a hit/cost or 1 if negating a hit/cost
+  void freeTransferOrHit(int sign) {
+    if (this.freeTransfers == 0) {
+      this.hits += 1 * sign;
+    } else {
+      this.freeTransfers += -1 * sign;
+    }
   }
 
   bool isLoggedIn() {
@@ -167,9 +167,8 @@ class LoggedInUser extends ChangeNotifier {
   }
 
   Future<void> generalDBPull() async {
-    this.playerDB = [];
-    await FirebaseCore().getPlayers(this.playerDB);
-    await this.loadInGWHistory();
+    await this.loadInPlayerAndGWHistoryDB();
+    await this.loadMiscDetailsFromDB();
   }
 
   void userDetailsPushDB() {
@@ -189,13 +188,18 @@ class LoggedInUser extends ChangeNotifier {
     FirebaseCore().pushTeamToDB(this.team, this.uid);
   }
 
-  void loadMiscDetailsFromDB(DocumentSnapshot data) {
+  void loadMiscDetailsFromDB() async {
+    DocumentSnapshot data = await FirebaseCore().getMiscDetails(this.uid);
     this.totalPts = data.get("total-pts");
     this.gwPts = data.get("gw-pts");
     this.teamName = data.get("team-name");
     this.budget = data.get("budget");
     this.freeTransfers = data.get("free-transfers");
-
+    this.hits = data.get("hits");
+    this.teamValue = data.get("team-value");
+    this.completedTransfers = data.data()["completed-transfers"] != null
+        ? completedTransfersFromData(data.get("completed-transfers"))
+        : [];
   }
 
   void benchPlayer(TeamPlayer player) {
@@ -221,13 +225,15 @@ class LoggedInUser extends ChangeNotifier {
       element.removed = false;
     });
   }
+
   void restoreOriginals() {
     this.team = this.originalModels.team;
     this.budget = this.originalModels.budget;
     this.freeTransfers = this.originalModels.freeTransfers;
+    this.hits = this.originalModels.hits;
     this.originalModels = null;
+    this.resetRemovedPlayers();
   }
-
 
   void getAdminInfo() {
     FirebaseCore().getAdminInfo(this);
@@ -249,29 +255,15 @@ class LoggedInUser extends ChangeNotifier {
           this.gwPts += p.currPts;
         });
       }
-    }
-    catch (e) {
+    } catch (e) {
       print("Something's wrong: ${e}");
     }
-  }
-
-
-  Map<String, dynamic> completedTransfersAsMap() {
-    Map<String, dynamic> map = {};
-    map["number-transfers"] = this.completedTransfers.length;
-    print(this.completedTransfers);
-    this.completedTransfers.asMap().forEach((index, transfer) {
-      map["in-${index}"] = transfer.incoming.name;
-      map["out-${index}"] = transfer.outgoing.name;
-    });
-    return map;
   }
 
   void setInitialChips() {
     this.chips = [];
     // todo add chips when we get here
   }
-
 
 // GETTERS & SETTERS
   int get gwPts => _gwPts;
@@ -352,7 +344,6 @@ class LoggedInUser extends ChangeNotifier {
     _signingUp = value;
   }
 
-
   int get freeTransfers => _freeTransfers;
 
   set freeTransfers(int value) {
@@ -395,11 +386,54 @@ class LoggedInUser extends ChangeNotifier {
     _chips = value;
   }
 
-
   List<Transfer> get completedTransfers => _completedTransfers;
 
   set completedTransfers(List<Transfer> value) {
     _completedTransfers = value;
   }
 
+  List<Transfer> completedTransfersFromData(List<String> transfers) {
+    this.completedTransfers = [];
+    transfers.forEach((String transfer) {
+      List<String> inAndOut = transfer.split("=>");
+      Player outP = this.playerDB.firstWhere((p) => p.name == inAndOut[0]);
+      Player inP = this.playerDB.firstWhere((p) => p.name == inAndOut[1]);
+      int index = this.team.players.firstWhere((p) => p.name == inP.name).index;
+      if (index == null) index = 0;
+      Transfer t = Transfer();
+      t.incoming = TeamPlayer.fromPlayer(inP, index);
+      t.outgoing = TeamPlayer.fromPlayer(outP, index);
+      this.completedTransfers.add(t);
+    });
+  }
+
+  List<String> completedTransferAsList() {
+    List<String> comTrans = [];
+    this.completedTransfers.forEach((Transfer t) {
+      comTrans.add("${t.outgoing.name}=>${t.incoming.name}");
+    });
+    print(comTrans);
+    return comTrans;
+  }
+
+  // A transfer has just been made. Check if you
+  // a) reinstate an original team member, add a free/reduce cost
+  // b) remove an original member, subtract a free/reduce cost
+  // c) remove a new transfer, do no free/cost but alter completedTransfers
+  void adjustCompletedTransfers(Transfer currTransfer) {
+    Team originalTeam = this.originalModels.team;
+    if (originalTeam.players.any((p) => p.name == currTransfer.incoming.name)) {
+      freeTransferOrHit(1);
+    } else if (originalTeam.players
+        .any((p) => p.name == currTransfer.outgoing.name)) {
+      freeTransferOrHit(-1);
+    } else if (this
+        .completedTransfers
+        .any((t) => t.outgoing.name == currTransfer.incoming.name)) {
+      this
+          .completedTransfers
+          .removeWhere((t) => t.outgoing.name == currTransfer.incoming.name);
+    }
+    this.completedTransfers.add(currTransfer);
+  }
 }
