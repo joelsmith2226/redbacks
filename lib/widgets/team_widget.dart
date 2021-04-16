@@ -40,37 +40,36 @@ class TeamWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: AlwaysScrollableScrollPhysics(),
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        // decoration: BoxDecoration(border: Border.all()),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: playersToWidgets(r1Players),
-              mainAxisAlignment: MainAxisAlignment.center,
-            ),
-            Row(
-              children: playersToWidgets(r2Players),
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            ),
-            Row(
-              children: playersToWidgets(r3Players),
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-            ),
-            SizedBox(height: 15),
-            this.bench
-                ? Bench(
-                    player: (PlayerWidget.fromTeamPlayer(
-                      this.benchPlayer,
-                      this.mode,
-                      benched: true,
-                    )),
-                  )
-                : Container(),
-          ],
-        ),
-      ),
+      height: MediaQuery.of(context).size.height*0.7,
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          Row(
+            children: playersToWidgets(r1Players),
+            mainAxisAlignment: MainAxisAlignment.center,
+          ),
+          Row(
+            children: playersToWidgets(r2Players),
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
+          Row(
+            children: playersToWidgets(r3Players),
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+          ),
+          // SizedBox(height: 15),
+          this.bench
+              ? Bench(
+                  player: (PlayerWidget.fromTeamPlayer(
+                    this.benchPlayer,
+                    this.mode,
+                    benched: true,
+                  )),
+                )
+              : Container(),
+        ],
+      ),)
     );
   }
 }

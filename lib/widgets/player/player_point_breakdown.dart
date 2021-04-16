@@ -28,8 +28,11 @@ class _PlayerPointBreakdownState extends State<PlayerPointBreakdown> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Container(
+
             height: 30,
-            decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+            decoration: BoxDecoration(color: Theme.of(context).primaryColor,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(10))
+            ),
             child: InkWell(
               onTap: _onPressed,
               child: Row(
@@ -80,13 +83,15 @@ class _PlayerPointBreakdownState extends State<PlayerPointBreakdown> {
   }
 
   Widget pointBreakdownRows(PointBreakdownRow pbr) {
+    TextStyle style =
+        TextStyle(color: Colors.white, fontWeight: FontWeight.w400);
     return ListTile(
-      leading: Container(width: 100, child: Text(pbr.category)),
-      title: Text(
-        '${pbr.value}',
-        textAlign: TextAlign.center,
-      ),
-      trailing: Text('${pbr.points}'),
+      tileColor: Theme.of(context).accentColor,
+      visualDensity: VisualDensity.compact,
+      dense: true,
+      leading: Container(width: 100, child: Text(pbr.category, style: style)),
+      title: Text('${pbr.value}', textAlign: TextAlign.center, style: style),
+      trailing: Text('${pbr.points}', style: style),
     );
   }
 

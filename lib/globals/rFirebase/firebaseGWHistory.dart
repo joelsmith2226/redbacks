@@ -78,19 +78,22 @@ class FirebaseGWHistory {
     querySnapshot.docs.forEach((doc) {
       gwHistory.add(Gameweek.fromData(doc.data()));
       print("Gameweek ${doc.data()["gw-number"]} added to list");
-      this.getPlayerGWs(gwHistory.last, doc, players);
     });
   }
 
-  Future<void> getPlayerGWs(Gameweek gwModel, QueryDocumentSnapshot gwDoc,
-      List<Player> players) async {
+  Future<void> getPlayerGWs(
+      List<Gameweek> gwModels, List<Player> players) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference playerGWs = firestore
         .collection('gw-history')
-        .doc(gwDoc.id)
+        .doc('gw-${gwModels[0].id}')
         .collection('player-gameweeks');
-
     QuerySnapshot qs = await playerGWs.get();
+    await _populatePlayerGWs(qs, players, gwModels[0]);
+  }
+
+  Future<void> _populatePlayerGWs(
+      QuerySnapshot qs, List<Player> players, Gameweek gwModel) {
     qs.docs.forEach((doc) {
       //Obtain correct player
       Player curr = players.firstWhere((p) => p.name == doc.id);
@@ -100,7 +103,6 @@ class FirebaseGWHistory {
           .add(Gameweek.singlePlayer(gwModel, gwModel.playerGameweeks.last));
       print("Player GW Added ${doc.id} added to list");
     });
-    return;
   }
 
   Future<void> addGW(Gameweek gw) {

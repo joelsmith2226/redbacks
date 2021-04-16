@@ -15,7 +15,7 @@ import 'firebasePlayers.dart';
 class FirebaseCore {
   FirebasePlayers firebasePlayers = FirebasePlayers();
   FirebaseGWHistory firebaseGWHistory = FirebaseGWHistory();
-  FirebaseLeaderboard firebaseLeaderboard=  FirebaseLeaderboard();
+  FirebaseLeaderboard firebaseLeaderboard = FirebaseLeaderboard();
   FirebaseUsers firebaseUsers = FirebaseUsers();
 
   // make instance accessible via constructor
@@ -68,11 +68,12 @@ class FirebaseCore {
     return firebaseGWHistory.addUserGWHistoryToDB(doc, currGw);
   }
 
-  Future<void> updateUserGWHistoryInDB(QueryDocumentSnapshot doc, Gameweek gw) async {
+  Future<void> updateUserGWHistoryInDB(
+      QueryDocumentSnapshot doc, Gameweek gw) async {
     return firebaseGWHistory.updateUserGWHistoryInDB(doc, gw);
   }
 
-  Future<DocumentSnapshot> getUserGWHistory(int gwId, String uid){
+  Future<DocumentSnapshot> getUserGWHistory(int gwId, String uid) {
     return firebaseGWHistory.getUserGWHistory(gwId, uid);
   }
 
@@ -95,13 +96,12 @@ class FirebaseCore {
 
   // GW History Management
 
-  Future<void> getGWHistory(List<Gameweek> gwHistory, List<Player> players) async {
-    return firebaseGWHistory.getGWHistory(gwHistory, players);
+  void getGWHistory(List<Gameweek> gwHistory, List<Player> players) async {
+    await firebaseGWHistory.getGWHistory(gwHistory, players);
   }
 
-  Future<void> getPlayerGWs(
-      Gameweek gwModel, QueryDocumentSnapshot gwDoc, List<Player> players) {
-    return firebaseGWHistory.getPlayerGWs(gwModel, gwDoc, players);
+  Future<void> getPlayerGWs(List<Gameweek> gwModels, List<Player> players) async {
+    await firebaseGWHistory.getPlayerGWs(gwModels, players);
   }
 
   void addGWToDB(Gameweek gw) {
@@ -135,7 +135,6 @@ class FirebaseCore {
     // 2) num transfers
     // 3) hits/chips used todo
     performMethodOnAllUsers((val) => addUserGWHistoryToDB(val, currGW));
-
   }
 
   // Helper Functions
@@ -146,8 +145,7 @@ class FirebaseCore {
     CollectionReference users = firestore.collection('users');
     users.get().then((QuerySnapshot user) {
       return (user.docs.forEach((doc) {
-        if(doc.id != 'Admin')
-          fn(doc);
+        if (doc.id != 'Admin') fn(doc);
       }));
     }).catchError((error) => print("Couldn't load in users: ${error}"));
   }
@@ -157,7 +155,10 @@ class FirebaseCore {
     print("Attempting to copy ${collection.id} into ${target.id}");
     collection.get().then((QuerySnapshot query) {
       query.docs.forEach((collectionDocToMove) {
-        target.collection(collection.id).doc(collectionDocToMove.id).set(collectionDocToMove.data());
+        target
+            .collection(collection.id)
+            .doc(collectionDocToMove.id)
+            .set(collectionDocToMove.data());
       });
     }).catchError((error) => print("Failed to copy collection: ${error}"));
   }

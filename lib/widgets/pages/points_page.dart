@@ -12,17 +12,21 @@ class PointsPage extends StatefulWidget {
 }
 
 class _PointsPageState extends State<PointsPage> {
-  RefreshController _refreshController = RefreshController();
+  RefreshController _refreshController = new RefreshController(initialRefresh: false);
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
-
     return Container(
       child: SmartRefresher(
         enablePullDown: true,
-        header: WaterDropHeader(
-          completeDuration: Duration(seconds: 4),
+        header: WaterDropMaterialHeader(
+          // completeDuration: Duration(seconds: 4),
         ),
         controller: _refreshController,
         onRefresh: () => _onRefresh(user),
@@ -46,9 +50,7 @@ class _PointsPageState extends State<PointsPage> {
 
   void _onLoading(LoggedInUser user) async {
     try {
-      print("await");
       await user.generalDBPull();
-      print("my soul");
     } catch (e) {
       _onError(e);
     }
@@ -59,12 +61,11 @@ class _PointsPageState extends State<PointsPage> {
   void _onRefresh(LoggedInUser user) async {
     try {
       await user.generalDBPull();
-      print("Ok done right");
       user.calculatePoints();
     } catch (e) {
       _onError(e);
     }
-    this._refreshController.refreshToIdle();
+    this._refreshController.refreshCompleted();
     setState(() {});
   }
 

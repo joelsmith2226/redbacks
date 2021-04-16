@@ -97,6 +97,7 @@ class Team {
   }
 
   void updateCaptaincy(TeamPlayer updatePlayer, String rank) {
+
     if (updatePlayer.rank == CAPTAIN && rank == VICE) {
       // switch captain/vice
       TeamPlayer oldVice =

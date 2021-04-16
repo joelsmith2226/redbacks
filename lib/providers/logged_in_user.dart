@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
+import 'package:redbacks/globals/rFirebase/firebaseGWHistory.dart';
 import 'package:redbacks/models/original_models.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team.dart';
@@ -158,14 +159,17 @@ class LoggedInUser extends ChangeNotifier {
     return;
   }
 
-  Future<void> loadInGWHistory() {
+  Future<void> loadInGWHistory() async {
     this.gwHistory = [];
-    return FirebaseCore().getGWHistory(this.gwHistory, this.playerDB);
+    await FirebaseCore().getGWHistory(this.gwHistory, this.playerDB);
+    await FirebaseGWHistory().getPlayerGWs(this.gwHistory, this.playerDB);
+    return;
   }
 
   Future<void> generalDBPull() async {
+    this.playerDB = [];
     await FirebaseCore().getPlayers(this.playerDB);
-    return this.loadInGWHistory();
+    await this.loadInGWHistory();
   }
 
   void userDetailsPushDB() {

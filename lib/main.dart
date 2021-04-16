@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 
 import 'package:redbacks/views/login.dart';
@@ -37,10 +39,22 @@ class MyApp extends StatelessWidget {
         // Once complete, show your application
         if (snapshot.connectionState == ConnectionState.done) {
           print("Connected successfully to Firebase");
-          InitialData();
+          // InitialData(); ..todo review this
           return ChangeNotifierProvider(
               create: (context) => LoggedInUser(),
-              child: LaunchApp(),
+              child:  RefreshConfiguration(
+                // headerBuilder: () => WaterDropHeader(),
+                // footerBuilder:  () => ClassicFooter(),
+                headerTriggerDistance: 80.0,
+                springDescription:SpringDescription(stiffness: 170, damping: 16, mass: 1.9),
+                maxOverScrollExtent :100,
+                maxUnderScrollExtent:0,
+                enableScrollWhenRefreshCompleted: true,
+                enableLoadingWhenFailed : true,
+                hideFooterWhenNotFull: false,
+                enableBallisticLoad: true,
+                child: LaunchApp(),
+              ),
           );
         }
 

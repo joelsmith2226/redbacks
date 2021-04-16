@@ -18,7 +18,8 @@ class PlayerCard extends StatelessWidget {
   String mode;
   VoidCallback callback;
 
-  PlayerCard({this.player, this.context, this.mode, this.callback, this.teamPlayer}) {
+  PlayerCard(
+      {this.player, this.context, this.mode, this.callback, this.teamPlayer}) {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
     this.pc = AlertDialog(
       insetPadding: EdgeInsets.all(27.0),
@@ -46,7 +47,7 @@ class PlayerCard extends StatelessWidget {
     return this.pc;
   }
 
-  List<Widget> cardActions(){
+  List<Widget> cardActions() {
     switch (this.mode) {
       case POINTS:
         return pointsActions();
@@ -59,11 +60,11 @@ class PlayerCard extends StatelessWidget {
     }
   }
 
-  List<Widget> pickActions(){
+  List<Widget> pickActions() {
     return [
-      rankCheckBox(CAPTAIN),
-      rankCheckBox(VICE),
-      MaterialButton(
+      this.teamPlayer.index != 5 ? rankCheckBox(CAPTAIN) : Container(),
+      this.teamPlayer.index != 5 ? rankCheckBox(VICE) : Container(),
+      this.teamPlayer.index != 5 ? MaterialButton(
         textColor: Color(0xFF6200EE),
         onPressed: () {
           LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
@@ -72,7 +73,7 @@ class PlayerCard extends StatelessWidget {
           this.callback();
         },
         child: Text('Bench'),
-      ),
+      ) : Container(),
       MaterialButton(
         textColor: Color(0xFF6200EE),
         onPressed: () {
@@ -83,7 +84,7 @@ class PlayerCard extends StatelessWidget {
     ];
   }
 
-  List<Widget> pointsActions(){
+  List<Widget> pointsActions() {
     return [
       MaterialButton(
         textColor: Color(0xFF6200EE),
@@ -95,14 +96,15 @@ class PlayerCard extends StatelessWidget {
     ];
   }
 
-  List<Widget> transferActions(){
+  List<Widget> transferActions() {
     return [
       MaterialButton(
         textColor: Color(0xFF6200EE),
         onPressed: () {
           LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
           user.removePlayer(this.teamPlayer);
-          if (!user.signingUp && ModalRoute.of(context).settings.name != Routes.ChooseTeam) {
+          if (!user.signingUp &&
+              ModalRoute.of(context).settings.name != Routes.ChooseTeam) {
             Navigator.pushNamed(context, Routes.ChooseTeam);
           } else {
             Navigator.pop(context);
@@ -114,7 +116,8 @@ class PlayerCard extends StatelessWidget {
         textColor: Color(0xFF6200EE),
         onPressed: () {
           Navigator.pop(context);
-          PlayerSelectorCard psc = PlayerSelectorCard(outgoingPlayer: this.teamPlayer, context: context);
+          PlayerSelectorCard psc = PlayerSelectorCard(
+              outgoingPlayer: this.teamPlayer, context: context);
           psc.displayCard();
         },
         child: Text('Replace'),
@@ -140,17 +143,17 @@ class PlayerCard extends StatelessWidget {
 
   Widget rankCheckBox(rank) {
     return Container(
-      child: Column(
-        children: [
-          Checkbox(value: this.player.rank == rank, onChanged: (value) => updateCaptaincy(value, rank)),
-          Text(rank)
-        ]
-      )
-    );
+        child: Column(children: [
+      Checkbox(
+        value: this.player.rank == rank,
+        onChanged: (value) => updateCaptaincy(value, rank),
+      ),
+      Text(rank)
+    ]));
   }
 
   void updateCaptaincy(bool value, String rank) {
-    if (!value){
+    if (!value) {
       return;
     }
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);

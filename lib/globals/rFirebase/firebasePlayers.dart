@@ -34,6 +34,8 @@ class FirebasePlayers{
     CollectionReference players = firestore.collection('players');
     print("Going into getPlayers");
     QuerySnapshot qs = await players.get();
+    // Ensure playerModels is empty
+    // playerModels = [];
     qs.docs.forEach((doc) {
         playerModels.add(Player.fromData(doc.data(), uid: doc.id));
         print("Player ${doc.data()["name"]} added to list");
