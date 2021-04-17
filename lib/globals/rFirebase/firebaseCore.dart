@@ -145,7 +145,7 @@ class FirebaseCore {
     CollectionReference users = firestore.collection('users');
     users.get().then((QuerySnapshot user) {
       return (user.docs.forEach((doc) {
-        if (doc.id != 'Admin') fn(doc);
+        if (doc.id != 'admin') fn(doc);
       }));
     }).catchError((error) => print("Couldn't load in users: ${error}"));
   }

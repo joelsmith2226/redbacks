@@ -103,6 +103,9 @@ class _EditGameweeksState extends State<EditGameweeks> {
               color: Theme.of(context).primaryColor,
               onPressed: () {
                 FirebaseCore().updateUsersGW(_gwHistory[_currIndex]);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text("Updated Users for GW ${_currIndex + 1}"),
+                ));
               }),
           MaterialButton(
               child: Text("Edit GW", style: TextStyle(color: Colors.white),),

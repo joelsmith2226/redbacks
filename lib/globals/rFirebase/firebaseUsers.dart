@@ -76,7 +76,6 @@ class FirebaseUsers {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference userCollection = firestore.collection('users');
     List<String> transfersAsStrings = user.completedTransferAsList();
-    print("SUCCESS");
     return userCollection
         .doc(user.uid)
         .set({

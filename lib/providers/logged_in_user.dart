@@ -10,6 +10,7 @@ import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/models/transfer.dart';
+import 'package:redbacks/models/user_GW.dart';
 import 'package:redbacks/providers/gameweek.dart';
 
 class LoggedInUser extends ChangeNotifier {
@@ -30,6 +31,7 @@ class LoggedInUser extends ChangeNotifier {
   bool _signingUp = false;
   int _freeTransfers;
   List<Gameweek> _gwHistory;
+  List<UserGW> _userGWs;
   OriginalModels _originalModels;
   int _currGW;
   int _hits;
@@ -499,5 +501,11 @@ class LoggedInUser extends ChangeNotifier {
 
   set completedTransfers(List<Transfer> value) {
     _completedTransfers = value;
+  }
+
+  List<UserGW> get userGWs => _userGWs;
+
+  set userGWs(List<UserGW> value) {
+    _userGWs = value;
   }
 }

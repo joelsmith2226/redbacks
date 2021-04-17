@@ -32,15 +32,103 @@ class Gameweek extends ChangeNotifier {
     this.playerGameweeks = [pgw];
   }
 
-
-  int getTeamGWPts(QuerySnapshot teamCollection) {
-    int teamGWPts = 0;
-    print("In getTeamGWPts()");
-    this.playerGameweeks.where((pgw) => teamCollection.docs.any((doc) => doc.data()['name'] == pgw.id)).forEach((teamPlayerGameweeks) {
-      teamGWPts += teamPlayerGameweeks.gwPts;
-      print("${teamPlayerGameweeks.id} => ${teamPlayerGameweeks.gwPts}");
+  Future<void> setTeamGWPts(CollectionReference teamCollection) async {
+    await teamCollection.get().then((QuerySnapshot teamPlayerDocs) {
+      // Loop over the 6 players in the team
+      teamPlayerDocs.docs.asMap().forEach((index, teamPlayerDoc) async {
+        // Find the corresponding playerGW for that player
+        PlayerGameweek pgw = this
+            .playerGameweeks
+            .singleWhere((pgw) => pgw.id == teamPlayerDoc.get('name'));
+        await teamCollection.doc('Player-${index}').set({
+          'gw-pts': pgw.gwPts,
+        }, SetOptions(merge: true));
+      });
     });
-    return teamGWPts;
+  }
+
+  Future<void> setCaptainViceGWPts(CollectionReference teamCollection) async {
+    // Identify captain/vice captain and check if captain played
+    await teamCollection.get().then((QuerySnapshot teamPlayerDocs) async {
+      QueryDocumentSnapshot captainDoc;
+      QueryDocumentSnapshot viceCaptainDoc;
+      if (teamPlayerDocs.docs.length == 6) {
+        teamPlayerDocs.docs.asMap().forEach((index, teamPlayerDoc) {
+          if (teamPlayerDoc.data()["rank"] == CAPTAIN)
+            captainDoc = teamPlayerDoc;
+          if (teamPlayerDoc.data()["rank"] == VICE)
+            viceCaptainDoc = teamPlayerDoc;
+        });
+
+        PlayerGameweek captainGW = this
+            .playerGameweeks
+            .singleWhere((pgw) => pgw.id == captainDoc.get('name'));
+        PlayerGameweek viceCaptainGW = this
+            .playerGameweeks
+            .singleWhere((pgw) => pgw.id == viceCaptainDoc.get('name'));
+
+        // Set who is getting the multiplier
+        int index = -1;
+        PlayerGameweek pgw;
+        if (captainGW.appearance) {
+          index = teamPlayerDocs.docs.indexWhere((x) => x.id == captainDoc.id);
+          pgw = captainGW;
+        } else if (viceCaptainGW.appearance) {
+          index =
+              teamPlayerDocs.docs.indexWhere((x) => x.id == viceCaptainDoc.id);
+          pgw = viceCaptainGW;
+        } else if (index == -1) {
+          // no multiplier appropriate cos no vice/cap played
+          return;
+        }
+        await teamCollection.doc('Player-${index}').set({
+          'gw-pts': pgw.gwPts * 2,
+        }, SetOptions(merge: true));
+      }
+    });
+  }
+
+  Future<void> setBenchSub(CollectionReference teamCollection) async {
+    QuerySnapshot teamPlayerDocs = await teamCollection.get();
+    // Check if any player didn't play & check if bench did play and swap those players
+    int noShowIndex = -1;
+    // Loop over the 6 players in the team
+    teamPlayerDocs.docs.asMap().forEach((index, teamPlayerDoc) {
+      // Find the corresponding playerGW for that player
+      PlayerGameweek pgw = this
+          .playerGameweeks
+          .singleWhere((pgw) => pgw.id == teamPlayerDoc.data()['name']);
+      if (!pgw.appearance) {
+        noShowIndex = index;
+      }
+      // If above conditional triggered on bench player, can't sub anyway so dw
+      if (noShowIndex == 5) {
+        noShowIndex = -1;
+      }
+    });
+
+    // Swap bench and noShowIndex players
+    if (noShowIndex != -1) {
+      QueryDocumentSnapshot bench = teamPlayerDocs.docs[5];
+      QueryDocumentSnapshot noShow = teamPlayerDocs.docs[noShowIndex];
+      print(noShowIndex);
+      await teamCollection.doc('Player-${noShowIndex}').set(
+        {
+          'name': bench.data()['name'],
+          'bought-price': bench.data()['bought-price'],
+          'rank': bench.data()['rank'],
+          'gw-pts': bench.data()['gw-pts'],
+        },
+      );
+      await teamCollection.doc('Player-5').set(
+        {
+          'name': noShow.data()['name'],
+          'bought-price': noShow.data()['bought-price'],
+          'rank': noShow.data()['rank'],
+          'gw-pts': noShow.data()['gw-pts'],
+        },
+      );
+    }
   }
 
   List<PlayerGameweek> get playerGameweeks => _playerGameweeks;
@@ -129,5 +217,4 @@ class Gameweek extends ChangeNotifier {
     _stage = value;
     notifyListeners();
   }
-
 }

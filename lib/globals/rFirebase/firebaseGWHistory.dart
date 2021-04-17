@@ -39,25 +39,55 @@ class FirebaseGWHistory {
 
     DocumentReference gwHistoryDoc =
         user.collection("GW-History").doc("GW-${gw.id}");
-    QuerySnapshot teamCollectionDocs =
-        await gwHistoryDoc.collection('Team').get();
-    int teamGWPts = await gw.getTeamGWPts(teamCollectionDocs);
-    int prevTotal = 0;
-    if (gw.id > 1) {
-      DocumentSnapshot prevGWHistory =
-          await getUserGWHistory(gw.id - 1, doc.reference.id);
-      prevTotal = prevGWHistory.data()["total-pts"];
-    }
-    int newTotal = prevTotal + teamGWPts;
-    // Add misc details
-    await gwHistoryDoc.set({
-      "gw-pts": teamGWPts,
-      "total-pts": newTotal,
-    }).catchError((error) => print("Failed to update gw history: $error"));
+    CollectionReference teamCollection = gwHistoryDoc.collection('Team');
 
-    // add team details
-    CollectionReference submissionTeam = user.collection('Team');
-    await FirebaseCore().copyCollection(submissionTeam, gwHistoryDoc);
+    // Set baseline points
+    await gw.setTeamGWPts(teamCollection);
+    print("SET TEAM PTS");
+    // Check captain/vice captain who gets double points
+    await gw.setCaptainViceGWPts(teamCollection);
+    print("SET CAP PTS");
+
+    // Check if bench sub is required
+    await gw.setBenchSub(teamCollection);
+    print("SET BENCH PTS");
+
+    // Pull total points acquired and set the parent with GW and total pts
+    teamCollection.get().then((teamPlayerDocs) async {
+      int teamGWPts = 0;
+      // count points minus bench player
+      for (int i = 0; i < 5; i++){
+        teamGWPts += teamPlayerDocs.docs[i].get('gw-pts');
+        print("ADDED ${teamPlayerDocs.docs[i].get('gw-pts')} POINTS");
+      }
+
+      // Reduce by hits if required
+      DocumentSnapshot gwHistorySnapshot = await gwHistoryDoc.get();
+      int hits = gwHistorySnapshot.get('hits');
+      teamGWPts -= (hits * 4);
+
+      int prevTotal = 0;
+      if (gw.id > 1) {
+        DocumentSnapshot prevGWHistory =
+            await getUserGWHistory(gw.id - 1, doc.reference.id);
+        prevTotal = prevGWHistory.get("total-pts");
+      }
+      int newTotal = prevTotal + teamGWPts;
+      // Add misc details
+      await gwHistoryDoc.set(
+        {
+          "gw-pts": teamGWPts,
+          "total-pts": newTotal,
+        },
+        SetOptions(merge: true,),
+      ).catchError((error) => print("Failed to update gw history: $error"));
+      print("GLOBAL SET");
+    });
+
+
+    // // add team details
+    // CollectionReference submissionTeam = user.collection('Team');
+    // await FirebaseCore().copyCollection(submissionTeam, gwHistoryDoc);
   }
 
   Future<DocumentSnapshot> getUserGWHistory(int gwId, String uid) {
@@ -77,7 +107,7 @@ class FirebaseGWHistory {
     QuerySnapshot querySnapshot = await gwHistoryDB.get();
     querySnapshot.docs.forEach((doc) {
       gwHistory.add(Gameweek.fromData(doc.data()));
-      print("Gameweek ${doc.data()["gw-number"]} added to list");
+      print("Gameweek ${doc.data()["gw-number"]} added to list 4");
     });
   }
 
