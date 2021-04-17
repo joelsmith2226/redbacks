@@ -75,7 +75,8 @@ class FirebaseUsers {
   Future<void> pushMiscFieldsToDB(LoggedInUser user) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference userCollection = firestore.collection('users');
-
+    List<String> transfersAsStrings = user.completedTransferAsList();
+    print("SUCCESS");
     return userCollection
         .doc(user.uid)
         .set({
@@ -86,7 +87,7 @@ class FirebaseUsers {
       "total-pts": user.totalPts,
       "team-name": user.teamName,
       "free-transfers": user.freeTransfers,
-      "completed-transfers": user.completedTransferAsList(),
+      "completed-transfers": transfersAsStrings,
       "hits": user.hits,
     })
         .then((value) => print("User Misc Details Added: ${user.uid}"))

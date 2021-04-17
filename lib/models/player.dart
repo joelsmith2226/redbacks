@@ -12,6 +12,7 @@ class Player {
   String _position;
   String _flagged = "";
   bool _removed = false;
+  bool _inConsideration = false;
   String _pic = "";
   List<Gameweek> _gwResults = [];
 
@@ -154,5 +155,11 @@ class Player {
 
   set uid(String value) {
     _uid = value;
+  }
+
+  bool get inConsideration => _inConsideration;
+
+  set inConsideration(bool value) {
+    _inConsideration = value;
   }
 }

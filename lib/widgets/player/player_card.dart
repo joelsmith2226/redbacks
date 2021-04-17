@@ -32,10 +32,14 @@ class PlayerCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset("assets/profilepics/${player.pic}",
-                width: MediaQuery.of(context).size.width * 0.3),
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width * 0.3),
             SizedBox(height: 30),
             Text(
-                'Name: ${this.player.name}\nValue: \$${this.player.price}m\nTotal Points: ${this.player.totalPts}\n'),
+                'Name: ${this.player.name}\nValue: \$${this.player
+                    .price}m\nTotal Points: ${this.player.totalPts}\n'),
             PlayerPointBreakdowns(user.gwHistory, player),
           ]),
       actions: cardActions(),
@@ -98,38 +102,69 @@ class PlayerCard extends StatelessWidget {
 
   List<Widget> transferActions() {
     return [
-      MaterialButton(
+    this.teamPlayer.inConsideration ? this.restoreOriginalTeamMember() : this
+        .removeRestoreBtn(),
+    MaterialButton(
+      textColor: Color(0xFF6200EE),
+      onPressed: () {
+        Navigator.pop(context);
+        PlayerSelectorCard psc = PlayerSelectorCard(
+            outgoingPlayer: this.teamPlayer, context: context);
+        psc.displayCard();
+      },
+      child: Text('Replace'),
+    )
+    ,
+    MaterialButton(
+    textColor: Color(0xFF6200EE),
+    onPressed: () {
+    Navigator.pop(context);
+    },
+    child: Text('OK'),
+    )
+    ,
+    ];
+  }
+
+  Widget removeRestoreBtn() {
+    return MaterialButton(
+      textColor: Color(0xFF6200EE),
+      onPressed: () {
+        LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+        user.removePlayer(this.teamPlayer);
+        if (!user.signingUp &&
+            ModalRoute
+                .of(context)
+                .settings
+                .name != Routes.ChooseTeam) {
+          Navigator.pushNamed(context, Routes.ChooseTeam);
+        } else {
+          Navigator.pop(context);
+        }
+      },
+      child: Text(this.teamPlayer.removed ? 'Restore' : 'Remove'),
+    );
+  }
+
+
+  Widget restoreOriginalTeamMember() {
+    return MaterialButton(
         textColor: Color(0xFF6200EE),
         onPressed: () {
           LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-          user.removePlayer(this.teamPlayer);
+          user.reinstateOriginalTeamPlayerFromIndex(this.teamPlayer.index);
           if (!user.signingUp &&
-              ModalRoute.of(context).settings.name != Routes.ChooseTeam) {
+              ModalRoute
+                  .of(context)
+                  .settings
+                  .name != Routes.ChooseTeam) {
             Navigator.pushNamed(context, Routes.ChooseTeam);
           } else {
             Navigator.pop(context);
           }
         },
-        child: Text(this.teamPlayer.removed ? 'Restore' : 'Remove'),
-      ),
-      MaterialButton(
-        textColor: Color(0xFF6200EE),
-        onPressed: () {
-          Navigator.pop(context);
-          PlayerSelectorCard psc = PlayerSelectorCard(
-              outgoingPlayer: this.teamPlayer, context: context);
-          psc.displayCard();
-        },
-        child: Text('Replace'),
-      ),
-      MaterialButton(
-        textColor: Color(0xFF6200EE),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: Text('OK'),
-      ),
-    ];
+        child: Text('Restore Original Player')
+    );
   }
 
   void displayCard() {
@@ -144,12 +179,12 @@ class PlayerCard extends StatelessWidget {
   Widget rankCheckBox(rank) {
     return Container(
         child: Column(children: [
-      Checkbox(
-        value: this.player.rank == rank,
-        onChanged: (value) => updateCaptaincy(value, rank),
-      ),
-      Text(rank)
-    ]));
+          Checkbox(
+            value: this.player.rank == rank,
+            onChanged: (value) => updateCaptaincy(value, rank),
+          ),
+          Text(rank)
+        ]));
   }
 
   void updateCaptaincy(bool value, String rank) {

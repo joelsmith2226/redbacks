@@ -36,6 +36,7 @@ class Team {
       } else {
         incoming.index = outgoing.index;
         this._players[outgoing.index] = incoming;
+        incoming.inConsideration = true;
         return "";
       }
     } catch (e) {

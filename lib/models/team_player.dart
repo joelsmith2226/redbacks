@@ -21,6 +21,7 @@ class TeamPlayer {
   int _transferredIn = 0;
   int _transferredOut = 0;
   Player player;
+  bool _inConsideration = false;
 
   TeamPlayer.blank(int index) {
     this.name = "";
@@ -59,6 +60,7 @@ class TeamPlayer {
     this.gwResults = p.gwResults;
     this.transferredOut = p.transferredOut;
     this.transferredIn = p.transferredIn;
+    this.player = p;
   }
 
   String getLastName() {
@@ -161,5 +163,11 @@ class TeamPlayer {
   Player playerFromTeamPlayer(List<Player> playerDB) {
     return playerDB.firstWhere((p) => p.name == this.name,
         orElse: () => Player.blank());
+  }
+
+  bool get inConsideration => _inConsideration;
+
+  set inConsideration(bool value) {
+    _inConsideration = value;
   }
 }

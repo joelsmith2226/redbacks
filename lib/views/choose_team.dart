@@ -36,6 +36,7 @@ class ChooseTeamView extends StatelessWidget {
                   ),
                 )),
       body: Container(
+        height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/background.jpeg"),
@@ -61,9 +62,7 @@ class ChooseTeamView extends StatelessWidget {
                     } else if (user.budget < 0) {
                       errMsg = "Not enough budget for this team!";
                     } else {
-                      user.userDetailsPushDB();
-                      user.signingUp = false;
-                      user.originalModels = null; //resets incase required
+                      user.confirmTransfersButtonPressed();
                       Navigator.pushReplacementNamed(context, Routes.Home);
                       return;
                     }

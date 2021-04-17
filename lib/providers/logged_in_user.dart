@@ -37,10 +37,8 @@ class LoggedInUser extends ChangeNotifier {
 
   LoggedInUser();
 
-  // Checks if user already logged in, then loads all appropriate details from DB
-
+  ///------ INITIALISATION METHODS ------///
   Future<void> initialiseUser() async {
-    print("SIGNING UP VALUE: ${this.signingUp}");
     this.signingUp
         ? initialiseUserSignup(teamName)
         : initialiseUserLogin().whenComplete(() => null);
@@ -55,7 +53,6 @@ class LoggedInUser extends ChangeNotifier {
       this.pendingTransfer = []; //Resets any residual transfers
       this.team = await FirebaseCore().getTeam(this.uid, this.playerDB);
       this.calculatePoints();
-      print("Team is sorted");
       this.loadMiscDetailsFromDB();
       print(
           "Loaded user successfully ${this.uid}. Should proceed to home page");
@@ -98,58 +95,14 @@ class LoggedInUser extends ChangeNotifier {
     this.hits = 0;
   }
 
-  void beginTransfer(TeamPlayer outgoing) {
-    this.pendingTransfer.add(Transfer());
-    this.pendingTransfer.last.outgoing = outgoing;
+  void setInitialChips() {
+    this.chips = [];
+    // todo add chips when we get here
   }
 
-  String completeTransfer(TeamPlayer outgoing, TeamPlayer incoming) {
-    try {
-      Transfer currTransfer =
-          this.pendingTransfer.firstWhere((t) => (t.outgoing == outgoing));
-      currTransfer.incoming = incoming;
-      this.adjustBudget(currTransfer);
-      String result = this.team.transfer(currTransfer);
-      //Remove pending transfer regardless of outcome
-      this.pendingTransfer.remove(currTransfer);
-      if (result == "") {
-        this.adjustCompletedTransfers(currTransfer);
-        notifyListeners();
-        return result;
-      }
-      return "${result}";
-    } catch (e) {
-      return "${e}";
-    }
-  }
-
-// Checks if user can afford to make the pending transfer
-// Assumes only runs after confirming that both players are viable
-// for transfer
-  String adjustBudget(Transfer currTransfer) {
-    TeamPlayer incoming = currTransfer.incoming;
-    TeamPlayer outgoing = currTransfer.outgoing;
-    this.budget -= incoming.boughtPrice;
-    this.budget += outgoing.currPrice;
-    return "";
-  }
-
-  // checks if making current transfer can be a free transfer otherwise adds a hit
-  // sign is either a -1 if reinstating a hit/cost or 1 if negating a hit/cost
-  void freeTransferOrHit(int sign) {
-    if (this.freeTransfers == 0) {
-      this.hits += 1 * sign;
-    } else {
-      this.freeTransfers += -1 * sign;
-    }
-  }
-
+  ///------ DB METHODS ------///
   bool isLoggedIn() {
     return FirebaseAuth.instance.currentUser != null;
-  }
-
-  void calculateTeamValue() {
-    this.teamValue = this.team.teamValue(); // todo seems bad style
   }
 
   Future<void> loadInPlayerAndGWHistoryDB() async {
@@ -168,6 +121,7 @@ class LoggedInUser extends ChangeNotifier {
 
   Future<void> generalDBPull() async {
     await this.loadInPlayerAndGWHistoryDB();
+    print("YO");
     await this.loadMiscDetailsFromDB();
   }
 
@@ -197,20 +151,70 @@ class LoggedInUser extends ChangeNotifier {
     this.freeTransfers = data.get("free-transfers");
     this.hits = data.get("hits");
     this.teamValue = data.get("team-value");
-    this.completedTransfers = data.data()["completed-transfers"] != null
+    print("here i bet");
+    data.data()["completed-transfers"] != null
         ? completedTransfersFromData(data.get("completed-transfers"))
-        : [];
+        : this.completedTransfers = [];
   }
 
-  void benchPlayer(TeamPlayer player) {
-    this.team.benchPlayer(player);
-    notifyListeners();
+  void getAdminInfo() {
+    FirebaseCore().getAdminInfo(this);
   }
 
-  void updateCaptaincy(TeamPlayer player, String rank) {
-    this.team.updateCaptaincy(player, rank);
-    FirebaseCore().pushTeamToDB(team, uid);
-    notifyListeners();
+  ///------ TRANSFER METHODS ------///
+
+  void beginTransfer(TeamPlayer outgoing) {
+    this.pendingTransfer.add(Transfer());
+    this.pendingTransfer.last.outgoing = outgoing;
+  }
+
+  String completeTransfer(TeamPlayer outgoing, TeamPlayer incoming) {
+    try {
+      Transfer currTransfer =
+          this.pendingTransfer.firstWhere((t) => (t.outgoing == outgoing));
+      currTransfer.incoming = incoming;
+      this.adjustBudget(currTransfer);
+      String result = this.team.transfer(currTransfer);
+      //Remove pending transfer regardless of outcome
+      this.pendingTransfer.remove(currTransfer);
+      if (result == "") {
+        this.adjustFreeTransfersAndHits(currTransfer);
+        notifyListeners();
+        return result;
+      }
+      return "${result}";
+    } catch (e) {
+      return "${e}";
+    }
+  }
+
+  /// Checks if user can afford to make the pending transfer
+  /// Assumes only runs after confirming that both players are viable
+  /// for transfer
+  String adjustBudget(Transfer currTransfer) {
+    TeamPlayer incoming = currTransfer.incoming;
+    TeamPlayer outgoing = currTransfer.outgoing;
+    this.budget -= incoming.boughtPrice;
+    this.budget += outgoing.currPrice;
+    return "";
+  }
+
+  /// checks if making current transfer can be a free transfer otherwise adds a hit
+  void subtractFreeTransferOrAddHit() {
+    if (this.freeTransfers == 0) {
+      this.hits += 1;
+    } else {
+      this.freeTransfers -= 1;
+    }
+  }
+
+  /// checks if making current transfer can be a free transfer otherwise adds a hit
+  void addFreeTransferOrSubtractHit() {
+    if (this.hits > 0) {
+      this.hits -= 1;
+    } else {
+      this.freeTransfers += 1;
+    }
   }
 
   void removePlayer(TeamPlayer player) {
@@ -226,17 +230,126 @@ class LoggedInUser extends ChangeNotifier {
     });
   }
 
+  void resetConsideredPlayers() {
+    print("Removing consideration");
+    this.team.players.forEach((p) {
+      p.inConsideration = false;
+    });
+    notifyListeners();
+  }
+
   void restoreOriginals() {
     this.team = this.originalModels.team;
     this.budget = this.originalModels.budget;
     this.freeTransfers = this.originalModels.freeTransfers;
     this.hits = this.originalModels.hits;
+    this.completedTransfers = this.completedTransfers;
     this.originalModels = null;
     this.resetRemovedPlayers();
   }
 
-  void getAdminInfo() {
-    FirebaseCore().getAdminInfo(this);
+  List<Transfer> completedTransfersFromData(List<dynamic> transfers) {
+    this.completedTransfers = [];
+    transfers.forEach((transfer) {
+      List<String> inAndOut = transfer.split("=>");
+      Player outP = this.playerDB.firstWhere((p) => p.name == inAndOut[0]);
+      Player inP = this.playerDB.firstWhere((p) => p.name == inAndOut[1]);
+      int index = 0; // index doesnt matter for these already completed.
+      Transfer t = Transfer();
+      t.incoming = TeamPlayer.fromPlayer(inP, index);
+      t.outgoing = TeamPlayer.fromPlayer(outP, index);
+      this.completedTransfers.add(t);
+    });
+  }
+
+  List<String> completedTransferAsList() {
+    List<String> comTrans = [];
+    this.completedTransfers.forEach((Transfer t) {
+      comTrans.add("${t.outgoing.name}=>${t.incoming.name}");
+    });
+    print(comTrans);
+    return comTrans;
+  }
+
+  /// A transfer has just been made. Check if you
+  /// a) reinstate an original team member, add a free/reduce cost
+  /// b) remove an original member, subtract a free/reduce cost
+  void adjustFreeTransfersAndHits(Transfer currTransfer) {
+    Team originalTeam = this.originalModels.team;
+    // If bringing back in an original team member, reinstate and readd frees/hits
+    if (originalTeam.players.any((p) => p.name == currTransfer.incoming.name)) {
+      reinstateOriginalTeamPlayer(currTransfer.incoming, originalTeam);
+    } else if (originalTeam.players
+        .any((p) => p.name == currTransfer.outgoing.name)) {
+      subtractFreeTransferOrAddHit();
+    }
+  }
+
+  /// This method will remove any 'middle' transfers that occurred in the tinkering
+  /// process
+  void addToCompletedTransfers() {
+    // List of new completed transfers
+    List<String> newTrans = [];
+    for (int i = 0; i < this.team.players.length; i++) {
+      TeamPlayer newTP = this.team.players[i];
+      TeamPlayer oldTP = this.originalModels.team.players[i];
+      if (newTP.name != oldTP.name) {
+        this
+            .completedTransfers
+            .add(Transfer.fromPlayers(incoming: newTP, outgoing: oldTP));
+        newTrans.add("${oldTP.name}=>${newTP.name}");
+      }
+    }
+    ;
+    print(newTrans);
+  }
+
+  void reinstateOriginalTeamPlayer(TeamPlayer player, Team originalTeam) {
+    addFreeTransferOrSubtractHit();
+    print("Incoming is from og squad. add a free or hit. Fix aura");
+    // replace with original pricing info from originalTeam
+    int index = this.team.players.indexOf(player);
+    this.team.players[index] =
+        originalTeam.players.firstWhere((p) => p.name == player.name);
+    this.team.players[index].inConsideration = false;
+    notifyListeners();
+  }
+
+  void reinstateOriginalTeamPlayerFromIndex(int index) {
+    this.team.players[index] = this.originalModels.team.players[index];
+    addFreeTransferOrSubtractHit();
+    this.team.players[index].inConsideration = false;
+    // Remove any 'completed transfers' with this original team member
+    this
+        .completedTransfers
+        .removeWhere((t) => t.outgoing.name == this.team.players[index].name);
+
+    notifyListeners();
+  }
+
+  void confirmTransfersButtonPressed() {
+    this.resetConsideredPlayers();
+    this.addToCompletedTransfers();
+    this.signingUp = false;
+    this.originalModels = null; //resets incase required
+    this.userDetailsPushDB();
+  }
+
+  ///------ GAMEPLAY METHODS ------///
+
+  void calculateTeamValue() {
+    this.teamValue = this.team.teamValue(); // todo seems bad style
+  }
+
+  void benchPlayer(TeamPlayer player) {
+    this.team.benchPlayer(player);
+    notifyListeners();
+  }
+
+  void updateCaptaincy(TeamPlayer player, String rank) {
+    this.team.updateCaptaincy(player, rank);
+    FirebaseCore().pushTeamToDB(team, uid);
+    notifyListeners();
   }
 
   void calculatePoints() {
@@ -260,12 +373,8 @@ class LoggedInUser extends ChangeNotifier {
     }
   }
 
-  void setInitialChips() {
-    this.chips = [];
-    // todo add chips when we get here
-  }
+  ///------ GETTERS/SETTERS ------///
 
-// GETTERS & SETTERS
   int get gwPts => _gwPts;
 
   set gwPts(int value) {
@@ -390,50 +499,5 @@ class LoggedInUser extends ChangeNotifier {
 
   set completedTransfers(List<Transfer> value) {
     _completedTransfers = value;
-  }
-
-  List<Transfer> completedTransfersFromData(List<String> transfers) {
-    this.completedTransfers = [];
-    transfers.forEach((String transfer) {
-      List<String> inAndOut = transfer.split("=>");
-      Player outP = this.playerDB.firstWhere((p) => p.name == inAndOut[0]);
-      Player inP = this.playerDB.firstWhere((p) => p.name == inAndOut[1]);
-      int index = this.team.players.firstWhere((p) => p.name == inP.name).index;
-      if (index == null) index = 0;
-      Transfer t = Transfer();
-      t.incoming = TeamPlayer.fromPlayer(inP, index);
-      t.outgoing = TeamPlayer.fromPlayer(outP, index);
-      this.completedTransfers.add(t);
-    });
-  }
-
-  List<String> completedTransferAsList() {
-    List<String> comTrans = [];
-    this.completedTransfers.forEach((Transfer t) {
-      comTrans.add("${t.outgoing.name}=>${t.incoming.name}");
-    });
-    print(comTrans);
-    return comTrans;
-  }
-
-  // A transfer has just been made. Check if you
-  // a) reinstate an original team member, add a free/reduce cost
-  // b) remove an original member, subtract a free/reduce cost
-  // c) remove a new transfer, do no free/cost but alter completedTransfers
-  void adjustCompletedTransfers(Transfer currTransfer) {
-    Team originalTeam = this.originalModels.team;
-    if (originalTeam.players.any((p) => p.name == currTransfer.incoming.name)) {
-      freeTransferOrHit(1);
-    } else if (originalTeam.players
-        .any((p) => p.name == currTransfer.outgoing.name)) {
-      freeTransferOrHit(-1);
-    } else if (this
-        .completedTransfers
-        .any((t) => t.outgoing.name == currTransfer.incoming.name)) {
-      this
-          .completedTransfers
-          .removeWhere((t) => t.outgoing.name == currTransfer.incoming.name);
-    }
-    this.completedTransfers.add(currTransfer);
   }
 }

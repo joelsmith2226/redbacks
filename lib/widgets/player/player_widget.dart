@@ -5,6 +5,7 @@ import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:redbacks/widgets/aura.dart';
 import 'package:redbacks/widgets/player/player_card.dart';
 import 'package:redbacks/widgets/player/player_selector_card.dart';
 
@@ -58,29 +59,34 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   Widget PointPricePickPlayer() {
     bool smallMode = widget.benched;
     var widthMultiplier = smallMode ? 0.15 : 0.25;
-
+    double width = MediaQuery.of(context).size.width * widthMultiplier;
     return Container(
-      decoration: BoxDecoration(),
       child: InkWell(
         onTap: showPlayerCardFn(),
-        child: Stack(alignment: Alignment.center, children: [
-          Column(
-            children: [
-              Image.asset(
-                (widget.teamPlayer.name == "" ||
-                        widget.teamPlayer.removed == true)
-                    ? "assets/avatar-nobg-unset.png"
-                    : "assets/avatar-nobg.png",
-                width: MediaQuery.of(context).size.width * widthMultiplier,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Aura(
+              teamPlayer: widget.teamPlayer,
+              child: Column(
+                children: [
+                  Image.asset(
+                    (widget.teamPlayer.name == "" ||
+                            widget.teamPlayer.removed == true)
+                        ? "assets/avatar-nobg-unset.png"
+                        : "assets/avatar-nobg.png",
+                    width: width,
+                  ),
+                  NameTag(),
+                  SecondaryTag(_getSecondaryValue())
+                ],
               ),
-              NameTag(),
-              SecondaryTag(_getSecondaryValue())
-            ],
-          ),
-          widget.mode == PRICE
-              ? Container()
-              : CaptainsArmband(widget.teamPlayer.rank),
-        ]),
+            ),
+            widget.mode == PRICE
+                ? Container()
+                : CaptainsArmband(widget.teamPlayer.rank),
+          ],
+        ),
       ),
     );
   }

@@ -5,4 +5,6 @@ class Transfer {
   TeamPlayer outgoing;
 
   Transfer();
+
+  Transfer.fromPlayers({this.incoming, this.outgoing});
 }
