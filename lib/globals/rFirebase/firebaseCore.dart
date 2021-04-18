@@ -129,7 +129,8 @@ class FirebaseCore {
   Future<void> updateUsersGW(Gameweek gw) {
     // update user-GW-history with 1) gwpts achieved 2) add gwPts to totalPts
     print("After all the player GW added pls");
-    performMethodOnAllUsers((val) => updateUserGWHistoryInDB(val, gw));
+    performMethodOnAllUsers(
+        (QueryDocumentSnapshot val) => updateUserGWHistoryInDB(val, gw));
   }
 
   // User + GW history
@@ -139,7 +140,7 @@ class FirebaseCore {
     // 2) num transfers
     // 3) hits/chips used todo
     // 4) reset hits/chips. Add free transfer
-    performMethodOnAllUsers((val) async {
+    performMethodOnAllUsers((QueryDocumentSnapshot val) async {
       await addUserGWHistoryToDB(val, currGW);
       await firebaseUsers.resetMiscDetailsForNewWeek(val.reference.id);
     });
@@ -151,11 +152,11 @@ class FirebaseCore {
     // get a list of users
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference users = firestore.collection('users');
-    users.get().then((QuerySnapshot user) {
-      return (user.docs.forEach((doc) {
-        if (doc.id != 'admin') fn(doc);
-      }));
-    }).catchError((error) => print("Couldn't load in users: ${error}"));
+    QuerySnapshot user = await users.get();
+    print("yo");
+    user.docs.forEach((doc) {
+      if (doc.id != 'admin') fn(doc);
+    });
   }
 
   Future<void> copyCollection(
@@ -171,20 +172,27 @@ class FirebaseCore {
     }).catchError((error) => print("Failed to copy collection: ${error}"));
   }
 
-  List<LeaderboardListEntry> loadUserLeadeboard() {
+  Future<List<LeaderboardListEntry>> loadUserLeadeboard() async {
     List<LeaderboardListEntry> leaderboard = [];
 
-    performMethodOnAllUsers((val) async {
-      DocumentSnapshot userDeets =
-          await firebaseUsers.getMiscDetails(val.reference.id);
-      leaderboard.add(LeaderboardListEntry(
-          userDeets.get('name'),
-          userDeets.get('team-name'),
-          userDeets.get('gw-pts'),
-          userDeets.get('total-pts'),
-          val.reference.id));
+    performMethodOnAllUsers((QueryDocumentSnapshot val) async {
+      leaderboard = await loadLeaderboardDetails(val, leaderboard);
     });
+    print("Returning leaderboard: ${leaderboard.length}");
+    return leaderboard;
+  }
 
+  Future<List<LeaderboardListEntry>> loadLeaderboardDetails(
+      QueryDocumentSnapshot val, List<LeaderboardListEntry> leaderboard) async {
+    print("MOVE BITCH GET OUT THE WAY");
+    String uid = val.id;
+    DocumentSnapshot userDeets = await firebaseUsers.getMiscDetails(uid);
+    leaderboard.add(LeaderboardListEntry(
+        userDeets.get('name'),
+        userDeets.get('team-name'),
+        userDeets.get('gw-pts'),
+        userDeets.get('total-pts'),
+        uid));
     return leaderboard;
   }
 }

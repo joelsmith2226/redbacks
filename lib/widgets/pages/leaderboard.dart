@@ -9,11 +9,9 @@ class Leaderboard extends StatefulWidget {
 }
 
 class _LeaderboardState extends State<Leaderboard> {
-  List<LeaderboardListEntry> _entries = [];
 
   @override
   void initState() {
-    _loadEntries();
     super.initState();
   }
 
@@ -29,62 +27,5 @@ class _LeaderboardState extends State<Leaderboard> {
         child: LeaderboardList(),
       ),
     );
-  }
-
-  Widget LeaderboardListLEGACY() {
-    _entries.sort((a, b) => b.totalPts.compareTo(a.totalPts));
-    return Column(
-      children: [
-        ColumnHeadings(),
-        Expanded(
-          child: ListView.builder(
-            itemCount: _entries.length,
-            shrinkWrap: true,
-            physics: AlwaysScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              return Card(
-                  margin: EdgeInsets.all(0.2),
-                  child: ListTile(
-                    leading: Text("${index + 1}"),
-                    title: Text('${_entries[index].teamName}'),
-                    subtitle: Text("${_entries[index].name}"),
-                    trailing: Text("${_entries[index].totalPts}"),
-                  ));
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget ColumnHeadings() {
-    return Card(
-      color: Theme.of(context).primaryColor,
-      margin: EdgeInsets.all(0),
-      child: ListTile(
-        // contentPadding: EdgeInsets.all(0),
-        dense: true,
-        leading:
-            Text("Pos", style: TextStyle(color: Colors.white, fontSize: 15)),
-        title:
-            Text("Name", style: TextStyle(color: Colors.white, fontSize: 15)),
-        trailing: Container(
-          width: 150,
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-            Text("GW-Pts", style: TextStyle(color: Colors.white, fontSize: 15)),
-            Text("Total", style: TextStyle(color: Colors.white, fontSize: 15))
-          ]),
-        ),
-        tileColor: Theme.of(context).primaryColor.withAlpha(170),
-      ),
-    );
-  }
-
-  void _loadEntries() {
-    setState(() {
-      _entries = FirebaseCore().loadUserLeadeboard();
-    });
   }
 }

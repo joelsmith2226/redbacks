@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
+import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/leaderboard_list_entry.dart';
 
 class LeaderboardList extends StatefulWidget {
@@ -11,6 +13,7 @@ class LeaderboardList extends StatefulWidget {
 
 class _LeaderboardListState extends State<LeaderboardList> {
   List<LeaderboardListEntry> _entries = [];
+  bool loading = true;
 
   @override
   void initState() {
@@ -29,7 +32,7 @@ class _LeaderboardListState extends State<LeaderboardList> {
         child: Container(
           height: MediaQuery.of(context).size.height * 0.7,
           width: MediaQuery.of(context).size.width * 0.95,
-          child: ListView.builder(
+          child: loading ? loadBtn() : ListView.builder(
             itemCount: _entries.length,
             shrinkWrap: true,
             physics: AlwaysScrollableScrollPhysics(),
@@ -51,9 +54,22 @@ class _LeaderboardListState extends State<LeaderboardList> {
   }
 
   void _loadEntries() {
-    setState(() {
-      _entries = FirebaseCore().loadUserLeadeboard();
-    });
+    FirebaseCore()
+        .loadUserLeadeboard()
+        .then((List<LeaderboardListEntry> entries) => setState(() {
+              _entries = entries;
+            }));
+  }
+
+  Widget loadBtn() {
+    return MaterialButton(
+      child: Text("load leaders"),
+      onPressed: () {
+        setState(() {
+          print("SET STATE");
+          loading = false;
+      });},
+    );
   }
 }
 
@@ -120,7 +136,11 @@ class LeaderboardListTile extends StatelessWidget {
     this.context = context;
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 10),
-      onTap: () {},
+      onTap: () {
+        Navigator.pushNamed(context, Routes.PointPageOther,
+            arguments: OtherPointPageArgs(
+                this.entry.uid, this.entry.name, this.entry.teamName));
+      },
       leading: Text(
         "${pos + 1}",
         textScaleFactor: 0.9,
@@ -155,16 +175,16 @@ class LeaderboardListTile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-        Text(
-          value,
-          textScaleFactor: 0.8,
-          overflow: TextOverflow.ellipsis,
-        ),
-        Text(
-          subtitle,
-          textScaleFactor: 0.6,
-        ),
-      ]),
+            Text(
+              value,
+              textScaleFactor: 0.8,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              subtitle,
+              textScaleFactor: 0.6,
+            ),
+          ]),
     );
   }
 }

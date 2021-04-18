@@ -114,18 +114,23 @@ class FirebaseGWHistory {
       String uid, List<Gameweek> globalGWHistory) async {
     List<UserGW> userGWHistory = [];
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    print("Collecting complete user history");
+    print("Collecting complete user history 2");
     CollectionReference gwHistoryDB =
         firestore.collection('users').doc(uid).collection('GW-History');
 
     QuerySnapshot gwSnapshot = await gwHistoryDB.get();
+    print("Collected gwHistory snapshot for user ${uid} 3");
+
     try {
       gwSnapshot.docs.forEach((gwDoc) async {
         DocumentSnapshot userGW = await this.getUserGWHistory(gwDoc.id, uid);
+        print("Got userGW started for ${gwDoc.id} 4");
         int gwNum = int.parse(gwDoc.id.split('-')[1]);
         Gameweek globalGW = globalGWHistory.length >= gwNum ? globalGWHistory[gwNum-1] : null;
         QuerySnapshot teamQS =
             await gwHistoryDB.doc('GW-${gwNum}').collection('Team').get();
+        print("Got team 5");
+
         Team gwTeam = Team.fromDataNoPlayers(teamQS);
         userGWHistory.add(UserGW(
           id: gwNum,
@@ -137,7 +142,7 @@ class FirebaseGWHistory {
           totalPts: userGW.get('total-pts'),
           completedTransfers: [], //todo COMPLETED TRANSFERS
         ));
-        print("SUCCESSFULLY ADDED A USERGW");
+        print("SUCCESSFULLY ADDED A USERGW 6");
       });
       print("Returning userGWhistory: ${userGWHistory.length}");
     } catch (e) {

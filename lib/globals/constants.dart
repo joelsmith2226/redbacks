@@ -131,3 +131,11 @@ const Map<String, String> POINT_LABELS = {
   CONCEDED: "Goals Conceded",
   APPEARANCE: "Appearance",
 };
+
+class OtherPointPageArgs {
+  final String uid;
+  final String name;
+  final String teamName;
+
+  OtherPointPageArgs(this.uid, this.name, this.teamName);
+}
