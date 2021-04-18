@@ -7,6 +7,7 @@ import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/player_gameweek.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/models/team_player.dart';
+import 'package:redbacks/models/user_GW.dart';
 import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 
@@ -73,8 +74,8 @@ class FirebaseCore {
     return firebaseGWHistory.updateUserGWHistoryInDB(doc, gw);
   }
 
-  Future<DocumentSnapshot> getUserGWHistory(int gwId, String uid) {
-    return firebaseGWHistory.getUserGWHistory(gwId, uid);
+  Future<List<UserGW>> getCompleteUserGWHistory(String uid, List<Gameweek> globalGWHistory) {
+    return firebaseGWHistory.getCompleteUserGWHistory(uid, globalGWHistory);
   }
 
   Future<void> pushMiscFieldsToDB(LoggedInUser user) {
@@ -134,7 +135,12 @@ class FirebaseCore {
     // create a GW-History with 1) locked in team (with cap/vice)
     // 2) num transfers
     // 3) hits/chips used todo
-    performMethodOnAllUsers((val) => addUserGWHistoryToDB(val, currGW));
+    // 4) reset hits/chips. Add free transfer
+    performMethodOnAllUsers((val) async {
+      await addUserGWHistoryToDB(val, currGW);
+      await firebaseUsers.resetMiscDetailsForNewWeek(val.reference.id);
+    });
+
   }
 
   // Helper Functions

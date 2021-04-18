@@ -60,6 +60,7 @@ class LoggedInUser extends ChangeNotifier {
           "Loaded user successfully ${this.uid}. Should proceed to home page");
       this.signingUp = false; // safety ensured check
       this.team.checkCaptain();
+      await this.getCompleteUserGWHistory();
       notifyListeners();
     } else {
       print('User is currently signed out! Continue with login');
@@ -123,7 +124,6 @@ class LoggedInUser extends ChangeNotifier {
 
   Future<void> generalDBPull() async {
     await this.loadInPlayerAndGWHistoryDB();
-    print("YO");
     await this.loadMiscDetailsFromDB();
   }
 
@@ -153,7 +153,6 @@ class LoggedInUser extends ChangeNotifier {
     this.freeTransfers = data.get("free-transfers");
     this.hits = data.get("hits");
     this.teamValue = data.get("team-value");
-    print("here i bet");
     data.data()["completed-transfers"] != null
         ? completedTransfersFromData(data.get("completed-transfers"))
         : this.completedTransfers = [];
@@ -162,6 +161,11 @@ class LoggedInUser extends ChangeNotifier {
   void getAdminInfo() {
     FirebaseCore().getAdminInfo(this);
   }
+
+  Future<void> getCompleteUserGWHistory() async {
+    this.userGWs = await FirebaseGWHistory().getCompleteUserGWHistory(uid, this.gwHistory);
+  }
+
 
   ///------ TRANSFER METHODS ------///
 
@@ -302,8 +306,6 @@ class LoggedInUser extends ChangeNotifier {
         newTrans.add("${oldTP.name}=>${newTP.name}");
       }
     }
-    ;
-    print(newTrans);
   }
 
   void reinstateOriginalTeamPlayer(TeamPlayer player, Team originalTeam) {

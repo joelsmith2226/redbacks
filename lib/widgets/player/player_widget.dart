@@ -168,7 +168,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   String _getSecondaryValue() {
     switch (widget.mode) {
       case POINTS:
-        return "${widget.player.currPts}pts";
+        return "${widget.teamPlayer.currPts}pts";
       case PICK:
         return widget.player.position;
       case PRICE:

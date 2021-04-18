@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team_player.dart';
@@ -23,7 +24,18 @@ class Team {
     this.players = [];
     teamData.forEach((playerData) {
       Player p = players.firstWhere((p) => p.name == playerData.data()["name"]);
-      this.players.add(TeamPlayer.fromData(playerData.data(), p, this.players.length));
+      this
+          .players
+          .add(TeamPlayer.fromData(playerData.data(), p, this.players.length));
+    });
+  }
+
+  Team.fromDataNoPlayers(QuerySnapshot teamData) {
+    this.players = [];
+    teamData.docs
+        .asMap()
+        .forEach((int index, QueryDocumentSnapshot playerData) {
+      this.players.add(TeamPlayer.fromDataNoPlayer(playerData.data(), index));
     });
   }
 
@@ -76,9 +88,9 @@ class Team {
     int cap = -1;
     this.players.forEach((player) {
       if (player.rank == VICE) {
-        vice = this.players.indexOf(player);
+        vice = vice == -1 ? this.players.indexOf(player) : 5;
       } else if (player.rank == CAPTAIN) {
-        cap = this.players.indexOf(player);
+        cap = cap == -1 ? this.players.indexOf(player) : 5;
       }
     });
 
@@ -95,10 +107,14 @@ class Team {
     // Ensure cap/vice set
     this.players[cap].rank = CAPTAIN;
     this.players[vice].rank = VICE;
+
+    // Resets all other ranks
+    this.players.asMap().forEach((index, player) {
+      if (![cap, vice].contains(index)) player.rank = '';
+    });
   }
 
   void updateCaptaincy(TeamPlayer updatePlayer, String rank) {
-
     if (updatePlayer.rank == CAPTAIN && rank == VICE) {
       // switch captain/vice
       TeamPlayer oldVice =
@@ -123,14 +139,14 @@ class Team {
   double removalBudget() {
     double removalBudget = 0.0;
     this.players.forEach((p) {
-      if (p.removed){
+      if (p.removed) {
         removalBudget += p.currPrice;
       }
     });
     return removalBudget;
   }
 
-  double teamPoints(){
+  double teamPoints() {
     double teamPoints = 0;
     this.players.forEach((p) {
       teamPoints += p.currPts;

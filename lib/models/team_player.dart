@@ -39,6 +39,15 @@ class TeamPlayer {
     this.loadPlayerModelFields(p);
   }
 
+  /// Creates an 'incomplete' team player only required for point page
+  TeamPlayer.fromDataNoPlayer(Map<String, dynamic> data, int index) {
+    this.name = data["name"];
+    this.boughtPrice = data["bought-price"];
+    this.rank = data["rank"];
+    this.currPts = data['gw-pts'];
+    this.index = index;
+  }
+
   TeamPlayer.fromPlayer(Player player, int index) {
     this.name = player.name;
     this.boughtPrice = player.price;

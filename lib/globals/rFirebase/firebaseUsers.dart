@@ -103,6 +103,22 @@ class FirebaseUsers {
     }).catchError((error) => print("Failed to add user misc details: $error"));
   }
 
+  Future<void> resetMiscDetailsForNewWeek(String uid) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference userCollection = firestore.collection('users');
+    DocumentSnapshot userDetails = await userCollection.doc(uid).get();
+    return userCollection
+        .doc(uid)
+        .set({
+      "free-transfers": userDetails.get('free-transfers') + 1,
+      "completed-transfers": [],
+      "hits": 0,
+    }, SetOptions(merge: true))
+        .then((value) => print("Reset misc fields for deadline: ${uid}"))
+        .catchError(
+            (error) => print("Failed to add user misc details: $error"));
+  }
+
   // GLOBAL ADMIN INFO
   Future<void> getAdminInfo(LoggedInUser user) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -123,5 +139,6 @@ class FirebaseUsers {
         }
     );
   }
+
 
 }

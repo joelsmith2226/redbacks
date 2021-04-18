@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/player_gameweek.dart';
+import 'package:redbacks/models/team.dart';
+import 'package:redbacks/models/user_GW.dart';
 import 'package:redbacks/providers/gameweek.dart';
 
 class FirebaseGWHistory {
@@ -56,7 +58,7 @@ class FirebaseGWHistory {
     teamCollection.get().then((teamPlayerDocs) async {
       int teamGWPts = 0;
       // count points minus bench player
-      for (int i = 0; i < 5; i++){
+      for (int i = 0; i < 5; i++) {
         teamGWPts += teamPlayerDocs.docs[i].get('gw-pts');
         print("ADDED ${teamPlayerDocs.docs[i].get('gw-pts')} POINTS");
       }
@@ -69,7 +71,7 @@ class FirebaseGWHistory {
       int prevTotal = 0;
       if (gw.id > 1) {
         DocumentSnapshot prevGWHistory =
-            await getUserGWHistory(gw.id - 1, doc.reference.id);
+            await getUserGWHistory("GW-${gw.id - 1}", doc.reference.id);
         prevTotal = prevGWHistory.get("total-pts");
       }
       int newTotal = prevTotal + teamGWPts;
@@ -79,25 +81,61 @@ class FirebaseGWHistory {
           "gw-pts": teamGWPts,
           "total-pts": newTotal,
         },
-        SetOptions(merge: true,),
+        SetOptions(
+          merge: true,
+        ),
       ).catchError((error) => print("Failed to update gw history: $error"));
       print("GLOBAL SET");
     });
-
 
     // // add team details
     // CollectionReference submissionTeam = user.collection('Team');
     // await FirebaseCore().copyCollection(submissionTeam, gwHistoryDoc);
   }
 
-  Future<DocumentSnapshot> getUserGWHistory(int gwId, String uid) {
+  Future<DocumentSnapshot> getUserGWHistory(String gwId, String uid) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     return firestore
         .collection('users')
         .doc(uid)
         .collection('GW-History')
-        .doc('GW-${gwId}')
+        .doc(gwId)
         .get();
+  }
+
+  Future<List<UserGW>> getCompleteUserGWHistory(
+      String uid, List<Gameweek> globalGWHistory) async {
+    List<UserGW> userGWHistory = [];
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    print("Collecting complete user history");
+    CollectionReference gwHistoryDB =
+        firestore.collection('users').doc(uid).collection('GW-History');
+
+    QuerySnapshot gwSnapshot = await gwHistoryDB.get();
+    try {
+      gwSnapshot.docs.forEach((gwDoc) async {
+        DocumentSnapshot userGW = await this.getUserGWHistory(gwDoc.id, uid);
+        int gwNum = int.parse(gwDoc.id.split('-')[1]);
+        Gameweek globalGW = globalGWHistory.length >= gwNum ? globalGWHistory[gwNum-1] : null;
+        QuerySnapshot teamQS =
+            await gwHistoryDB.doc('GW-${gwNum}').collection('Team').get();
+        Team gwTeam = Team.fromDataNoPlayers(teamQS);
+        userGWHistory.add(UserGW(
+          team: gwTeam,
+          gw: globalGW,
+          hits: userGW.get('hits'),
+          chip: userGW.get('chips-used'),
+          points: userGW.get('gw-pts'),
+          totalPts: userGW.get('total-pts'),
+          completedTransfers: [], //todo COMPLETED TRANSFERS
+        ));
+        print("SUCCESSFULLY ADDED A USERGW");
+      });
+      print("Returning userGWhistory: ${userGWHistory.length}");
+    } catch (e) {
+      print("Error in finding complete history");
+    }
+    return userGWHistory;
   }
 
   Future<void> getGWHistory(

@@ -21,7 +21,7 @@ class SubstitutePage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          PointsSummary(),
+          // PointsSummary(),
           TeamWidget(user.team, bench: true, mode: SUB),
         ],
       ),
