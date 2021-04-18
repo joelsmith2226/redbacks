@@ -20,9 +20,6 @@ class PointsSummary extends StatefulWidget {
 class _PointsSummaryState extends State<PointsSummary> {
   @override
   Widget build(BuildContext context) {
-    var style = GoogleFonts.merriweatherSans();
-    LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-
     return HomepageSummary(
         body: Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -41,7 +38,7 @@ class _PointsSummaryState extends State<PointsSummary> {
         padding: EdgeInsets.zero,
       ),
       SummaryContainer(
-          body: PointsText("GW", "${widget.userGW.gw.id}",
+          body: PointsText("GW", "${widget.userGW.id}",
               Theme.of(context).primaryColor, Colors.white)),
       SummaryContainer(
           body: PointsText("${widget.userGW.points}", "pts", Colors.white,

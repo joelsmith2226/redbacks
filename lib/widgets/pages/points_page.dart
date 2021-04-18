@@ -25,9 +25,12 @@ class _PointsPageState extends State<PointsPage> {
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-    print("this: ${currentWeek} ${user.userGWs.length}");
     if (user.userGWs.isEmpty) {
-      return Container(child: Text("NO POINTS TO SHOW"));
+      return Container(
+        child: Text("NO POINTS TO SHOW"),
+        color: Colors.white,
+        alignment: Alignment.center,
+      );
     } else {
       if (currentWeek > user.userGWs.length) {
         currentWeek = user.userGWs.length;
@@ -35,13 +38,11 @@ class _PointsPageState extends State<PointsPage> {
         currentWeek = 1;
       }
 
+      // Sort userGWs by GW id;
+      user.userGWs.sort((UserGW a, UserGW b) => a.id.compareTo(b.id));
       UserGW ugw = user.userGWs.length >= currentWeek
           ? user.userGWs[currentWeek - 1]
           : null;
-
-      if (ugw != null) {
-        ugw = ugw.gw == null ? null : ugw;
-      }
 
       return Container(
         child: Column(
@@ -50,7 +51,7 @@ class _PointsPageState extends State<PointsPage> {
             PointsSummary(
                 ugw, currentWeek, (val) => setState(() => currentWeek = val)),
             ugw == null
-                ? Container(child:Text("No points for this GW"))
+                ? Container(child: Text("No points for this GW"))
                 : TeamWidget(ugw.team, bench: true, mode: POINTS),
           ],
         ),

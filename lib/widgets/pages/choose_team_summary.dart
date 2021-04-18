@@ -14,7 +14,7 @@ class _ChooseTeamSummaryState extends State<ChooseTeamSummary> {
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
     double removalBudget = user.team.removalBudget();
-    print(user.hits);
+    print("removal budget: ${removalBudget}");
     int freshHits = (user.hits - user.originalModels.hits) * 4;
     return HomepageSummary(
       body: Row(

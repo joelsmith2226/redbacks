@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:redbacks/globals/rFirebase/firebaseGWHistory.dart';
 import 'package:redbacks/globals/rFirebase/firebaseLeaderboard.dart';
 import 'package:redbacks/globals/rFirebase/firebaseUsers.dart';
+import 'package:redbacks/models/leaderboard_list_entry.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/player_gameweek.dart';
 import 'package:redbacks/models/team.dart';
@@ -74,7 +75,8 @@ class FirebaseCore {
     return firebaseGWHistory.updateUserGWHistoryInDB(doc, gw);
   }
 
-  Future<List<UserGW>> getCompleteUserGWHistory(String uid, List<Gameweek> globalGWHistory) {
+  Future<List<UserGW>> getCompleteUserGWHistory(
+      String uid, List<Gameweek> globalGWHistory) {
     return firebaseGWHistory.getCompleteUserGWHistory(uid, globalGWHistory);
   }
 
@@ -101,7 +103,8 @@ class FirebaseCore {
     await firebaseGWHistory.getGWHistory(gwHistory, players);
   }
 
-  Future<void> getPlayerGWs(List<Gameweek> gwModels, List<Player> players) async {
+  Future<void> getPlayerGWs(
+      List<Gameweek> gwModels, List<Player> players) async {
     await firebaseGWHistory.getPlayerGWs(gwModels, players);
   }
 
@@ -140,7 +143,6 @@ class FirebaseCore {
       await addUserGWHistoryToDB(val, currGW);
       await firebaseUsers.resetMiscDetailsForNewWeek(val.reference.id);
     });
-
   }
 
   // Helper Functions
@@ -167,5 +169,22 @@ class FirebaseCore {
             .set(collectionDocToMove.data());
       });
     }).catchError((error) => print("Failed to copy collection: ${error}"));
+  }
+
+  List<LeaderboardListEntry> loadUserLeadeboard() {
+    List<LeaderboardListEntry> leaderboard = [];
+
+    performMethodOnAllUsers((val) async {
+      DocumentSnapshot userDeets =
+          await firebaseUsers.getMiscDetails(val.reference.id);
+      leaderboard.add(LeaderboardListEntry(
+          userDeets.get('name'),
+          userDeets.get('team-name'),
+          userDeets.get('gw-pts'),
+          userDeets.get('total-pts'),
+          val.reference.id));
+    });
+
+    return leaderboard;
   }
 }

@@ -4,6 +4,7 @@ import 'package:redbacks/providers/gameweek.dart';
 
 /// Stores historical data of a user's state at this point in time
 class UserGW {
+  int id;
   Team team;
   Gameweek gw;
   int points;
@@ -13,5 +14,5 @@ class UserGW {
   List<Transfer> completedTransfers = [];
 
 
-  UserGW({this.team, this.gw, this.points, this.hits, this.completedTransfers, this.chip, this.totalPts});
+  UserGW({this.id, this.team, this.gw, this.points, this.hits, this.completedTransfers, this.chip, this.totalPts});
 }

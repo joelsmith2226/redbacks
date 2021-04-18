@@ -85,6 +85,13 @@ class FirebaseGWHistory {
           merge: true,
         ),
       ).catchError((error) => print("Failed to update gw history: $error"));
+
+      // Update misc details with gw-pts and total-pts
+      user.set({
+        "gw-pts": teamGWPts,
+        "total-pts": newTotal,
+      }, SetOptions(merge: true));
+
       print("GLOBAL SET");
     });
 
@@ -121,6 +128,7 @@ class FirebaseGWHistory {
             await gwHistoryDB.doc('GW-${gwNum}').collection('Team').get();
         Team gwTeam = Team.fromDataNoPlayers(teamQS);
         userGWHistory.add(UserGW(
+          id: gwNum,
           team: gwTeam,
           gw: globalGW,
           hits: userGW.get('hits'),
