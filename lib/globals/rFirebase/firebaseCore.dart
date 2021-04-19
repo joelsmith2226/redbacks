@@ -153,7 +153,6 @@ class FirebaseCore {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference users = firestore.collection('users');
     QuerySnapshot user = await users.get();
-    print("yo");
     user.docs.forEach((doc) {
       if (doc.id != 'admin') fn(doc);
     });
@@ -172,27 +171,4 @@ class FirebaseCore {
     }).catchError((error) => print("Failed to copy collection: ${error}"));
   }
 
-  Future<List<LeaderboardListEntry>> loadUserLeadeboard() async {
-    List<LeaderboardListEntry> leaderboard = [];
-
-    performMethodOnAllUsers((QueryDocumentSnapshot val) async {
-      leaderboard = await loadLeaderboardDetails(val, leaderboard);
-    });
-    print("Returning leaderboard: ${leaderboard.length}");
-    return leaderboard;
-  }
-
-  Future<List<LeaderboardListEntry>> loadLeaderboardDetails(
-      QueryDocumentSnapshot val, List<LeaderboardListEntry> leaderboard) async {
-    print("MOVE BITCH GET OUT THE WAY");
-    String uid = val.id;
-    DocumentSnapshot userDeets = await firebaseUsers.getMiscDetails(uid);
-    leaderboard.add(LeaderboardListEntry(
-        userDeets.get('name'),
-        userDeets.get('team-name'),
-        userDeets.get('gw-pts'),
-        userDeets.get('total-pts'),
-        uid));
-    return leaderboard;
-  }
 }

@@ -101,8 +101,10 @@ class PlayerCard extends StatelessWidget {
   }
 
   List<Widget> transferActions() {
+    LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+
     return [
-    this.teamPlayer.inConsideration ? this.restoreOriginalTeamMember() : this
+    this.teamPlayer.inConsideration && !user.signingUp ? this.restoreOriginalTeamMember() : this
         .removeRestoreBtn(),
     MaterialButton(
       textColor: Color(0xFF6200EE),
@@ -127,10 +129,10 @@ class PlayerCard extends StatelessWidget {
   }
 
   Widget removeRestoreBtn() {
+    LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
     return MaterialButton(
       textColor: Color(0xFF6200EE),
       onPressed: () {
-        LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
         user.removePlayer(this.teamPlayer);
         if (!user.signingUp &&
             ModalRoute

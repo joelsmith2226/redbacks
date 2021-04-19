@@ -19,8 +19,13 @@ class _PlayerPointBreakdownState extends State<PlayerPointBreakdown> {
 
   @override
   Widget build(BuildContext context) {
-    PlayerGameweek pgw =
-        widget.gw.playerGameweeks.firstWhere((pgw) => pgw.id == widget.p.name);
+    PlayerGameweek pgw;
+    try {
+      pgw = widget.gw.playerGameweeks
+          .firstWhere((pgw) => pgw.id == widget.p.name, orElse: null);
+    } catch (e) {
+      return Container();
+    }
     TextStyle style =
         TextStyle(color: Colors.white, fontWeight: FontWeight.w400);
     return Container(
@@ -28,11 +33,10 @@ class _PlayerPointBreakdownState extends State<PlayerPointBreakdown> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Container(
-
             height: 30,
-            decoration: BoxDecoration(color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(10))
-            ),
+            decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
             child: InkWell(
               onTap: _onPressed,
               child: Row(

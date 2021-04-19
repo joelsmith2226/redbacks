@@ -17,6 +17,7 @@ class _SignupFormState extends State<SignupForm> {
   String teamName;
   String pwd;
   String conPwd;
+  String name;
   FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
@@ -27,13 +28,19 @@ class _SignupFormState extends State<SignupForm> {
       width: MediaQuery.of(context).size.width,
       color: Colors.white,
       alignment: Alignment.center,
-      child: BuildForm(),
+      child: SingleChildScrollView(
+        physics: AlwaysScrollableScrollPhysics(),
+        child: BuildForm(),
+      ),
     );
   }
 
-  Widget SignupTextForm(String name, String label, bool pwd, {String initial = ""}) {
-    var validators = [FormBuilderValidators.required(context),
-      FormBuilderValidators.max(context, 70)];
+  Widget SignupTextForm(String name, String label, bool pwd,
+      {String initial = ""}) {
+    var validators = [
+      FormBuilderValidators.required(context),
+      FormBuilderValidators.max(context, 70)
+    ];
     // if (name == "conPwd") {
     //   validators.add(FormBuilderValidators.equal(context, this.pwd, errorText: "Passwords do not match"));
     // }
@@ -54,17 +61,20 @@ class _SignupFormState extends State<SignupForm> {
   }
 
   Widget BuildForm() {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
+    return Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
       FormBuilder(
         key: _formKey,
         child: Column(
           children: <Widget>[
-            SignupTextForm("teamName", "Enter Team Name", false, initial: "LADmin"),
-            SignupTextForm("email", "Enter Email", false, initial: "joel.smith2226@gmail.com"),
+            SignupTextForm("firstName", "First Name", false, initial: "Joel"),
+            SignupTextForm("lastName", "Last Name", false, initial: "Smith"),
+            SignupTextForm("teamName", "Enter Team Name", false,
+                initial: "LADmin"),
+            SignupTextForm("email", "Enter Email", false,
+                initial: "joel.smith2226@gmail.com"),
             SignupTextForm("pwd", "Enter Password", true, initial: "password"),
-            SignupTextForm("conPwd", "Confirm Password", true, initial: "password"),
+            SignupTextForm("conPwd", "Confirm Password", true,
+                initial: "password"),
           ],
         ),
       ),
@@ -78,11 +88,12 @@ class _SignupFormState extends State<SignupForm> {
           ),
           onPressed: () {
             _formKey.currentState.save();
+            this.name =
+                '${_formKey.currentState.value["firstName"]} ${_formKey.currentState.value["lastName"]}';
             this.teamName = _formKey.currentState.value["teamName"];
             this.email = _formKey.currentState.value["email"];
             this.pwd = _formKey.currentState.value["pwd"];
             this.conPwd = _formKey.currentState.value["conPwd"];
-            print(this.pwd + " " +  this.conPwd);
             if (_formKey.currentState.validate()) {
               registerUserOnFirebase();
             } else {
@@ -97,15 +108,16 @@ class _SignupFormState extends State<SignupForm> {
 
   void registerUserOnFirebase() async {
     try {
-      UserCredential userCredential = await this.auth.createUserWithEmailAndPassword(
-          email: this.email,
-          password: this.conPwd
-      );
+      UserCredential userCredential = await this
+          .auth
+          .createUserWithEmailAndPassword(
+              email: this.email, password: this.conPwd);
       print("Successful User Registration for ${userCredential.user.email}.");
       // Set user to signup mode
       LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
       user.signingUp = true;
       user.teamName = this.teamName;
+      user.name = this.name;
       Navigator.pushReplacementNamed(context, Routes.Loading);
     } on FirebaseAuthException catch (e) {
       var message = "";
@@ -116,7 +128,9 @@ class _SignupFormState extends State<SignupForm> {
       } else {
         message = "Something else went wrong: ${e}";
       }
-      var sb = SnackBar(content: Text(message),);
+      var sb = SnackBar(
+        content: Text(message),
+      );
       ScaffoldMessenger.of(context).showSnackBar(sb);
     } catch (e) {
       print(e);

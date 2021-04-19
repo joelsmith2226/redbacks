@@ -139,3 +139,6 @@ class OtherPointPageArgs {
 
   OtherPointPageArgs(this.uid, this.name, this.teamName);
 }
+
+const int UNLIMITED = 100;
+const String UNLIMITED_SYMBOL = '∞';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/pages/homepage_summary.dart';
 import 'package:redbacks/widgets/summary_container.dart';
@@ -15,20 +16,24 @@ class _ChooseTeamSummaryState extends State<ChooseTeamSummary> {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
     double removalBudget = user.team.removalBudget();
     print("removal budget: ${removalBudget}");
-    int freshHits = (user.hits - user.originalModels.hits) * 4;
+    int freshHits = user.hits;
+    if (user.originalModels != null) {
+      freshHits = (user.hits - user.originalModels.hits) * 4;
+    }
+    String fts = user.freeTransfers == UNLIMITED ? UNLIMITED_SYMBOL : '${user.freeTransfers}';
     return HomepageSummary(
       body: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
         ChooseTeamSummaryContainer(
           "Free Transfer",
-          "${user.freeTransfers}",
+          fts,
         ),
-        ChooseTeamSummaryContainer(
+        user.signingUp ? Container() : ChooseTeamSummaryContainer(
           "Wildcard",
           "Available",
         ),
-        ChooseTeamSummaryContainer(
+        user.signingUp ? Container() : ChooseTeamSummaryContainer(
           "Cost",
           "${freshHits}",
         ),

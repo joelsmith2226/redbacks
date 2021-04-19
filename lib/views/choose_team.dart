@@ -63,7 +63,7 @@ class ChooseTeamView extends StatelessWidget {
                       errMsg = "Not enough budget for this team!";
                     } else {
                       user.confirmTransfersButtonPressed();
-                      Navigator.pushReplacementNamed(context, Routes.Home);
+                      Navigator.pushReplacementNamed(context, Routes.Loading);
                       return;
                     }
                     ScaffoldMessenger.of(context)

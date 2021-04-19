@@ -17,8 +17,13 @@ class _LoadingViewState extends State<LoadingView> {
   bool loginOnce = true;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     _loadUser();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     return Scaffold(
       key: _scaffoldKey,
@@ -42,18 +47,19 @@ class _LoadingViewState extends State<LoadingView> {
   }
 
   void _loadUser() {
-    LoggedInUser user = Provider.of<LoggedInUser>(context);
+    LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
     user.signingUp ? _initialiseSignup() : _initialiseLogin();
   }
 
   void _initialiseSignup() async {
-    LoggedInUser user = Provider.of<LoggedInUser>(context);
-    await user.initialiseUserSignup(user.teamName);
+    LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+    await user.loadInPlayerAndGWHistoryDB(); // ensures player DB loaded before init
+    await user.initialiseUserSignup();
     Navigator.pushReplacementNamed(context, Routes.ChooseTeam);
   }
 
   void _initialiseLogin() async {
-    LoggedInUser user = Provider.of<LoggedInUser>(context);
+    LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
     if (this.loginOnce) {
       this.loginOnce = false;
       await user.loadInPlayerAndGWHistoryDB(); // ensures player DB loaded before init

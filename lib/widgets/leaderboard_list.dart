@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
+import 'package:redbacks/globals/rFirebase/firebaseLeaderboard.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/leaderboard_list_entry.dart';
 
@@ -29,36 +30,33 @@ class _LeaderboardListState extends State<LeaderboardList> {
       color: Colors.white.withAlpha(200),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Container(
+        child: loading ? CircularProgressIndicator() :Container(
           height: MediaQuery.of(context).size.height * 0.7,
           width: MediaQuery.of(context).size.width * 0.95,
-          child: loading ? loadBtn() : ListView.builder(
-            itemCount: _entries.length,
-            shrinkWrap: true,
-            physics: AlwaysScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                // Build category row
-                return Column(children: [
-                  CategoryListTile(),
-                  LeaderboardListTile(_entries[index], index),
-                ]);
-              } else {
-                return LeaderboardListTile(_entries[index], index);
-              }
-            },
-          ),
+          child:ListView.builder(
+                  itemCount: _entries.length,
+                  shrinkWrap: true,
+                  physics: AlwaysScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      // Build category row
+                      return Column(children: [
+                        CategoryListTile(),
+                        LeaderboardListTile(_entries[index], index),
+                      ]);
+                    } else {
+                      return LeaderboardListTile(_entries[index], index);
+                    }
+                  },
+                ),
         ),
       ),
     );
   }
 
-  void _loadEntries() {
-    FirebaseCore()
-        .loadUserLeadeboard()
-        .then((List<LeaderboardListEntry> entries) => setState(() {
-              _entries = entries;
-            }));
+  void _loadEntries() async {
+    this._entries = await FirebaseLeaderboard().loadUserLeadeboard();
+    setState(() {loading = false;});
   }
 
   Widget loadBtn() {
@@ -68,7 +66,8 @@ class _LeaderboardListState extends State<LeaderboardList> {
         setState(() {
           print("SET STATE");
           loading = false;
-      });},
+        });
+      },
     );
   }
 }
@@ -101,7 +100,6 @@ class CategoryListTile extends StatelessWidget {
         children: [
           categoryColumnCell("", 0.14),
           categoryColumnCell("Name", 0.43),
-          categoryColumnCell("", 0.02),
           categoryColumnCell("GW Pts", 0.1),
           categoryColumnCell("Total Pts", 0.1),
         ],
@@ -155,10 +153,10 @@ class LeaderboardListTile extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          columnCell('${this.entry.teamName}', 0.45, subtitle: this.entry.name),
-          columnCell("${this.entry.gwPts}pts", 0.1,
+          columnCell('${this.entry.teamName}', 0.4, subtitle: this.entry.name),
+          columnCell("${this.entry.gwPts}pts", 0.16,
               align: Alignment.centerRight),
-          columnCell("${this.entry.totalPts}pts", 0.1,
+          columnCell("${this.entry.totalPts}pts", 0.16,
               align: Alignment.centerRight),
         ],
       ),

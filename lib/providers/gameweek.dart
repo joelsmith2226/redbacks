@@ -36,13 +36,18 @@ class Gameweek extends ChangeNotifier {
     await teamCollection.get().then((QuerySnapshot teamPlayerDocs) {
       // Loop over the 6 players in the team
       teamPlayerDocs.docs.asMap().forEach((index, teamPlayerDoc) async {
-        // Find the corresponding playerGW for that player
-        PlayerGameweek pgw = this
-            .playerGameweeks
-            .singleWhere((pgw) => pgw.id == teamPlayerDoc.get('name'));
-        await teamCollection.doc('Player-${index}').set({
-          'gw-pts': pgw.gwPts,
-        }, SetOptions(merge: true));
+        // Find the corresponding playerGW for that player]
+        try {
+          PlayerGameweek pgw = this
+              .playerGameweeks
+              .singleWhere((pgw) => pgw.id == teamPlayerDoc.get('name'));
+          await teamCollection.doc('Player-${index}').set({
+            'gw-pts': pgw.gwPts,
+          }, SetOptions(merge: true));
+        } catch (e) {
+          print(
+              "Cant find a corresponding pgw for ${teamPlayerDoc.get('name')}");
+        }
       });
     });
   }
@@ -59,7 +64,10 @@ class Gameweek extends ChangeNotifier {
           if (teamPlayerDoc.data()["rank"] == VICE)
             viceCaptainDoc = teamPlayerDoc;
         });
-
+        if (captainDoc == null || viceCaptainDoc == null) {
+          print("cant find captains... no bonus for u");
+          return;
+        }
         PlayerGameweek captainGW = this
             .playerGameweeks
             .singleWhere((pgw) => pgw.id == captainDoc.get('name'));
@@ -95,15 +103,20 @@ class Gameweek extends ChangeNotifier {
     // Loop over the 6 players in the team
     teamPlayerDocs.docs.asMap().forEach((index, teamPlayerDoc) {
       // Find the corresponding playerGW for that player
-      PlayerGameweek pgw = this
-          .playerGameweeks
-          .singleWhere((pgw) => pgw.id == teamPlayerDoc.data()['name']);
-      if (!pgw.appearance) {
-        noShowIndex = index;
-      }
-      // If above conditional triggered on bench player, can't sub anyway so dw
-      if (noShowIndex == 5) {
-        noShowIndex = -1;
+      try {
+        PlayerGameweek pgw = this
+            .playerGameweeks
+            .singleWhere((pgw) => pgw.id == teamPlayerDoc.data()['name']);
+        if (!pgw.appearance) {
+          noShowIndex = index;
+        }
+        // If above conditional triggered on bench player, can't sub anyway so dw
+        if (noShowIndex == 5) {
+          noShowIndex = -1;
+        }
+      } catch (e) {
+        print(
+            "couldnt find a corr. pgw for a player or player doc is corrupted");
       }
     });
 

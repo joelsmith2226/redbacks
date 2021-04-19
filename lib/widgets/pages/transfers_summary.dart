@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/pages/homepage_summary.dart';
 import 'package:redbacks/widgets/summary_container.dart';
@@ -13,13 +14,13 @@ class _TransfersSummaryState extends State<TransfersSummary> {
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
-
+    String fts = user.freeTransfers == UNLIMITED ? UNLIMITED_SYMBOL : '${user.freeTransfers}';
     return HomepageSummary(
       body: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TransfersSummaryContainer("Free Transfers", "${user.freeTransfers}"),
+          TransfersSummaryContainer("Free Transfers", fts),
           TransfersSummaryContainer("Wild Card", "Available"),
           TransfersSummaryContainer("Hits Taken", "${user.hits}"),
           TransfersSummaryContainer("Bank", "\$${user.budget}m"),

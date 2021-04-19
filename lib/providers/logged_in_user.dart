@@ -18,6 +18,7 @@ class LoggedInUser extends ChangeNotifier {
   String _pwd = ""; // don't think we can access this
   String _uid;
   String _teamName;
+  String _name = "";
   bool _admin;
   Team _team;
   int _totalPts;
@@ -42,7 +43,7 @@ class LoggedInUser extends ChangeNotifier {
   ///------ INITIALISATION METHODS ------///
   Future<void> initialiseUser() async {
     this.signingUp
-        ? initialiseUserSignup(teamName)
+        ? initialiseUserSignup()
         : initialiseUserLogin().whenComplete(() => null);
   }
 
@@ -67,14 +68,14 @@ class LoggedInUser extends ChangeNotifier {
     }
   }
 
-// Initialises the user once signup is finalised
-  void initialiseUserSignup(String teamName) {
+// Initialises the user once signup is finalised with teamname/name already set prior
+  void initialiseUserSignup() {
     User user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       this.email = user.email;
       this.uid = user.uid;
       this.admin = admins.contains(this.email);
-      this.teamName = teamName;
+      //this.teamName = teamName;
       this.gwPts = 0;
       this.totalPts = 0;
       this.pendingTransfer = []; //Resets any residual transfers
@@ -94,7 +95,7 @@ class LoggedInUser extends ChangeNotifier {
   void setInitialTeam() {
     this.team = Team.blank();
     this.budget = 100.0;
-    this.freeTransfers = 100;
+    this.freeTransfers = UNLIMITED;
     this.hits = 0;
   }
 
@@ -117,7 +118,8 @@ class LoggedInUser extends ChangeNotifier {
 
   Future<void> loadInGWHistory() async {
     this.gwHistory = [];
-    await FirebaseCore().getGWHistory(this.gwHistory, this.playerDB);
+    await FirebaseGWHistory().getGWHistory(this.gwHistory, this.playerDB);
+    print("Should only be here if gw history full: ${this.gwHistory.length}");
     await FirebaseGWHistory().getPlayerGWs(this.gwHistory, this.playerDB);
     return;
   }
@@ -125,6 +127,10 @@ class LoggedInUser extends ChangeNotifier {
   Future<void> generalDBPull() async {
     await this.loadInPlayerAndGWHistoryDB();
     await this.loadMiscDetailsFromDB();
+    await this.getCompleteUserGWHistory();
+    print("At this point: Player/GWhistory/Misc/UGW uploaded: ");
+    print(
+        "PlayerDB: ${this.playerDB.length}, GWHistory: ${this.gwHistory.length}, UGW: ${this.userGWs.length}");
   }
 
   void userDetailsPushDB() {
@@ -163,9 +169,9 @@ class LoggedInUser extends ChangeNotifier {
   }
 
   Future<void> getCompleteUserGWHistory() async {
-    this.userGWs = await FirebaseGWHistory().getCompleteUserGWHistory(uid, this.gwHistory);
+    this.userGWs =
+        await FirebaseGWHistory().getCompleteUserGWHistory(uid, this.gwHistory);
   }
-
 
   ///------ TRANSFER METHODS ------///
 
@@ -184,7 +190,7 @@ class LoggedInUser extends ChangeNotifier {
       //Remove pending transfer regardless of outcome
       this.pendingTransfer.remove(currTransfer);
       if (result == "") {
-        this.adjustFreeTransfersAndHits(currTransfer);
+        if (!signingUp) this.adjustFreeTransfersAndHits(currTransfer);
         notifyListeners();
         return result;
       }
@@ -207,6 +213,11 @@ class LoggedInUser extends ChangeNotifier {
 
   /// checks if making current transfer can be a free transfer otherwise adds a hit
   void subtractFreeTransferOrAddHit() {
+    // If unlimited, make no changes.
+    if (this.freeTransfers == UNLIMITED) {
+      return;
+    }
+
     if (this.freeTransfers == 0) {
       this.hits += 1;
     } else {
@@ -216,6 +227,10 @@ class LoggedInUser extends ChangeNotifier {
 
   /// checks if making current transfer can be a free transfer otherwise adds a hit
   void addFreeTransferOrSubtractHit() {
+    // If unlimited, make no changes.
+    if (this.freeTransfers == UNLIMITED) {
+      return;
+    }
     if (this.hits > 0) {
       this.hits -= 1;
     } else {
@@ -241,7 +256,6 @@ class LoggedInUser extends ChangeNotifier {
     this.team.players.forEach((p) {
       p.inConsideration = false;
     });
-    notifyListeners();
   }
 
   void restoreOriginals() {
@@ -333,7 +347,7 @@ class LoggedInUser extends ChangeNotifier {
 
   void confirmTransfersButtonPressed() {
     this.resetConsideredPlayers();
-    this.addToCompletedTransfers();
+    if (!this.signingUp) this.addToCompletedTransfers();
     this.signingUp = false;
     this.originalModels = null; //resets incase required
     this.userDetailsPushDB();
@@ -509,5 +523,11 @@ class LoggedInUser extends ChangeNotifier {
 
   set userGWs(List<UserGW> value) {
     _userGWs = value;
+  }
+
+  String get name => _name;
+
+  set name(String value) {
+    _name = value;
   }
 }

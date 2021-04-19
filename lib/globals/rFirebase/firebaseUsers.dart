@@ -4,6 +4,8 @@ import 'package:redbacks/models/team.dart';
 import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 
+import '../constants.dart';
+
 class FirebaseUsers {
   // Pushes the user's current team to the Firebase DB
   Future<void> pushTeamToDB(Team team, String uid) {
@@ -80,6 +82,7 @@ class FirebaseUsers {
         .doc(user.uid)
         .set({
       "email": user.email,
+      "name": user.name,
       "budget": user.budget,
       "team-value": user.teamValue,
       "gw-pts": user.gwPts,
@@ -107,10 +110,17 @@ class FirebaseUsers {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference userCollection = firestore.collection('users');
     DocumentSnapshot userDetails = await userCollection.doc(uid).get();
+    int freeTransfers = userDetails.get('free-transfers');
+
+    // Unlimited frees could be triggered on signup or wildcard
+    if (freeTransfers == UNLIMITED){
+      freeTransfers = 1;
+    }
+
     return userCollection
         .doc(uid)
         .set({
-      "free-transfers": userDetails.get('free-transfers') + 1,
+      "free-transfers": freeTransfers,
       "completed-transfers": [],
       "hits": 0,
     }, SetOptions(merge: true))
