@@ -70,11 +70,11 @@ class PlayerGameweek {
       gwPts += this.quarterClean ? POINT_SYSTEM[position][QUARTER_CLEAN] : 0;
       gwPts += this.halfClean ? POINT_SYSTEM[position][HALF_CLEAN] : 0;
       gwPts += this.fullClean ? POINT_SYSTEM[position][FULL_CLEAN] : 0;
-      gwPts -= this.goalsConceded * POINT_SYSTEM[position][CONCEDED];
-      gwPts -= this.yellowCards * POINT_SYSTEM[position][YELLOW];
-      gwPts -= this.redCards * POINT_SYSTEM[position][RED];
-      gwPts -= this.ownGoals * POINT_SYSTEM[position][OWNS];
-      gwPts -= this.penaltiesMissed * POINT_SYSTEM[position][PENS];
+      gwPts += this.goalsConceded * POINT_SYSTEM[position][CONCEDED];
+      gwPts += this.yellowCards * POINT_SYSTEM[position][YELLOW];
+      gwPts += this.redCards * POINT_SYSTEM[position][RED];
+      gwPts += this.ownGoals * POINT_SYSTEM[position][OWNS];
+      gwPts += this.penaltiesMissed * POINT_SYSTEM[position][PENS];
       gwPts += this.bonus * POINT_SYSTEM[position][BONUS];
     }
     generatePointBreakdown();

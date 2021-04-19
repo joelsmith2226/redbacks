@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:redbacks/globals/constants.dart';
-import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/models/player_gameweek.dart';
+import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/widgets/player/player_widget.dart';
 
 class PlayerCarousel extends StatefulWidget {
@@ -28,26 +28,33 @@ class _PlayerCarouselState extends State<PlayerCarousel> {
         itemBuilder: (context, index) {
           PlayerGameweek currPlayerGW = widget.gw.playerGameweeks[index];
           return Container(
-              color: index ==  widget.gw.currPlayerIndex
-                  ? Colors.blue.withAlpha(190)
-                  : Colors.transparent,
-              foregroundDecoration: currPlayerGW.saved
-                  ? BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.scaleDown,
-                        scale: 0.4,
-                        image: AssetImage("assets/tick.png"),
-                      ),
-                    )
-                  : null,
-              child: InkWell(
-                  child: PlayerWidget(currPlayerGW.player, CAROUSEL),
-                  onTap: () {
-                    setState(() {
-                      widget.gw.currPlayerIndex = index;
-                    });
-                  }),
-              padding: EdgeInsets.symmetric(horizontal: 3));
+            padding: EdgeInsets.symmetric(horizontal: 3),
+            color: index == widget.gw.currPlayerIndex
+                ? Colors.blue.withAlpha(190)
+                : Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  widget.gw.currPlayerIndex = index;
+                });
+              },
+              child: Stack(
+                children: [
+                  PlayerWidget(currPlayerGW.player, CAROUSEL),
+                  currPlayerGW.saved
+                      ? Container(
+                          height: 100,
+                          child: Opacity(
+                              child: Image.asset(
+                                "assets/tick.png",
+                              ),
+                              opacity: 0.7),
+                        )
+                      : Container(),
+                ],
+              ),
+            ),
+          );
         },
       ),
     );

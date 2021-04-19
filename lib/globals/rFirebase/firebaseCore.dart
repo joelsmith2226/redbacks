@@ -108,17 +108,19 @@ class FirebaseCore {
     await firebaseGWHistory.getPlayerGWs(gwModels, players);
   }
 
-  void addGWToDB(Gameweek gw) {
-    this.addGW(gw);
-    this.addAllPlayerGWs(gw);
+  Future<void> addGWToDB(Gameweek gw) async {
+    await this.addGW(gw);
+    await this.addAllPlayerGWs(gw);
   }
 
-  Future<void> addGW(Gameweek gw) {
-    return firebaseGWHistory.addGW(gw);
+  Future<void> addGW(Gameweek gw) async {
+    await firebaseGWHistory.addGW(gw);
+    return;
   }
 
-  void addAllPlayerGWs(Gameweek gw) {
-    return firebaseGWHistory.addAllPlayerGWs(gw);
+  Future<void> addAllPlayerGWs(Gameweek gw) async {
+    await firebaseGWHistory.addAllPlayerGWs(gw);
+    return;
   }
 
   Future<void> addPlayerGW(PlayerGameweek gw, int gwNumber) {

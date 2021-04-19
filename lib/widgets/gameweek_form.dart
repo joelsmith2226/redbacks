@@ -10,6 +10,10 @@ import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/player/player_gameweek_form.dart';
 
 class GameweekForm extends StatefulWidget {
+  Gameweek loadedGW;
+
+  GameweekForm({this.loadedGW});
+
   @override
   _GameweekFormState createState() => _GameweekFormState();
 }
@@ -30,10 +34,15 @@ class _GameweekFormState extends State<GameweekForm> {
   @override
   Widget build(BuildContext context) {
     this.user = Provider.of<LoggedInUser>(context);
-    this.GW = Provider.of<Gameweek>(context);
+    // Override provider
+    if (widget.loadedGW != null) {
+      this.GW = widget.loadedGW;
+    } else {
+      this.GW = Provider.of<Gameweek>(context);
+    }
     _stage = this.GW.stage;
 
-    return this._stage == 0 ? GameweekForm() : PlayerGameweekForm();
+    return this._stage == 0 ? GameweekForm() : PlayerGameweekForm(loadedGW: widget.loadedGW);
   }
 
   Widget GameweekForm() {
@@ -115,6 +124,7 @@ class _GameweekFormState extends State<GameweekForm> {
     List<String> score =
         this.GW.gameScore == null ? ["", ""] : this.GW.gameScore.split("-");
     if (score.length != 2) score = ["", ""];
+    int gwNum = this.GW.id == null ? user.gwHistory.length + 1 : this.GW.id;
     return FormBuilder(
       key: key,
       child: Expanded(
@@ -124,7 +134,7 @@ class _GameweekFormState extends State<GameweekForm> {
             physics: AlwaysScrollableScrollPhysics(),
             shrinkWrap: true,
             children: [
-              NumberForm(user.gwHistory.length + 1, GAMEWEEK, "Gameweek #"),
+              NumberForm(gwNum, GAMEWEEK, "Gameweek #"),
               TextForm(OPPOSITION, "Enter Opposition", initial: opposition),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 TextForm(HOME, "Redbacks",

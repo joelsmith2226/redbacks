@@ -190,6 +190,7 @@ class Gameweek extends ChangeNotifier {
       curr.yellowCards = ifValidReturn(currentState, YELLOW, 0);
       curr.redCards = ifValidReturn(currentState, RED, 0);
       curr.bonus = int.parse(ifValidReturn(currentState, BONUS, "0"));
+      curr.goalsConceded = ifValidReturn(currentState, CONCEDED, 0);
       setClean(currentState, curr);
       curr.calculatePoints();
     }

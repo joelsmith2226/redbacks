@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
+import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 
@@ -41,7 +42,8 @@ class _EditGameweeksState extends State<EditGameweeks> {
   }
 
   void _loadingFn(LoggedInUser user) async {
-    await user.loadInGWHistory(); // Need to make this blocking somehow but havent figured it out todo
+    await user
+        .loadInGWHistory(); // Need to make this blocking somehow but havent figured it out todo
     setState(() {
       _gwHistory = user.gwHistory;
       _loading = false;
@@ -99,7 +101,10 @@ class _EditGameweeksState extends State<EditGameweeks> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           MaterialButton(
-              child: Text("Update Users Pts", style: TextStyle(color: Colors.white),),
+              child: Text(
+                "Update Users Pts",
+                style: TextStyle(color: Colors.white),
+              ),
               color: Theme.of(context).primaryColor,
               onPressed: () {
                 FirebaseCore().updateUsersGW(_gwHistory[_currIndex]);
@@ -108,12 +113,16 @@ class _EditGameweeksState extends State<EditGameweeks> {
                 ));
               }),
           MaterialButton(
-              child: Text("Edit GW", style: TextStyle(color: Colors.white),),
+              child: Text(
+                "Edit GW",
+                style: TextStyle(color: Colors.white),
+              ),
               color: Theme.of(context).primaryColor,
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text("EDIT GW COMING SOON"),
-                ));
+                _gwHistory[_currIndex].stage = 0;
+                // Open up new game week with a gameweek model going IN
+                Navigator.pushNamed(context, Routes.EditGW,
+                    arguments: _gwHistory[_currIndex]);
               }),
         ],
       ),

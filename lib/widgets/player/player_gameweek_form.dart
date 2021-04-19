@@ -11,7 +11,9 @@ import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/player/player_carousel.dart';
 
 class PlayerGameweekForm extends StatefulWidget {
-  PlayerGameweekForm();
+  Gameweek loadedGW;
+
+  PlayerGameweekForm({this.loadedGW});
 
   @override
   _PlayerGameweekFormState createState() => _PlayerGameweekFormState();
@@ -19,30 +21,26 @@ class PlayerGameweekForm extends StatefulWidget {
 
 class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
   FirebaseAuth auth = FirebaseAuth.instance;
-
-  List<GlobalKey<FormBuilderState>> _playerFormKeys = [];
-
   final double heightMultiplier = 0.54;
-
   LoggedInUser user;
-
   bool _loading = false;
-
   Gameweek GW;
-
   PlayerGameweek currPlayerGW;
-
   GlobalKey<FormBuilderState> _currKey;
-
-  int _stage;
-
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   BuildContext context;
+
   @override
   Widget build(BuildContext context) {
     this.user = Provider.of<LoggedInUser>(context);
-    this.GW = Provider.of<Gameweek>(context);
+    if (widget.loadedGW != null) {
+      this.GW = widget.loadedGW;
+    } else {
+      this.GW = Provider.of<Gameweek>(context);
+    }
     this.currPlayerGW = this.GW.playerGameweeks[this.GW.currPlayerIndex];
     this._currKey = this.currPlayerGW.key;
+    // if (this.currPlayerGW.saved) _loadKey();
     this.context = context;
 
     return Container(
@@ -104,6 +102,46 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
           ),
           dropdownForm(BONUS, "Bonus Points", ["0", "1", "2", "3"],
               initial: "0"),
+        ]);
+      }
+    } catch (e) {}
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _loading ? CircularProgressIndicator() : Container(),
+        _form(formElements, _currKey),
+      ],
+    );
+  }
+
+
+  Widget playerFormFromLoaded() {
+    List<Widget> formElements = <Widget>[
+      dropdownForm(APPEARANCE, "Made appearance?", ["Yes", "No"],
+          initial: this.currPlayerGW.appearance ? "Yes" : "No")
+    ];
+    try {
+      if (this._currKey.currentState == null ||
+          this._currKey.currentState.value[APPEARANCE] == "Yes") {
+        formElements.addAll([
+          dropdownForm(
+              POSITION, "Select Position", ["GKP", "DEF", "MID", "FWD"],
+              initial: this.currPlayerGW.player.position),
+          goalAssistSaves(),
+          Divider(
+            thickness: 1,
+          ),
+          dropdownForm(CLEANS, "Cleans kept",
+              [NO_CLEAN, QUARTER_CLEAN, HALF_CLEAN, FULL_CLEAN],
+              initial: cleanIdentifier()),
+          cardsOwnsPens(),
+          Divider(
+            thickness: 1,
+          ),
+          dropdownForm(BONUS, "Bonus Points", ["0", "1", "2", "3"],
+              initial: '${this.currPlayerGW.bonus}'),
         ]);
       }
     } catch (e) {}
@@ -220,7 +258,6 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
 
   Widget dropdownForm(String name, String label, List<String> options,
       {String initial = ""}) {
-
     return FormBuilderChoiceChip(
       alignment: WrapAlignment.center,
       initialValue: initial,
@@ -233,7 +270,11 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
       options: List.generate(
           options.length,
           (index) => FormBuilderFieldOption(
-              value: options[index], child: Text(options[index], style:TextStyle(fontSize: 10),))),
+              value: options[index],
+              child: Text(
+                options[index],
+                style: TextStyle(fontSize: 10),
+              ))),
       onChanged: (val) {
         saveCurrPlayerGWState(this._currKey);
       },
@@ -264,9 +305,9 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
 
   Widget goalAssistSaves() {
     return Row(children: [
-      NumberForm(0, GOALS, "Goals Scored"),
-      NumberForm(0, ASSISTS, "Assists Scored"),
-      NumberForm(0, SAVES, "2x Saves Scored"),
+      NumberForm(this.currPlayerGW.goals, GOALS, "Goals Scored"),
+      NumberForm(this.currPlayerGW.assists, ASSISTS, "Assists Scored"),
+      NumberForm(this.currPlayerGW.saves, SAVES, "2x Saves Scored"),
     ]);
   }
 
@@ -277,15 +318,14 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-              NumberForm(0, YELLOW, "Number of yellow cards"),
-              NumberForm(0, RED, "Red card received"),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              NumberForm(this.currPlayerGW.yellowCards, YELLOW, "Number of yellow cards"),
+              NumberForm(this.currPlayerGW.redCards, RED, "Red card received"),
             ]),
             Row(children: [
-              NumberForm(0, OWNS, "Own goals conceded"),
-              NumberForm(0, PENS, "Penalties Missed"),
-              NumberForm(0, CONCEDED, "2x Goals conceded")
+              NumberForm(this.currPlayerGW.ownGoals, OWNS, "Own goals conceded"),
+              NumberForm(this.currPlayerGW.penaltiesMissed, PENS, "Penalties Missed"),
+              NumberForm(this.currPlayerGW.goalsConceded, CONCEDED, "2x Goals conceded")
             ])
           ]),
     );
@@ -335,15 +375,44 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
   cleansGoalsAgainst() {
     return Container(
         width: MediaQuery.of(context).size.width * 0.6,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Container(
             width: MediaQuery.of(context).size.width * 0.55,
             child: dropdownForm(CLEANS, "Cleans kept",
-              [NO_CLEAN, QUARTER_CLEAN, HALF_CLEAN, FULL_CLEAN],
-              initial: "0"),),
+                [NO_CLEAN, QUARTER_CLEAN, HALF_CLEAN, FULL_CLEAN],
+                initial: "0"),
+          ),
           NumberForm(0, CONCEDED, "Goals conceded")
         ]));
+  }
+
+  String cleanIdentifier() {
+    if (this.currPlayerGW.fullClean) {
+      return FULL_CLEAN;
+    } else if (this.currPlayerGW.halfClean) {
+      return HALF_CLEAN;
+    } else if (this.currPlayerGW.quarterClean) {
+      return QUARTER_CLEAN;
+    } else {
+      return "";
+    }
+  }
+
+  void _loadKey() {
+    // _formKey = new GlobalKey<FormState>();
+    // _formKey.currentState.reset();
+    //
+    // _formKey.currentState.setInternalFieldValue('appearance', this.currPlayerGW.appearance);
+    // _formKey.currentState.setInternalFieldValue('position', this.currPlayerGW.position);
+    // _formKey.currentState.setInternalFieldValue('goals', this.currPlayerGW.goals);
+    // _formKey.currentState.setInternalFieldValue('assists', this.currPlayerGW.assists);
+    // _formKey.currentState.setInternalFieldValue('saves', this.currPlayerGW.saves);
+    // _formKey.currentState.setInternalFieldValue('cleans', cleanIdentifier());
+    // _formKey.currentState.setInternalFieldValue('yellow', this.currPlayerGW.yellowCards);
+    // _formKey.currentState.setInternalFieldValue('red', this.currPlayerGW.redCards);
+    // _formKey.currentState.setInternalFieldValue('owns', this.currPlayerGW.ownGoals);
+    // _formKey.currentState.setInternalFieldValue('pens', this.currPlayerGW.penaltiesMissed);
+    // _formKey.currentState.setInternalFieldValue('conceded', this.currPlayerGW.goalsConceded);
+    // _formKey.currentState.setInternalFieldValue('bonus', '${this.currPlayerGW.bonus}');
   }
 }

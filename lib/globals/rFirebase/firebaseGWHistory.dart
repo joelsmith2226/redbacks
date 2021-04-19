@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
+import 'package:redbacks/globals/rFirebase/firebasePlayers.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/player_gameweek.dart';
 import 'package:redbacks/models/team.dart';
@@ -207,39 +208,41 @@ class FirebaseGWHistory {
         .catchError((error) => print("Failed to add GW: $error"));
   }
 
-  void addAllPlayerGWs(Gameweek gw) {
-    gw.playerGameweeks.forEach((pgw) {
-      this.addPlayerGW(pgw, gw.id);
-    });
+  Future<void> addAllPlayerGWs(Gameweek gw) async {
+    for (int i = 0; i < gw.playerGameweeks.length; i++){
+      await this.addPlayerGW(gw.playerGameweeks[i], gw.id);
+      // copy this pgw into corresponding player
+      await FirebasePlayers().addPlayerGW(gw.playerGameweeks[i], gw.id);
+    }
   }
 
-  Future<void> addPlayerGW(PlayerGameweek gw, int gwNumber) {
+  Future<void> addPlayerGW(PlayerGameweek pgw, int gwNumber) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference gwHistoryDB = firestore.collection('gw-history');
     return gwHistoryDB
         .doc('gw-${gwNumber}')
         .collection('player-gameweeks')
-        .doc(gw.id)
+        .doc(pgw.id)
         .set({
-          'appearance': gw.appearance,
-          'position': gw.position,
-          'goals': gw.goals,
-          'assists': gw.assists,
-          'saves': gw.saves,
-          'goals-conceded': gw.goalsConceded,
-          'quarter-clean': gw.quarterClean,
-          'half-clean': gw.halfClean,
-          'full-clean': gw.fullClean,
-          'yellow': gw.yellowCards,
-          'red': gw.redCards,
-          'owns': gw.ownGoals,
-          'pens': gw.penaltiesMissed,
-          'bonus': gw.bonus,
-          'saved': gw.saved,
-          'gw-pts': gw.gwPts,
-          'point-breakdown': gw.pointBreakdown.toMap(),
+          'appearance': pgw.appearance,
+          'position': pgw.position,
+          'goals': pgw.goals,
+          'assists': pgw.assists,
+          'saves': pgw.saves,
+          'goals-conceded': pgw.goalsConceded,
+          'quarter-clean': pgw.quarterClean,
+          'half-clean': pgw.halfClean,
+          'full-clean': pgw.fullClean,
+          'yellow': pgw.yellowCards,
+          'red': pgw.redCards,
+          'owns': pgw.ownGoals,
+          'pens': pgw.penaltiesMissed,
+          'bonus': pgw.bonus,
+          'saved': pgw.saved,
+          'gw-pts': pgw.gwPts,
+          'point-breakdown': pgw.pointBreakdown.toMap(),
         })
-        .then((value) => print("Player GW Added: ${gw.id}"))
+        .then((value) => print("Player GW Added: ${pgw.id}"))
         .catchError((error) => print("Failed to add player GW: $error"));
   }
 }

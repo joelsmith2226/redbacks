@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:redbacks/views/admin.dart';
 import 'package:redbacks/views/choose_team.dart';
+import 'package:redbacks/views/edit_gw.dart';
 import 'package:redbacks/views/home.dart';
 import 'package:redbacks/views/loading.dart';
 import 'package:redbacks/views/login.dart';
@@ -18,6 +19,7 @@ class Routes {
   static const String Transfer = '/transfer';
   static const String Loading = '/loading';
   static const String Admin = '/admin';
+  static const String EditGW = '/admin/edit-gw';
   static const String PlayerStats = '/player-stats';
   static const String PointPageOther = '/home/point-page-other-user';
 
@@ -33,6 +35,7 @@ class Routes {
       Routes.Admin: (context) => AdminView(),
       Routes.PlayerStats: (context) => PlayerStatsView(),
       Routes.PointPageOther: (context) => PointPageOtherUser(),
+      Routes.EditGW: (context) => EditGWView(),
     };
   }
 }
