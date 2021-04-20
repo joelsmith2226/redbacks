@@ -12,14 +12,15 @@ class PointsPage extends StatefulWidget {
 }
 
 class _PointsPageState extends State<PointsPage> {
-  int currentWeek = 1;
+  int currentWeek;
   List<UserGW> userGWHistory = [];
   bool loading = true;
 
   @override
   void initState() {
     super.initState();
-    // LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+    LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+    currentWeek = user.gwHistory.length;
   }
 
   @override

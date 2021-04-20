@@ -338,7 +338,7 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
         textAlign: TextAlign.center,
       ),
       content:
-          Text("Are you sure you are happy to overwrite current GW in DB?"),
+          Text("Are you sure you are happy to overwrite GW-${this.GW.id} in DB?"),
       actions: [
         MaterialButton(
           textColor: Color(0xFF6200EE),

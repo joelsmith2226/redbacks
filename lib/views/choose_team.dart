@@ -55,15 +55,18 @@ class ChooseTeamView extends StatelessWidget {
                   color: Theme.of(context).canvasColor,
                   onPressed: () {
                     String errMsg = "";
-                    print("team: ${team.isComplete()}");
                     if (!team.isComplete()) {
                       errMsg =
                           "Team is incomplete! Make sure no ? players left";
                     } else if (user.budget < 0) {
                       errMsg = "Not enough budget for this team!";
+                    } else if (team.corrupted()) {
+                      errMsg = "Team was corrupted somehow with duplicate players, please try transfer process again!";
+                      user.restoreOriginals();
+                      Navigator.of(context).pushReplacementNamed(Routes.Home);
                     } else {
                       user.confirmTransfersButtonPressed();
-                      Navigator.pushReplacementNamed(context, Routes.Loading);
+                      Navigator.pushReplacementNamed(context, Routes.Home); // not loading... ?
                       return;
                     }
                     ScaffoldMessenger.of(context)

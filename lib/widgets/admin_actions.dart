@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/initial_data.dart';
 import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
+import 'package:redbacks/globals/rFirebase/firebasePlayers.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/form_widgets.dart';
 
@@ -28,13 +30,15 @@ class _AdminActionsState extends State<AdminActions> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          calcTotalCurrPtsPlayersBtn(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               setCurrentGW(forms, user, context),
               deadlineBtn(context, user)
             ],
-          )
+          ),
+          initPlayerDBBtn(),
         ],
       ),
     );
@@ -88,5 +92,60 @@ class _AdminActionsState extends State<AdminActions> {
             })
       ]),
     );
+  }
+
+  Widget initPlayerDBBtn() {
+    return MaterialButton(
+      child: Text(
+        "Reinitialise Player DB",
+        style: TextStyle(color: Colors.white),
+      ),
+      color: Colors.black,
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Reset player DB?'),
+                content: Text("Are you sure you want to reinitialise playerDB? Go delete collection first or youll have double ups!"),
+                actions: [
+                  MaterialButton(
+                    textColor: Color(0xFF6200EE),
+                    onPressed: () {
+                      InitialData();
+                      // FirebasePlayers().repushAllGWs(); CEEBS
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Players reset'),
+                      ));
+                      Navigator.pop(context);
+                    },
+                    child: Text('Yes'),
+                  ),
+                  MaterialButton(
+                    textColor: Color(0xFF6200EE),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('No'),
+                  ),
+                ],
+              );
+            });
+      },
+    );
+  }
+
+  Widget calcTotalCurrPtsPlayersBtn() {
+    return MaterialButton(
+        child: Text(
+          "Calculate Player Pts",
+          style: TextStyle(color: Colors.white),
+        ),
+        color: Colors.blue,
+        onPressed: () {
+          FirebasePlayers().calculatePlayerGlobalPts();
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Players Pts totalled!')));
+        });
   }
 }

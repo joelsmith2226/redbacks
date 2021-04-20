@@ -62,7 +62,7 @@ class LoggedInUser extends ChangeNotifier {
       this.signingUp = false; // safety ensured check
       this.team.checkCaptain();
       await this.getCompleteUserGWHistory();
-      notifyListeners();
+      // notifyListeners();
     } else {
       print('User is currently signed out! Continue with login');
     }
@@ -322,18 +322,29 @@ class LoggedInUser extends ChangeNotifier {
     }
   }
 
-  void reinstateOriginalTeamPlayer(TeamPlayer player, Team originalTeam) {
+  void reinstateOriginalTeamPlayer(TeamPlayer currOG, Team originalTeam) {
     addFreeTransferOrSubtractHit();
     print("Incoming is from og squad. add a free or hit. Fix aura");
     // replace with original pricing info from originalTeam
-    int index = this.team.players.indexOf(player);
-    this.team.players[index] =
-        originalTeam.players.firstWhere((p) => p.name == player.name);
-    this.team.players[index].inConsideration = false;
+    TeamPlayer oldOG = originalTeam.players.firstWhere((p) => p.name == currOG.name); // to maintain boughtprice
+    TeamPlayer newIncoming = this.team.players[oldOG.index]; // the diff incoming
+    int targetOGIndex = currOG.index;
+    int targetNewIndex = newIncoming.index;
+
+    this.team.players[targetNewIndex] = newIncoming;
+    this.team.players[targetNewIndex].inConsideration = true;
+    this.team.players[targetNewIndex].index = targetNewIndex;
+    this.team.players[targetOGIndex] = oldOG;
+    this.team.players[targetOGIndex].inConsideration = false;
+    this.team.players[targetOGIndex].index = targetOGIndex;
+
+    // print("${oldOG.name} should be in ${newIncoming.index} and ${} should be in ${}");
+
     notifyListeners();
   }
 
-  void reinstateOriginalTeamPlayerFromIndex(int index) {
+  void reinstateOriginalTeamPlayerFromCard(TeamPlayer newPlayerGoing) {
+    int index = newPlayerGoing.index;
     this.team.players[index] = this.originalModels.team.players[index];
     addFreeTransferOrSubtractHit();
     this.team.players[index].inConsideration = false;
@@ -342,6 +353,11 @@ class LoggedInUser extends ChangeNotifier {
         .completedTransfers
         .removeWhere((t) => t.outgoing.name == this.team.players[index].name);
 
+    // Adjust budget accounting for player being removed and original back in
+    Transfer reinstateT = Transfer();
+    reinstateT.outgoing = newPlayerGoing;
+    reinstateT.incoming = this.team.players[index];
+    this.adjustBudget(reinstateT);
     notifyListeners();
   }
 
@@ -359,9 +375,15 @@ class LoggedInUser extends ChangeNotifier {
     this.teamValue = this.team.teamValue(); // todo seems bad style
   }
 
-  void benchPlayer(TeamPlayer player) {
+  String benchPlayer(TeamPlayer player) {
+    Team original = Team(new List.from(this.team.players));
     this.team.benchPlayer(player);
-    notifyListeners();
+    if (this.team.corrupted()){
+      this.team = original;
+      return "Team got corrupted somehow with duplicate players";
+    } else {
+      notifyListeners();
+    }
   }
 
   void updateCaptaincy(TeamPlayer player, String rank) {

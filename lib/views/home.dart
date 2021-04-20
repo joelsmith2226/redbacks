@@ -165,7 +165,7 @@ class _HomeViewState extends State<HomeView> {
 
   Future<void> _logoutFn() async {
     await FirebaseAuth.instance.signOut();
-    Navigator.pushReplacementNamed(context, "/login");
+    Navigator.pushReplacementNamed(context, Routes.Login);
   }
 
   void _settingsFn() {

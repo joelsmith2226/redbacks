@@ -19,6 +19,15 @@ class _SignupFormState extends State<SignupForm> {
   String conPwd;
   String name;
   FirebaseAuth auth = FirebaseAuth.instance;
+  bool hidePwd;
+  bool hideConPwd;
+
+  @override
+  void initState() {
+    hidePwd = true;
+    hideConPwd = true;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,27 +45,36 @@ class _SignupFormState extends State<SignupForm> {
   }
 
   Widget SignupTextForm(String name, String label, bool pwd,
-      {String initial = ""}) {
+      {TextInputType keyboard = TextInputType.text}) {
     var validators = [
       FormBuilderValidators.required(context),
       FormBuilderValidators.max(context, 70)
     ];
-    // if (name == "conPwd") {
-    //   validators.add(FormBuilderValidators.equal(context, this.pwd, errorText: "Passwords do not match"));
-    // }
+
+    bool isPwd = ["pwd", "conPwd"].contains(name);
     return Container(
-      width: MediaQuery.of(context).size.width * 0.75,
-      child: FormBuilderTextField(
-        initialValue: initial,
-        name: name,
-        obscureText: pwd,
-        decoration: InputDecoration(
-          labelText: label,
-        ),
-        // valueTransformer: (text) => num.tryParse(text),
-        validator: FormBuilderValidators.compose(validators),
-        keyboardType: TextInputType.text,
-      ),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width * (isPwd ? 0.52 : 0.65),
+              child: FormBuilderTextField(
+                name: name,
+                textCapitalization: keyboard == TextInputType.name
+                    ? TextCapitalization.words
+                    : TextCapitalization.none,
+                obscureText: pwd,
+                decoration: InputDecoration(
+                  labelText: label,
+                ),
+                // valueTransformer: (text) => num.tryParse(text),
+                validator: FormBuilderValidators.compose(validators),
+                keyboardType: keyboard,
+              ),
+            ),
+            isPwd ? showHidePwd(name) : Container()
+          ]),
     );
   }
 
@@ -65,16 +83,20 @@ class _SignupFormState extends State<SignupForm> {
       FormBuilder(
         key: _formKey,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            SignupTextForm("firstName", "First Name", false, initial: "Joel"),
-            SignupTextForm("lastName", "Last Name", false, initial: "Smith"),
+            SignupTextForm("firstName", "First Name", false,
+                keyboard: TextInputType.name),
+            SignupTextForm("lastName", "Last Name", false,
+                keyboard: TextInputType.name),
             SignupTextForm("teamName", "Enter Team Name", false,
-                initial: "LADmin"),
+                keyboard: TextInputType.name),
             SignupTextForm("email", "Enter Email", false,
-                initial: "joel.smith2226@gmail.com"),
-            SignupTextForm("pwd", "Enter Password", true, initial: "password"),
-            SignupTextForm("conPwd", "Confirm Password", true,
-                initial: "password"),
+                keyboard: TextInputType.emailAddress),
+            SignupTextForm("pwd", "Enter Password", hidePwd,
+                keyboard: TextInputType.visiblePassword),
+            SignupTextForm("conPwd", "Confirm Password", hideConPwd,
+                keyboard: TextInputType.visiblePassword),
           ],
         ),
       ),
@@ -135,5 +157,16 @@ class _SignupFormState extends State<SignupForm> {
     } catch (e) {
       print(e);
     }
+  }
+
+  Widget showHidePwd(String name) {
+    bool showHide;
+    showHide = name == 'pwd' ? hidePwd : hideConPwd;
+    Function onPress = name == 'pwd'
+        ? () => (setState(() => hidePwd = !hidePwd))
+        : () => (setState(() => hideConPwd = !hideConPwd));
+    return IconButton(
+        icon: Icon(showHide ? Icons.visibility_off : Icons.visibility),
+        onPressed: onPress);
   }
 }

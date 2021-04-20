@@ -66,10 +66,11 @@ class Player {
     };
   }
 
-  Player.initial(String name, double value, String position) {
+  Player.initial(String name, double value, String position, String pic) {
     this._name = name;
     this._price = value;
     this._position = position;
+    this._pic = pic;
   }
 
   String getLastName() {
@@ -161,5 +162,21 @@ class Player {
 
   set inConsideration(bool value) {
     _inConsideration = value;
+  }
+
+  String getFirstInitial() {
+    if (this.name.length > 0){
+      return this.name[0];
+    } else {
+      return '';
+    }
+  }
+
+  String getNameTag(){
+    if (this.name.length == 0) {
+      return '?';
+    } else {
+      return '${this.getFirstInitial()}. ${this.getLastName()}';
+    }
   }
 }

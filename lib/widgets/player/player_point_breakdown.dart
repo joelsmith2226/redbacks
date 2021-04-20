@@ -29,6 +29,7 @@ class _PlayerPointBreakdownState extends State<PlayerPointBreakdown> {
     TextStyle style =
         TextStyle(color: Colors.white, fontWeight: FontWeight.w400);
     return Container(
+      padding: EdgeInsets.all(10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -36,7 +37,7 @@ class _PlayerPointBreakdownState extends State<PlayerPointBreakdown> {
             height: 30,
             decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(10), bottom: Radius.circular(this.show ? 0 : 10))),
             child: InkWell(
               onTap: _onPressed,
               child: Row(

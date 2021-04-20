@@ -14,12 +14,11 @@ class PlayerWidget extends StatefulWidget {
   Player player;
   String mode;
   bool benched = false;
-  VoidCallback callback = () => null;
 
-  PlayerWidget(this.player, this.mode, {this.benched = false, this.callback});
+  PlayerWidget(this.player, this.mode, {this.benched = false});
 
   PlayerWidget.fromTeamPlayer(this.teamPlayer, this.mode,
-      {this.benched = false, this.callback});
+      {this.benched = false});
 
   @override
   _PlayerWidgetState createState() => _PlayerWidgetState();
@@ -98,7 +97,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
           teamPlayer: widget.teamPlayer,
           context: context,
           mode: widget.mode,
-          callback: widget.callback);
+      );
       return () => pc.displayCard();
     } else {
       PlayerSelectorCard psc = PlayerSelectorCard(
@@ -110,14 +109,17 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   Widget NameTag() {
     return Container(
       padding: EdgeInsets.all(1),
-      child: RichText(
-        textAlign: TextAlign.center,
-        text: TextSpan(
-          text: "${widget.player.getLastName()}",
-          style: TextStyle(
-              fontSize: 14,
-              color: Colors.white,
-              fontFamily: GoogleFonts.merriweatherSans().fontFamily),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: RichText(
+          textAlign: TextAlign.center,
+          text: TextSpan(
+            text: widget.player.getNameTag(),
+            style: TextStyle(
+                fontSize: 14,
+                color: Colors.white,
+                fontFamily: GoogleFonts.merriweatherSans().fontFamily),
+          ),
         ),
       ),
       color: Colors.black.withAlpha(180),

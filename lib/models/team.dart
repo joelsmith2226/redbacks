@@ -80,6 +80,8 @@ class Team {
         this.players.indexWhere((player) => player.name == benchwarmer.name);
     this.players[index] = this.players[5];
     this.players[5] = benchwarmer;
+    this.players[index].index = index;
+    this.players[5].index = 5;
   }
 
   // Checks a captain and vice cap have been set, otherwise defaults.
@@ -152,5 +154,19 @@ class Team {
       teamPoints += p.currPts;
     });
     return teamPoints;
+  }
+
+  bool corrupted() {
+    // Checks if somehow a player has been duplicated
+    List<String> names = [];
+    this.players.forEach((player) {
+      print(names);
+      if (names.contains(player.name)){
+        return true;
+      } else {
+        names.add(player.name);
+      }
+    });
+    return false;
   }
 }

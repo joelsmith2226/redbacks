@@ -136,8 +136,9 @@ class OtherPointPageArgs {
   final String uid;
   final String name;
   final String teamName;
+  final int currWeek;
 
-  OtherPointPageArgs(this.uid, this.name, this.teamName);
+  OtherPointPageArgs(this.uid, this.name, this.teamName, this.currWeek);
 }
 
 const int UNLIMITED = 100;

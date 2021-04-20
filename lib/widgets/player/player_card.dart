@@ -24,7 +24,7 @@ class PlayerCard extends StatelessWidget {
     this.pc = AlertDialog(
       insetPadding: EdgeInsets.all(27.0),
       title: Text(
-        'Player Card',
+        '${this.player.name}',
         textAlign: TextAlign.center,
       ),
       content: Column(
@@ -38,8 +38,7 @@ class PlayerCard extends StatelessWidget {
                     .width * 0.3),
             SizedBox(height: 30),
             Text(
-                'Name: ${this.player.name}\nValue: \$${this.player
-                    .price}m\nTotal Points: ${this.player.totalPts}\n'),
+                'Value: \$${this.player.price}m    Total Points: ${this.player.totalPts}\n'),
             PlayerPointBreakdowns(user.gwHistory, player),
           ]),
       actions: cardActions(),
@@ -72,9 +71,12 @@ class PlayerCard extends StatelessWidget {
         textColor: Color(0xFF6200EE),
         onPressed: () {
           LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-          user.benchPlayer(this.teamPlayer);
+          String result = user.benchPlayer(this.teamPlayer);
+          if (result != ""){
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(result)));
+          }
           Navigator.pop(context);
-          this.callback();
         },
         child: Text('Bench'),
       ) : Container(),
@@ -154,7 +156,7 @@ class PlayerCard extends StatelessWidget {
         textColor: Color(0xFF6200EE),
         onPressed: () {
           LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-          user.reinstateOriginalTeamPlayerFromIndex(this.teamPlayer.index);
+          user.reinstateOriginalTeamPlayerFromCard(this.teamPlayer);
           if (!user.signingUp &&
               ModalRoute
                   .of(context)
@@ -182,7 +184,7 @@ class PlayerCard extends StatelessWidget {
     return Container(
         child: Column(children: [
           Checkbox(
-            value: this.player.rank == rank,
+            value: this.teamPlayer.rank == rank,
             onChanged: (value) => updateCaptaincy(value, rank),
           ),
           Text(rank)

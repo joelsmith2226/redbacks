@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:redbacks/globals/constants.dart';
-import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
 import 'package:redbacks/globals/rFirebase/firebaseLeaderboard.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/leaderboard_list_entry.dart';
+import 'package:redbacks/providers/logged_in_user.dart';
 
 class LeaderboardList extends StatefulWidget {
   LeaderboardList();
@@ -30,10 +31,12 @@ class _LeaderboardListState extends State<LeaderboardList> {
       color: Colors.white.withAlpha(200),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: loading ? CircularProgressIndicator() :Container(
-          height: MediaQuery.of(context).size.height * 0.7,
-          width: MediaQuery.of(context).size.width * 0.95,
-          child:ListView.builder(
+        child: loading
+            ? CircularProgressIndicator()
+            : Container(
+                height: MediaQuery.of(context).size.height * 0.7,
+                width: MediaQuery.of(context).size.width * 0.95,
+                child: ListView.builder(
                   itemCount: _entries.length,
                   shrinkWrap: true,
                   physics: AlwaysScrollableScrollPhysics(),
@@ -49,14 +52,16 @@ class _LeaderboardListState extends State<LeaderboardList> {
                     }
                   },
                 ),
-        ),
+              ),
       ),
     );
   }
 
   void _loadEntries() async {
     this._entries = await FirebaseLeaderboard().loadUserLeadeboard();
-    setState(() {loading = false;});
+    setState(() {
+      loading = false;
+    });
   }
 
   Widget loadBtn() {
@@ -132,12 +137,13 @@ class LeaderboardListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     this.context = context;
+    LoggedInUser user = Provider.of<LoggedInUser>(context);
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 10),
       onTap: () {
         Navigator.pushNamed(context, Routes.PointPageOther,
-            arguments: OtherPointPageArgs(
-                this.entry.uid, this.entry.name, this.entry.teamName));
+            arguments: OtherPointPageArgs(this.entry.uid, this.entry.name,
+                this.entry.teamName, user.gwHistory.length));
       },
       leading: Text(
         "${pos + 1}",
@@ -169,20 +175,23 @@ class LeaderboardListTile extends StatelessWidget {
       height: 50,
       width: MediaQuery.of(context).size.width * width,
       alignment: align,
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              value,
-              textScaleFactor: 0.8,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              subtitle,
-              textScaleFactor: 0.6,
-            ),
-          ]),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                textScaleFactor: 0.8,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                subtitle,
+                textScaleFactor: 0.6,
+              ),
+            ]),
+      ),
     );
   }
 }

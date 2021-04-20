@@ -1,14 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/player_gameweek.dart';
-import 'package:redbacks/models/team.dart';
-import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/providers/gameweek.dart';
-import 'package:redbacks/providers/logged_in_user.dart';
 
-class FirebasePlayers{
-
+class FirebasePlayers {
   // Player Management
   Future<void> addPlayer(Player p) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -16,15 +11,16 @@ class FirebasePlayers{
     // Call the user's CollectionReference to add a new user
     return players
         .add({
-      'name': p.name,
-      'price': p.price,
-      'position': p.position,
-      'flagged': p.flagged,
-      'transferredIn': p.transferredIn,
-      'transferredOut': p.transferredOut,
-      'gwPts': p.currPts,
-      'totalPts': p.totalPts,
-    })
+          'name': p.name,
+          'price': p.price,
+          'position': p.position,
+          'flagged': p.flagged,
+          'transferredIn': p.transferredIn,
+          'transferredOut': p.transferredOut,
+          'gwPts': p.currPts,
+          'totalPts': p.totalPts,
+          'picture': p.pic,
+        })
         .then((value) => print("Player Added: ${p.name}"))
         .catchError((error) => print("Failed to add player: $error"));
   }
@@ -36,9 +32,9 @@ class FirebasePlayers{
     // Ensure playerModels is empty
     // playerModels = [];
     qs.docs.forEach((doc) {
-        playerModels.add(Player.fromData(doc.data(), uid: doc.id));
-        print("Player ${doc.data()["name"]} added to list");
-      });
+      playerModels.add(Player.fromData(doc.data(), uid: doc.id));
+      print("Player ${doc.data()["name"]} added to list");
+    });
     return;
   }
 
@@ -49,7 +45,12 @@ class FirebasePlayers{
     });
   }
 
-  Future<void> addPlayerGWs(Gameweek gw) async{
+  void removePlayersCollection() {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    firestore.collection('players');
+  }
+
+  Future<void> addPlayerGWs(Gameweek gw) async {
     // Loop over players
     // go to GW history collection
     // add/reset correct gw
@@ -58,41 +59,76 @@ class FirebasePlayers{
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference players = firestore.collection('players');
     QuerySnapshot playersSnapshot = await players.get();
-    for (int i=0; i < playersSnapshot.docs.length; i++){
-      
-    }
-
+    for (int i = 0; i < playersSnapshot.docs.length; i++) {}
   }
 
   Future<void> addPlayerGW(PlayerGameweek pgw, int gwNumber) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference players = firestore.collection('players');
     // Find corr player doc for pgw
-    QuerySnapshot currPlayer = await players.where('name', isEqualTo: pgw.id).get();
+    QuerySnapshot currPlayer =
+        await players.where('name', isEqualTo: pgw.id).get();
     return players
         .doc(currPlayer.docs[0].id)
         .collection('GW-History')
         .doc('GW-${gwNumber}')
         .set({
-      'appearance': pgw.appearance,
-      'position': pgw.position,
-      'goals': pgw.goals,
-      'assists': pgw.assists,
-      'saves': pgw.saves,
-      'goals-conceded': pgw.goalsConceded,
-      'quarter-clean': pgw.quarterClean,
-      'half-clean': pgw.halfClean,
-      'full-clean': pgw.fullClean,
-      'yellow': pgw.yellowCards,
-      'red': pgw.redCards,
-      'owns': pgw.ownGoals,
-      'pens': pgw.penaltiesMissed,
-      'bonus': pgw.bonus,
-      'saved': pgw.saved,
-      'gw-pts': pgw.gwPts,
-      'point-breakdown': pgw.pointBreakdown.toMap(),
-    })
+          'appearance': pgw.appearance,
+          'position': pgw.position,
+          'goals': pgw.goals,
+          'assists': pgw.assists,
+          'saves': pgw.saves,
+          'goals-conceded': pgw.goalsConceded,
+          'quarter-clean': pgw.quarterClean,
+          'half-clean': pgw.halfClean,
+          'full-clean': pgw.fullClean,
+          'yellow': pgw.yellowCards,
+          'red': pgw.redCards,
+          'owns': pgw.ownGoals,
+          'pens': pgw.penaltiesMissed,
+          'bonus': pgw.bonus,
+          'saved': pgw.saved,
+          'gw-pts': pgw.gwPts,
+          'point-breakdown': pgw.pointBreakdown.toMap(),
+        })
         .then((value) => print("Player GW Added: ${pgw.id}"))
         .catchError((error) => print("Failed to add player GW: $error"));
+  }
+
+  Future<void> calculatePlayerGlobalPts() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference players = firestore.collection('players');
+    QuerySnapshot playersQS = await players.get();
+    for (int i = 0; i < playersQS.docs.length; i++) {
+      await calculateIndividualPlayerGlobalPts(playersQS.docs[i].id);
+    }
+  }
+
+  Future<void> calculateIndividualPlayerGlobalPts(String playerId) async {
+    // Calculate totalpts by adding all pgws and maintain the last pgw as curr pts
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    QuerySnapshot gwQS = await firestore
+        .collection('players')
+        .doc(playerId)
+        .collection('GW-History')
+        .get();
+
+    int totalPts = 0;
+    int currPts = 0;
+    for (int i = 0; i < gwQS.docs.length; i++) {
+      currPts = await gwQS.docs[i].get('gw-pts');
+      totalPts += currPts;
+    }
+
+    // Set global curr pts & total pts
+    firestore
+        .collection('players')
+        .doc(playerId)
+        .set({'gwPts': currPts, 'totalPts': totalPts}, SetOptions(merge: true));
+  }
+
+  Future<void> repushAllGWs() async {
+    // repush all exists GWs
+
   }
 }

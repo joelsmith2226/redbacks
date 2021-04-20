@@ -16,7 +16,7 @@ class PointPageOtherUser extends StatefulWidget {
 }
 
 class _PointPageOtherUserState extends State<PointPageOtherUser> {
-  int currentWeek = 1;
+  int currentWeek;
   List<UserGW> userGWHistory = [];
   bool loading = true;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -26,6 +26,7 @@ class _PointPageOtherUserState extends State<PointPageOtherUser> {
 
   @override
   void initState() {
+    loading = true;
     super.initState();
   }
 
@@ -33,14 +34,22 @@ class _PointPageOtherUserState extends State<PointPageOtherUser> {
   Widget build(BuildContext context) {
     final OtherPointPageArgs args =
         ModalRoute.of(context).settings.arguments as OtherPointPageArgs;
-    uid = args.uid;
-    name = args.name;
-    teamName = args.teamName;
-    UserGW ugw;
+    if (loading) {
+      uid = args.uid;
+      name = args.name;
+      teamName = args.teamName;
+      currentWeek = args.currWeek;
+    } // load once
 
+    UserGW ugw;
+    print("before: ${currentWeek}");
     // CurrentWeek Controller
-    if (currentWeek > userGWHistory.length) currentWeek = userGWHistory.length;
-    if (currentWeek <= 0) currentWeek = 1;
+    if (!loading && currentWeek > userGWHistory.length)
+      currentWeek = userGWHistory.length;
+    else if (currentWeek <= 0) currentWeek = 1;
+
+    print(currentWeek);
+    print(userGWHistory.length);
 
     if (loading)
       _loadInUserGWHistory();
@@ -90,7 +99,6 @@ class _PointPageOtherUserState extends State<PointPageOtherUser> {
 
   void _loadInUserGWHistory() async {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-    print("Entering complete 1");
     userGWHistory =
         await FirebaseGWHistory().getCompleteUserGWHistory(uid, user.gwHistory);
     setState(() {
