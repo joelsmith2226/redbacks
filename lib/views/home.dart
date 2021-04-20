@@ -155,9 +155,11 @@ class _HomeViewState extends State<HomeView> {
         padding: EdgeInsets.all(10),
         child: MaterialButton(
           color: Theme.of(context).accentColor,
-          child: Text(
-            title,
-            style: TextStyle(color: Colors.white),
+          child: FittedBox(
+            child: Text(
+              title,
+              style: TextStyle(color: Colors.white),
+            ),
           ),
           onPressed: onPressed,
         ));

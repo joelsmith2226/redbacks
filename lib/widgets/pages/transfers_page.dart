@@ -20,6 +20,7 @@ class TransfersPage extends StatelessWidget {
       );
     }
     return Container(
+      height: MediaQuery.of(context).size.height*0.9,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

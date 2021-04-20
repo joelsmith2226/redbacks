@@ -13,6 +13,7 @@ class PickPage extends StatelessWidget {
     user.team.checkCaptain();
 
     return Container(
+      height: MediaQuery.of(context).size.height*0.9,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
