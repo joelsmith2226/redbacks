@@ -13,18 +13,24 @@ class Bench extends StatefulWidget {
 class _BenchState extends State<Bench> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * 0.15,
-      color: Colors.black.withAlpha(100),
-      child: Stack(
+    return Expanded(
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.15,
+        color: Colors.black.withAlpha(100),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Icon(
+              Icons.event_seat,
+              size: 100,
+              color: Colors.white,
+            ),
+            widget.player,
+          ],
+        ),
         alignment: Alignment.center,
-        children: [
-          Icon(Icons.event_seat, size: 100, color: Colors.white,),
-          widget.player,
-        ],
       ),
-      alignment: Alignment.center,
     );
   }
 }

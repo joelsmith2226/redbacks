@@ -69,7 +69,7 @@ class LoggedInUser extends ChangeNotifier {
   }
 
 // Initialises the user once signup is finalised with teamname/name already set prior
-  void initialiseUserSignup() {
+  Future<void> initialiseUserSignup() async {
     User user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       this.email = user.email;

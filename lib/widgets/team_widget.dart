@@ -39,33 +39,35 @@ class TeamWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.7,
-      child: Column(
-        children: [
-          Row(
-            children: playersToWidgets(r1Players),
-            mainAxisAlignment: MainAxisAlignment.center,
-          ),
-          Row(
-            children: playersToWidgets(r2Players),
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          ),
-          Row(
-            children: playersToWidgets(r3Players),
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-          ),
-          // SizedBox(height: 15),
-          this.bench
-              ? Bench(
-                  player: (PlayerWidget.fromTeamPlayer(
-                    this.benchPlayer,
-                    this.mode,
-                    benched: true,
-                  )),
-                )
-              : Container(),
-        ],
+    return Expanded(
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: playersToWidgets(r1Players),
+              mainAxisAlignment: MainAxisAlignment.center,
+            ),
+            Row(
+              children: playersToWidgets(r2Players),
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            ),
+            Row(
+              children: playersToWidgets(r3Players),
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            ),
+            this.bench
+                ? Bench(
+                    player: (PlayerWidget.fromTeamPlayer(
+                      this.benchPlayer,
+                      this.mode,
+                      benched: true,
+                    )),
+                  )
+                : Container(),
+          ],
+        ),
       ),
     );
   }

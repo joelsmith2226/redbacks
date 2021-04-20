@@ -96,7 +96,7 @@ class _LoginFormState extends State<LoginForm> {
         print("Successful User Login for ${userCredentials.user.email}");
         Navigator.pushReplacementNamed(context, Routes.Loading);
       });
-    } on FirebaseAuthException catch (e) {
+    } catch (e) {
       _errorHandler(e);
     }
   }

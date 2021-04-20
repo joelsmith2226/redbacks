@@ -37,6 +37,8 @@ class _LoginViewState extends State<LoginView> {
       appBar: AppBar(
         title: Text("Login", style: GoogleFonts.merriweatherSans()),
         centerTitle: true,
+        actions: [],
+        automaticallyImplyLeading: false,
       ),
       body: Container(
         decoration: BoxDecoration(

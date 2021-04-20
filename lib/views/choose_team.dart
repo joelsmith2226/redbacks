@@ -47,7 +47,7 @@ class ChooseTeamView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ChooseTeamSummary(),
-              Expanded(child: TeamWidget(team, mode: PRICE, bench: false)),
+              TeamWidget(team, mode: PRICE, bench: false),
               Container(
                 margin: EdgeInsets.all(20),
                 child: MaterialButton(
@@ -65,8 +65,15 @@ class ChooseTeamView extends StatelessWidget {
                       user.restoreOriginals();
                       Navigator.of(context).pushReplacementNamed(Routes.Home);
                     } else {
+                      String route = user.signingUp ? Routes.Login : Routes.Home;
                       user.confirmTransfersButtonPressed();
-                      Navigator.pushReplacementNamed(context, Routes.Home); // not loading... ?
+                      if (route == Routes.Home) {
+                        Navigator.pushReplacementNamed(context, route);
+                      } else {
+                        Navigator.popUntil(context, (popRoute) => popRoute.isFirst);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text("All signed up! Please login with your details!")));
+                      }
                       return;
                     }
                     ScaffoldMessenger.of(context)

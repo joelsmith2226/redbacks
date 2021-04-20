@@ -130,7 +130,9 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   Widget SecondaryTag(String value) {
     return Container(
       child: Container(
+        height: 18,
         padding: EdgeInsets.all(1),
+        child: FittedBox(
         child: RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
@@ -139,7 +141,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                   fontSize: 14,
                   color: Colors.white,
                   fontFamily: GoogleFonts.merriweatherSans().fontFamily)),
-        ),
+        ),),
         color: Theme.of(context).primaryColor.withAlpha(150),
         width: MediaQuery.of(context).size.width * 0.2,
       ),

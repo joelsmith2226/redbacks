@@ -24,7 +24,6 @@ class _LoadingViewState extends State<LoadingView> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       key: _scaffoldKey,
       body: Container(
@@ -52,25 +51,25 @@ class _LoadingViewState extends State<LoadingView> {
   }
 
   void _initialiseSignup() async {
-    LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-    await user.loadInPlayerAndGWHistoryDB(); // ensures player DB loaded before init
-    await user.initialiseUserSignup();
-    Navigator.pushReplacementNamed(context, Routes.ChooseTeam);
+    if (this.loginOnce) {
+      this.loginOnce = false;
+      LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+      await user
+          .loadInPlayerAndGWHistoryDB(); // ensures player DB loaded before init
+      await user.initialiseUserSignup();
+      Navigator.pushReplacementNamed(context, Routes.ChooseTeam);
+    }
   }
 
   void _initialiseLogin() async {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
     if (this.loginOnce) {
       this.loginOnce = false;
-      await user.loadInPlayerAndGWHistoryDB(); // ensures player DB loaded before init
-      await user.initialiseUserLogin().whenComplete(() {
-        print("Finished Loading, user should be fully initialised");
-        Navigator.pushReplacementNamed(context, Routes.Home);
-      }).onError((error, stackTrace) {
-        ErrorDialog err = ErrorDialog(body: "Error in loading user");
-        err.displayCard();
-        return;
-      });
+      await user
+          .loadInPlayerAndGWHistoryDB(); // ensures player DB loaded before init
+      await user.initialiseUserLogin();
+      print("Finished Loading, user should be fully initialised");
+      Navigator.pushReplacementNamed(context, Routes.Home);
     }
   }
 }
