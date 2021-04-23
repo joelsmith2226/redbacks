@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:redbacks/views/admin.dart';
 import 'package:redbacks/views/choose_team.dart';
 import 'package:redbacks/views/edit_gw.dart';
+import 'package:redbacks/views/flag.dart';
 import 'package:redbacks/views/home.dart';
 import 'package:redbacks/views/loading.dart';
 import 'package:redbacks/views/login.dart';
@@ -9,6 +10,7 @@ import 'package:redbacks/views/player_stats.dart';
 import 'package:redbacks/views/point_page_other_user.dart';
 import 'package:redbacks/views/signup.dart';
 import 'package:redbacks/views/transfer.dart';
+import 'package:redbacks/views/unknown.dart';
 
 class Routes {
   // Route name constants
@@ -19,9 +21,12 @@ class Routes {
   static const String Transfer = '/transfer';
   static const String Loading = '/loading';
   static const String Admin = '/admin';
+  static const String Flag = '/admin/flag';
   static const String EditGW = '/admin/edit-gw';
   static const String PlayerStats = '/player-stats';
   static const String PointPageOther = '/home/point-page-other-user';
+  static const String Unknown = '/unknown';
+
 
   /// The map used to define our routes, needs to be supplied to [MaterialApp]
   static Map<String, WidgetBuilder> getRoutes() {
@@ -36,6 +41,8 @@ class Routes {
       Routes.PlayerStats: (context) => PlayerStatsView(),
       Routes.PointPageOther: (context) => PointPageOtherUser(),
       Routes.EditGW: (context) => EditGWView(),
+      Routes.Unknown: (context) => UnknownView(),
+      Routes.Flag: (context) => FlagView(),
     };
   }
 }

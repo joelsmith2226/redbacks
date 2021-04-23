@@ -14,7 +14,7 @@ class FirebasePlayers {
           'name': p.name,
           'price': p.price,
           'position': p.position,
-          'flagged': p.flagged,
+          'flagged': p.flag == null ? null : p.flag.toMap(),
           'transferredIn': p.transferredIn,
           'transferredOut': p.transferredOut,
           'gwPts': p.currPts,
@@ -130,5 +130,15 @@ class FirebasePlayers {
   Future<void> repushAllGWs() async {
     // repush all exists GWs
 
+  }
+
+  Future<void> setFlag(Player p) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    // Get correct player doc
+    QuerySnapshot player = await firestore.collection('players').where('name', isEqualTo: p.name).limit(1).get();
+
+    firestore.collection('players').doc(player.docs[0].id).set({
+      'flagged': p.flag == null ? null : p.flag.toMap(),
+    }, SetOptions(merge: true));
   }
 }

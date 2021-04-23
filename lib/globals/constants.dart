@@ -10,7 +10,7 @@ Map<int, Color> colorSwatch = {
   600: Color.fromRGBO(160, 19, 0, .7),
   700: Color.fromRGBO(160, 19, 0, .8),
   800: Color.fromRGBO(160, 19, 0, .9),
-  900: Color.fromRGBO(160, 19, 0, 1),
+  900: Color.fromRGBO(160, 19, 0, 1.0),
 };
 
 const List<String> admins = ["joel.smith2226@gmail.com"];
@@ -143,3 +143,7 @@ class OtherPointPageArgs {
 
 const int UNLIMITED = 100;
 const String UNLIMITED_SYMBOL = '∞';
+
+const String SEVERITY = 'severity';
+const String MESSAGE = 'message';
+const String PERCENT = 'percent';

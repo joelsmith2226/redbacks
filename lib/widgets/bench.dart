@@ -13,8 +13,7 @@ class Bench extends StatefulWidget {
 class _BenchState extends State<Bench> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
+    return Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height * 0.15,
         color: Colors.black.withAlpha(100),
@@ -30,7 +29,7 @@ class _BenchState extends State<Bench> {
           ],
         ),
         alignment: Alignment.center,
-      ),
+
     );
   }
 }

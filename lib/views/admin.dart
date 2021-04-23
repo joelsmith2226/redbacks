@@ -91,13 +91,13 @@ class _AdminViewState extends State<AdminView> {
               children: [
                 MaterialButton(
                     color: Theme.of(context).accentColor,
-                    child: Text("Go Back"),
+                    child: Text("Go Back", style: TextStyle(color: Colors.white)),
                     onPressed: () {
                       Navigator.pushReplacementNamed(context, Routes.Home);
                     }),
                 MaterialButton(
                   color: Theme.of(context).accentColor,
-                  child: Text("Logout"),
+                  child: Text("Logout", style: TextStyle(color: Colors.white)),
                   onPressed: () async {
                     await FirebaseAuth.instance.signOut();
                     Navigator.pushReplacementNamed(context, "/login");

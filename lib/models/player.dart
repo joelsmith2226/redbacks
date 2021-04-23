@@ -1,7 +1,9 @@
+import 'package:redbacks/models/flag.dart';
 import 'package:redbacks/providers/gameweek.dart';
 
 class Player {
-  String _uid = ""; // Hopefully will never not be set from DB.. or its a team version player... :|
+  String _uid =
+      ""; // Hopefully will never not be set from DB.. or its a team version player... :|
   String _name;
   double _price;
   int _transferredIn = 0;
@@ -10,7 +12,7 @@ class Player {
   int _currPts = 0;
   String _rank = "";
   String _position;
-  String _flagged = "";
+  Flag _flag;
   bool _removed = false;
   bool _inConsideration = false;
   String _pic = "";
@@ -25,7 +27,7 @@ class Player {
     this._currPts = 0;
     this._rank = "";
     this._position = "";
-    this._flagged = "";
+    this._flag = null;
   }
 
   Player.template() {
@@ -37,7 +39,7 @@ class Player {
     this._currPts = 5;
     this._rank = "";
     this._position = "FWD";
-    this._flagged = "";
+    this._flag = null;
   }
 
   Player.fromData(Map<String, dynamic> data, {String uid = ""}) {
@@ -50,19 +52,20 @@ class Player {
     this.currPts = data["gwPts"];
     this.rank = "";
     this.position = data["position"];
-    this.flagged = data["flagged"];
+    this.flag = data["flagged"] == null || data["flagged"] == "" ? null : Flag.fromData(data["flagged"]);
     this.pic = data["picture"];
   }
 
-  Map<String, dynamic> toMap(){
+  Map<String, dynamic> toMap() {
     return {
-      "Name" : this.name,
-      "Pos" : this.position,
+      "Name": this.name,
+      "Pos": this.position,
       "Price": this.price,
       "GW Pts": this.currPts,
       "Total Pts": this.totalPts,
       "In": this.transferredIn,
       "Out": this.transferredOut,
+      "flagged": this.flag == null ? null : this.flag.toMap(),
     };
   }
 
@@ -122,10 +125,10 @@ class Player {
     _name = value;
   }
 
-  String get flagged => _flagged;
+  Flag get flag => _flag;
 
-  set flagged(String value) {
-    _flagged = value;
+  set flag(Flag value) {
+    _flag = value;
   }
 
   String get position => _position;
@@ -165,14 +168,14 @@ class Player {
   }
 
   String getFirstInitial() {
-    if (this.name.length > 0){
+    if (this.name.length > 0) {
       return this.name[0];
     } else {
       return '';
     }
   }
 
-  String getNameTag(){
+  String getNameTag() {
     if (this.name.length == 0) {
       return '?';
     } else {

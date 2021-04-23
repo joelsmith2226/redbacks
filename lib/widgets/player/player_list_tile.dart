@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/router.dart';
+import 'package:redbacks/models/flag.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
@@ -81,7 +82,7 @@ class PlayerListTile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           columnCell(this.player.position, 0.1),
-          columnCell(this.player.name, 0.28),
+          columnCell(this.player.name, 0.28, showFlag: true),
           columnCell("\$${this.player.price}m", 0.15),
           columnCell("${this.player.currPts}pts", 0.15),
           columnCell("${this.player.totalPts}pts", 0.15),
@@ -92,14 +93,24 @@ class PlayerListTile extends StatelessWidget {
     );
   }
 
-  Widget columnCell(String value, double width) {
+  Widget columnCell(String value, double width, {bool showFlag = false}) {
+    Flag f = this.player.flag;
+    TextStyle t = TextStyle(color: Colors.black);
+    Color c = Colors.white;
+    if (f != null && showFlag){
+      c = f.severity == 1 ? Colors.amber : Colors.red;
+      t = TextStyle(color: Colors.white);
+    }
+
     return Container(
       height: 20,
       width: MediaQuery.of(context).size.width * width,
+      color: c,
       child: Text(
         value,
         textAlign: TextAlign.center,
         textScaleFactor: 0.8,
+        style: t
       ),
     );
   }

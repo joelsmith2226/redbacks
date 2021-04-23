@@ -1,4 +1,4 @@
-package com.example.redbacks
+package com.joelsmithinc.redbacks
 
 import io.flutter.embedding.android.FlutterActivity
 

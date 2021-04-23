@@ -11,7 +11,6 @@ class PlayerStatsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
-    print("user players: ${user.playerDB.length}");
     return Scaffold(
       key: _scaffoldKey,
       body: Stack(

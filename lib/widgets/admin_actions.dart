@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:redbacks/globals/initial_data.dart';
 import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
 import 'package:redbacks/globals/rFirebase/firebasePlayers.dart';
+import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/form_widgets.dart';
 
@@ -31,6 +32,7 @@ class _AdminActionsState extends State<AdminActions> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           calcTotalCurrPtsPlayersBtn(),
+          setFlagButton(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -61,6 +63,18 @@ class _AdminActionsState extends State<AdminActions> {
             content: Text("DEADLINE ACTIVATED: new curr gw ${user.currGW}"),
           ));
           setState(() {});
+        });
+  }
+
+  Widget setFlagButton() {
+    return MaterialButton(
+        child: Text(
+          "Manage Flags",
+          style: TextStyle(color: Colors.white),
+        ),
+        color: Colors.purple,
+        onPressed: () {
+          Navigator.pushNamed(context, Routes.Flag);
         });
   }
 

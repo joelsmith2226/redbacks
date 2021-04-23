@@ -13,6 +13,7 @@ class SignupView extends StatelessWidget {
         title: Text("Signup", style: GoogleFonts.merriweatherSans()),
         centerTitle: true,
       ),
+      resizeToAvoidBottomInset: false,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -20,7 +21,10 @@ class SignupView extends StatelessWidget {
             fit: BoxFit.fill,
           ),
         ),
-        child: SignupForm(),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+            body: SignupForm(),
+        ),
       ),
     );
   }

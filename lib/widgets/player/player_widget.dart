@@ -40,7 +40,8 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   }
 
   Widget CarouselPlayer() {
-    return Container(
+    return FittedBox(
+        child: Container(
       child: InkWell(
         child: Column(
           children: [
@@ -52,39 +53,41 @@ class _PlayerWidgetState extends State<PlayerWidget> {
           ],
         ),
       ),
-    );
+    ),);
   }
 
   Widget PointPricePickPlayer() {
     bool smallMode = widget.benched;
     var widthMultiplier = smallMode ? 0.15 : 0.25;
     double width = MediaQuery.of(context).size.width * widthMultiplier;
-    return Container(
-      child: InkWell(
-        onTap: showPlayerCardFn(),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Aura(
-              teamPlayer: widget.teamPlayer,
-              child: Column(
-                children: [
-                  Image.asset(
-                    (widget.teamPlayer.name == "" ||
-                            widget.teamPlayer.removed == true)
-                        ? "assets/avatar-nobg-unset.png"
-                        : "assets/avatar-nobg.png",
-                    width: width,
-                  ),
-                  NameTag(),
-                  SecondaryTag(_getSecondaryValue())
-                ],
+    return FittedBox(
+      child: Container(
+        child: InkWell(
+          onTap: showPlayerCardFn(),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Aura(
+                player: widget.player,
+                child: Column(
+                  children: [
+                    Image.asset(
+                      (widget.teamPlayer.name == "" ||
+                              widget.teamPlayer.removed == true)
+                          ? "assets/avatar-nobg-unset.png"
+                          : "assets/avatar-nobg.png",
+                      width: width,
+                    ),
+                    NameTag(),
+                    SecondaryTag(_getSecondaryValue())
+                  ],
+                ),
               ),
-            ),
-            widget.mode == PRICE
-                ? Container()
-                : CaptainsArmband(widget.teamPlayer.rank),
-          ],
+              widget.mode == PRICE
+                  ? Container()
+                  : CaptainsArmband(widget.teamPlayer.rank),
+            ],
+          ),
         ),
       ),
     );
@@ -93,10 +96,10 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   Function showPlayerCardFn() {
     if (widget.teamPlayer.name != "") {
       PlayerCard pc = PlayerCard(
-          player: widget.player,
-          teamPlayer: widget.teamPlayer,
-          context: context,
-          mode: widget.mode,
+        player: widget.player,
+        teamPlayer: widget.teamPlayer,
+        context: context,
+        mode: widget.mode,
       );
       return () => pc.displayCard();
     } else {
@@ -130,18 +133,19 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   Widget SecondaryTag(String value) {
     return Container(
       child: Container(
-        height: 18,
+        height: 15,
         padding: EdgeInsets.all(1),
         child: FittedBox(
-        child: RichText(
-          textAlign: TextAlign.center,
-          text: TextSpan(
-              text: value,
-              style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                  fontFamily: GoogleFonts.merriweatherSans().fontFamily)),
-        ),),
+          child: RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+                text: value,
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                    fontFamily: GoogleFonts.merriweatherSans().fontFamily)),
+          ),
+        ),
         color: Theme.of(context).primaryColor.withAlpha(150),
         width: MediaQuery.of(context).size.width * 0.2,
       ),
@@ -155,7 +159,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       return Container();
     }
     return Positioned(
-      right: 1,
+      right: 10,
       bottom: 40,
       child: Container(
         width: MediaQuery.of(context).size.width * 0.08,

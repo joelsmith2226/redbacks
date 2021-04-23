@@ -123,6 +123,7 @@ class _HomeViewState extends State<HomeView> {
 
   List<Widget> drawerActions() {
     return [
+      Image.asset('assets/icon/spider.png'),
       actionBtn("Player Stats", _playerStatsFn),
       actionBtn("Admin", _adminFn),
       actionBtn("Settings", _settingsFn),

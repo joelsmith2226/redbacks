@@ -1,5 +1,5 @@
 name: redbacks
-description: A new Flutter project.
+description: 'RFL is the ultimate fantasy app for the Caringbah Redbacks U18Cs'
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -30,7 +30,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   firebase_core: ^1.0.2
-  firebase_auth: ^1.0.1
+  firebase_auth: ^1.1.1
   flutter_form_builder: ^6.0.0-nullsafety.1
   google_fonts: ^2.0.0
   cloud_firestore: "^1.0.3"
@@ -38,11 +38,17 @@ dependencies:
   flutter_touch_spin: ^2.0.0-nullsafety.1
   pull_to_refresh: ^1.6.4
 
-
-
 dev_dependencies:
+  flutter_launcher_icons: ^0.9.0
+
   flutter_test:
     sdk: flutter
+
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/spider.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

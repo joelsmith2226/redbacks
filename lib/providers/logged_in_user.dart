@@ -383,6 +383,7 @@ class LoggedInUser extends ChangeNotifier {
       return "Team got corrupted somehow with duplicate players";
     } else {
       notifyListeners();
+      return "";
     }
   }
 

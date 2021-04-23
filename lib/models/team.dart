@@ -160,7 +160,6 @@ class Team {
     // Checks if somehow a player has been duplicated
     List<String> names = [];
     this.players.forEach((player) {
-      print(names);
       if (names.contains(player.name)){
         return true;
       } else {

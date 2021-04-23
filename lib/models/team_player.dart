@@ -1,3 +1,4 @@
+import 'package:redbacks/models/flag.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/providers/gameweek.dart';
 
@@ -14,7 +15,6 @@ class TeamPlayer {
   int _totalPts = 0;
   int _currPts = 0;
   String _position;
-  String _flagged = "";
   bool _removed = false;
   String _pic = "";
   List<Gameweek> _gwResults = [];
@@ -22,6 +22,7 @@ class TeamPlayer {
   int _transferredOut = 0;
   Player player;
   bool _inConsideration = false;
+  Flag _flag;
 
   TeamPlayer.blank(int index) {
     this.name = "";
@@ -63,7 +64,7 @@ class TeamPlayer {
     this.totalPts = p.totalPts;
     this.currPts = p.currPts;
     this.position = p.position;
-    this.flagged = p.flagged;
+    this.flag = p.flag;
     this.removed = p.removed;
     this.pic = p.pic;
     this.gwResults = p.gwResults;
@@ -121,10 +122,10 @@ class TeamPlayer {
     _name = value;
   }
 
-  String get flagged => _flagged;
+  Flag get flag => _flag;
 
-  set flagged(String value) {
-    _flagged = value;
+  set flag(Flag value) {
+    _flag = value;
   }
 
   String get position => _position;

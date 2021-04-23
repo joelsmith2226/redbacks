@@ -7,6 +7,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 
 import 'package:redbacks/views/login.dart';
+import 'package:redbacks/views/unknown.dart';
 
 import 'globals/constants.dart';
 import 'globals/initial_data.dart';
@@ -75,11 +76,12 @@ class MyApp extends StatelessWidget {
       ),
       home: LoginView(),
       routes: Routes.getRoutes(),
+      onUnknownRoute: (settings) => MaterialPageRoute(
+          builder: (context) => UnknownView()),
     );
   }
 
   Widget SomethingWentWrong() {
-    print("something wrong");
     return MaterialApp(
       home: Scaffold(
         body: Container(

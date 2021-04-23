@@ -40,15 +40,20 @@ class _LoginViewState extends State<LoginView> {
         actions: [],
         automaticallyImplyLeading: false,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/background.jpeg"),
-            fit: BoxFit.fill,
+      backgroundColor: Colors.black,
+      resizeToAvoidBottomInset: false,
+      body: Stack(children: [
+        Container(
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/background.jpeg"),
+              fit: BoxFit.fill,
+            ),
           ),
         ),
-        child: LoginForm(),
-      ),
+        LoginForm()
+      ]),
       floatingActionButton: FloatingActionButton(
         child: Text(
           "Sign Up",

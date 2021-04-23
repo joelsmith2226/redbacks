@@ -57,7 +57,7 @@ class FormWidgets {
   }
 
   Widget dropdownForm(String name, String label, List<String> options,
-      {String initial = "", Function onChanged}) {
+      {String initial = ""}) {
     return FormBuilderChoiceChip(
       alignment: WrapAlignment.center,
       initialValue: initial,
@@ -75,9 +75,6 @@ class FormWidgets {
                 options[index],
                 style: TextStyle(fontSize: 10),
               ))),
-      onChanged: (val) {
-        onChanged(val);
-      },
     );
   }
 }

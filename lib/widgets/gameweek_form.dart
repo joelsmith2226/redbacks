@@ -22,7 +22,7 @@ class _GameweekFormState extends State<GameweekForm> {
   FirebaseAuth auth = FirebaseAuth.instance;
   final GlobalKey<FormBuilderState> _gameFormKey =
       GlobalKey<FormBuilderState>();
-  final double heightMultiplier = 0.3;
+  final double heightMultiplier = 0.5;
 
   LoggedInUser user;
   bool _loading = false;
