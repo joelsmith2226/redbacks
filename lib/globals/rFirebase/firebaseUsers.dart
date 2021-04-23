@@ -91,6 +91,7 @@ class FirebaseUsers {
       "free-transfers": user.freeTransfers,
       "completed-transfers": transfersAsStrings,
       "hits": user.hits,
+      "chips": user.chips,
     })
         .then((value) => print("User Misc Details Added: ${user.uid}"))
         .catchError(
@@ -133,8 +134,9 @@ class FirebaseUsers {
   Future<void> getAdminInfo(LoggedInUser user) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference users = firestore.collection('users');
-    return users.doc('admin').get().then((DocumentSnapshot docs) {
+    users.doc('admin').get().then((DocumentSnapshot docs) {
       user.currGW = docs.data()["curr-gw"];
+      user.patchMode = docs.data()["patch-mode"];
     }).onError((error, stackTrace) {
       print("Error in getting admin data: ${error}");
     });

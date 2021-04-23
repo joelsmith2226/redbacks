@@ -34,8 +34,10 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     switch (widget.mode) {
       case CAROUSEL:
         return CarouselPlayer();
+      case PRICE:
+        return PricePlayer();
       default:
-        return PointPricePickPlayer();
+        return PointPickPlayer();
     }
   }
 
@@ -56,7 +58,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     ),);
   }
 
-  Widget PointPricePickPlayer() {
+  Widget PointPickPlayer() {
     bool smallMode = widget.benched;
     var widthMultiplier = smallMode ? 0.15 : 0.25;
     double width = MediaQuery.of(context).size.width * widthMultiplier;
@@ -74,6 +76,43 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                     Image.asset(
                       (widget.teamPlayer.name == "" ||
                               widget.teamPlayer.removed == true)
+                          ? "assets/avatar-nobg-unset.png"
+                          : "assets/avatar-nobg.png",
+                      width: width,
+                    ),
+                    NameTag(),
+                    SecondaryTag(_getSecondaryValue())
+                  ],
+                ),
+              ),
+              widget.mode == PRICE
+                  ? Container()
+                  : CaptainsArmband(widget.teamPlayer.rank),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget PricePlayer() {
+    bool smallMode = widget.benched;
+    var widthMultiplier = smallMode ? 0.15 : 0.25;
+    double width = MediaQuery.of(context).size.width * widthMultiplier;
+    return FittedBox(
+      child: Container(
+        child: InkWell(
+          onTap: showPlayerCardFn(),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Aura(
+                teamPlayer: widget.teamPlayer,
+                child: Column(
+                  children: [
+                    Image.asset(
+                      (widget.teamPlayer.name == "" ||
+                          widget.teamPlayer.removed == true)
                           ? "assets/avatar-nobg-unset.png"
                           : "assets/avatar-nobg.png",
                       width: width,

@@ -55,6 +55,7 @@ class ChooseTeamView extends StatelessWidget {
                   color: Theme.of(context).canvasColor,
                   onPressed: () {
                     String errMsg = "";
+                    print(team.corrupted());
                     if (!team.isComplete()) {
                       errMsg =
                           "Team is incomplete! Make sure no ? players left";
@@ -65,19 +66,12 @@ class ChooseTeamView extends StatelessWidget {
                       user.restoreOriginals();
                       Navigator.of(context).pushReplacementNamed(Routes.Home);
                     } else {
-                      String route = user.signingUp ? Routes.Login : Routes.Home;
-                      user.confirmTransfersButtonPressed();
-                      if (route == Routes.Home) {
-                        Navigator.pushReplacementNamed(context, route);
-                      } else {
-                        Navigator.popUntil(context, (popRoute) => popRoute.isFirst);
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text("All signed up! Please login with your details!")));
+                      Navigator.of(context).pushNamed(Routes.Confirm);
                       }
-                      return;
-                    }
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(SnackBar(content: Text(errMsg)));
+                    if (errMsg != '')
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text(errMsg)));
+                    return;
                   },
                   child: Text('Confirm'),
                 ),

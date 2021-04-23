@@ -160,12 +160,9 @@ class Team {
     // Checks if somehow a player has been duplicated
     List<String> names = [];
     this.players.forEach((player) {
-      if (names.contains(player.name)){
-        return true;
-      } else {
         names.add(player.name);
-      }
     });
-    return false;
+
+    return names.toSet().toList().length != 6;
   }
 }

@@ -1,11 +1,11 @@
-class Chip {
+class RFLChip {
   String _name;
   bool _available;
   bool _active;
 
-  Chip(this._name, this._available, this._active);
+  RFLChip(this._name, this._available, this._active);
 
-  Chip.fromMap(Map<String, dynamic> data){
+  RFLChip.fromMap(Map<String, dynamic> data){
     this.name = data["name"];
     this.available = data["available"];
     this.active = data["active"];

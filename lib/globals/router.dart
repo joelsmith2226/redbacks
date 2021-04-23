@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:redbacks/views/admin.dart';
 import 'package:redbacks/views/choose_team.dart';
+import 'package:redbacks/views/confirm_transfer.dart';
 import 'package:redbacks/views/edit_gw.dart';
 import 'package:redbacks/views/flag.dart';
 import 'package:redbacks/views/home.dart';
@@ -26,6 +27,7 @@ class Routes {
   static const String PlayerStats = '/player-stats';
   static const String PointPageOther = '/home/point-page-other-user';
   static const String Unknown = '/unknown';
+  static const String Confirm = '/choose-team/confirm-transfer';
 
 
   /// The map used to define our routes, needs to be supplied to [MaterialApp]
@@ -43,6 +45,7 @@ class Routes {
       Routes.EditGW: (context) => EditGWView(),
       Routes.Unknown: (context) => UnknownView(),
       Routes.Flag: (context) => FlagView(),
+      Routes.Confirm: (context) => ConfirmTransfersView(),
     };
   }
 }

@@ -149,6 +149,47 @@ class _AdminActionsState extends State<AdminActions> {
     );
   }
 
+
+  Widget resetChips() {
+    return MaterialButton(
+      child: Text(
+        "Reset Chips",
+        style: TextStyle(color: Colors.white),
+      ),
+      color: Colors.black,
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Reset Chips?'),
+                content: Text("Which chips do you want to reset?"),
+                actions: [
+                  MaterialButton(
+                    textColor: Color(0xFF6200EE),
+                    onPressed: () {
+                      InitialData();
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Players reset'),
+                      ));
+                      Navigator.pop(context);
+                    },
+                    child: Text('Yes'),
+                  ),
+                  MaterialButton(
+                    textColor: Color(0xFF6200EE),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('No'),
+                  ),
+                ],
+              );
+            });
+      },
+    );
+  }
+
   Widget calcTotalCurrPtsPlayersBtn() {
     return MaterialButton(
         child: Text(

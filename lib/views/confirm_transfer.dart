@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/router.dart';
+import 'package:redbacks/models/transfer.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:redbacks/widgets/chips_container.dart';
+import 'package:redbacks/widgets/transfer_list.dart';
 
 class ConfirmTransfersView extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -10,9 +13,12 @@ class ConfirmTransfersView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
+    List<Transfer> pendings = user.currentTransfersInProgress();
+
     return Scaffold(
       key: _scaffoldKey,
       body: Stack(
+        alignment: Alignment.center,
         children: [
           Container(
             decoration: BoxDecoration(
@@ -25,10 +31,13 @@ class ConfirmTransfersView extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(10),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Transfer list
-
+                TransferList(transferList: pendings),
                 // chip options
+                ChipsContainer(chips: user.chips),
                 // confirm
               ],
             ),
@@ -42,12 +51,22 @@ class ConfirmTransfersView extends StatelessWidget {
         ),
         centerTitle: true,
       ),
+      backgroundColor: Theme.of(context).primaryColor,
       persistentFooterButtons: [
-        MaterialButton(
-          child: Text("Back"),
-          onPressed: () => Navigator.pop(context),
+        Container(
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              MaterialButton(
+                child: Text("Back"),
+                onPressed: () => Navigator.pop(context),
+                color: Colors.black,
+              ),
+              _confirmButton(user, context)
+            ],
+          ),
         ),
-        _confirmButton(user, context)
       ],
     );
   }
@@ -55,6 +74,7 @@ class ConfirmTransfersView extends StatelessWidget {
   MaterialButton _confirmButton(LoggedInUser user, BuildContext context) {
     return MaterialButton(
       child: Text("Confirm"),
+      color: Color(0xFF008000),
       onPressed: () {
         String route = user.signingUp ? Routes.Login : Routes.Home;
         user.confirmTransfersButtonPressed();

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/login_form.dart';
+import 'package:redbacks/widgets/patch_mode.dart';
 
 class LoginView extends StatefulWidget {
   @override
@@ -14,6 +15,21 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   LoggedInUser user;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _loadedAdmin;
+
+  @override
+  void initState() {
+    _loadedAdmin = false;
+    this.user = Provider.of<LoggedInUser>(context, listen: false);
+    this.user.getAdminInfo().then(
+          (_) => setState(
+            () {
+              _loadedAdmin = true;
+            },
+          ),
+        );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +39,13 @@ class _LoginViewState extends State<LoginView> {
       user.loadInPlayerAndGWHistoryDB();
     }
 
-    this.user.getAdminInfo();
-
-    // For persistent logins todo
-    isLoggedIn().then((bool isSignedIn) => isSignedIn
-        ? SchedulerBinding.instance.addPostFrameCallback((_) {
-            Navigator.pushReplacementNamed(context, Routes.Loading);
-          })
-        : null);
+    // For persistent logins
+    if (_loadedAdmin)
+      isLoggedIn().then((bool isSignedIn) => isSignedIn
+          ? SchedulerBinding.instance.addPostFrameCallback((_) {
+              Navigator.pushReplacementNamed(context, Routes.Loading);
+            })
+          : null);
 
     return Scaffold(
       key: _scaffoldKey,
@@ -52,9 +67,9 @@ class _LoginViewState extends State<LoginView> {
             ),
           ),
         ),
-        LoginForm()
+        _loadedAdmin && !user.patchMode ? LoginForm() : PatchMode(),
       ]),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: !user.patchMode ? FloatingActionButton(
         child: Text(
           "Sign Up",
           style: TextStyle(fontSize: 14),
@@ -63,7 +78,7 @@ class _LoginViewState extends State<LoginView> {
         onPressed: () {
           Navigator.pushNamed(context, Routes.Signup);
         },
-      ),
+      ) : Container(),
     );
   }
 

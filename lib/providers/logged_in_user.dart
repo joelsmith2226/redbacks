@@ -7,6 +7,7 @@ import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
 import 'package:redbacks/globals/rFirebase/firebaseGWHistory.dart';
 import 'package:redbacks/models/original_models.dart';
 import 'package:redbacks/models/player.dart';
+import 'package:redbacks/models/rfl_chip.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/models/transfer.dart';
@@ -36,8 +37,10 @@ class LoggedInUser extends ChangeNotifier {
   OriginalModels _originalModels;
   int _currGW;
   int _hits;
-  List<Chip> _chips = [];
+  List<RFLChip> _chips = [];
 
+  // PATCH MODE
+  bool patchMode = false;
   LoggedInUser();
 
   ///------ INITIALISATION METHODS ------///
@@ -100,8 +103,11 @@ class LoggedInUser extends ChangeNotifier {
   }
 
   void setInitialChips() {
-    this.chips = [];
-    // todo add chips when we get here
+    this.chips = [
+      RFLChip("Wildcard", true, false),
+      RFLChip("Free Hit", true, false),
+      RFLChip("Triple Cap", true, false)
+    ];
   }
 
   ///------ DB METHODS ------///
@@ -162,10 +168,11 @@ class LoggedInUser extends ChangeNotifier {
     data.data()["completed-transfers"] != null
         ? completedTransfersFromData(data.get("completed-transfers"))
         : this.completedTransfers = [];
+    this.chips = chipsFromData(data.get("chips"));
   }
 
-  void getAdminInfo() {
-    FirebaseCore().getAdminInfo(this);
+  Future<void> getAdminInfo() async {
+    await FirebaseCore().getAdminInfo(this);
   }
 
   Future<void> getCompleteUserGWHistory() async {
@@ -287,8 +294,13 @@ class LoggedInUser extends ChangeNotifier {
     this.completedTransfers.forEach((Transfer t) {
       comTrans.add("${t.outgoing.name}=>${t.incoming.name}");
     });
-    print(comTrans);
     return comTrans;
+  }
+
+  List<RFLChip> chipsFromData(List<Map<String, dynamic>> chipData){
+    this.chips = [];
+    chipData.forEach((chipMap) => this.chips.add(RFLChip.fromMap(chipMap)));
+
   }
 
   /// A transfer has just been made. Check if you
@@ -320,6 +332,35 @@ class LoggedInUser extends ChangeNotifier {
         newTrans.add("${oldTP.name}=>${newTP.name}");
       }
     }
+  }
+
+  List<Transfer> currentTransfersInProgress(){
+    List<Transfer> pendings = [];
+    for (int i = 0; i < this.team.players.length; i++) {
+      TeamPlayer newTP = this.team.players[i];
+      TeamPlayer oldTP = this.originalModels.team.players[i];
+      if (newTP.name != oldTP.name) {
+        pendings
+            .add(Transfer.fromPlayers(incoming: newTP, outgoing: oldTP));
+      }
+    }
+
+    // Check if there's any chains
+    int i = 0;
+    while (i < pendings.length) {
+      Transfer curr = pendings[i];
+      if (pendings.any((otherTransfer) =>
+      otherTransfer.outgoing.name == curr.incoming.name)) {
+        Transfer merge = pendings.firstWhere((t) =>
+        t.outgoing.name == curr.incoming.name);
+        merge.outgoing = curr.outgoing;
+        pendings.remove(curr);
+      } else {
+        i++;
+      }
+    }
+
+    return pendings;
   }
 
   void reinstateOriginalTeamPlayer(TeamPlayer currOG, Team originalTeam) {
@@ -530,9 +571,9 @@ class LoggedInUser extends ChangeNotifier {
     _hits = value;
   }
 
-  List<Chip> get chips => _chips;
+  List<RFLChip> get chips => _chips;
 
-  set chips(List<Chip> value) {
+  set chips(List<RFLChip> value) {
     _chips = value;
   }
 
