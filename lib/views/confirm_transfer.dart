@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +14,9 @@ class ConfirmTransfersView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
+    print("hmm");
     List<Transfer> pendings = user.currentTransfersInProgress();
+    print('hi there');
 
     return Scaffold(
       key: _scaffoldKey,
@@ -75,13 +78,14 @@ class ConfirmTransfersView extends StatelessWidget {
     return MaterialButton(
       child: Text("Confirm"),
       color: Color(0xFF008000),
-      onPressed: () {
+      onPressed: () async {
         String route = user.signingUp ? Routes.Login : Routes.Home;
         user.confirmTransfersButtonPressed();
         if (route == Routes.Home) {
           Navigator.pushReplacementNamed(context, route);
         } else {
-          Navigator.popUntil(context, (popRoute) => popRoute.isFirst);
+          Navigator.pushReplacementNamed(context, Routes.Login);
+          await FirebaseAuth.instance.signOut();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text("All signed up! Please login with your details!")));
         }

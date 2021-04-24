@@ -16,6 +16,7 @@ class RFLChip {
     map["name"] = this.name;
     map["available"] = this.available;
     map["active"] = this.active;
+    return map;
   }
 
   bool get active => _active;

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:redbacks/globals/initial_data.dart';
 import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
 import 'package:redbacks/globals/rFirebase/firebasePlayers.dart';
+import 'package:redbacks/globals/rFirebase/firebaseUsers.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/form_widgets.dart';
@@ -14,11 +15,17 @@ class AdminActions extends StatefulWidget {
 
 class _AdminActionsState extends State<AdminActions> {
   int _currGW;
+  bool wc = false;
+  bool tc = false;
+  bool fh = false;
 
   @override
   void initState() {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
     _currGW = user.currGW;
+    wc = false;
+    tc = false;
+    fh = false;
     super.initState();
   }
 
@@ -40,7 +47,9 @@ class _AdminActionsState extends State<AdminActions> {
               deadlineBtn(context, user)
             ],
           ),
-          initPlayerDBBtn(),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [initPlayerDBBtn(), resetChips()]),
         ],
       ),
     );
@@ -121,7 +130,8 @@ class _AdminActionsState extends State<AdminActions> {
             builder: (context) {
               return AlertDialog(
                 title: Text('Reset player DB?'),
-                content: Text("Are you sure you want to reinitialise playerDB? Go delete collection first or youll have double ups!"),
+                content: Text(
+                    "Are you sure you want to reinitialise playerDB? Go delete collection first or youll have double ups!"),
                 actions: [
                   MaterialButton(
                     textColor: Color(0xFF6200EE),
@@ -149,45 +159,51 @@ class _AdminActionsState extends State<AdminActions> {
     );
   }
 
-
   Widget resetChips() {
     return MaterialButton(
-      child: Text(
-        "Reset Chips",
-        style: TextStyle(color: Colors.white),
-      ),
-      color: Colors.black,
-      onPressed: () {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text('Reset Chips?'),
-                content: Text("Which chips do you want to reset?"),
-                actions: [
-                  MaterialButton(
-                    textColor: Color(0xFF6200EE),
-                    onPressed: () {
-                      InitialData();
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text('Players reset'),
-                      ));
-                      Navigator.pop(context);
-                    },
-                    child: Text('Yes'),
-                  ),
-                  MaterialButton(
-                    textColor: Color(0xFF6200EE),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('No'),
-                  ),
-                ],
-              );
-            });
-      },
-    );
+        child: Text(
+          "Reset Chips",
+          style: TextStyle(color: Colors.white),
+        ),
+        color: Colors.black,
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Reset Chips?'),
+                  content: StatefulBuilder(
+                      builder: (BuildContext context, StateSetter setState) {
+                    return Column(children: [
+                      Text("Which chips do you want to reset?"),
+                      checkBoxWithLabel("Wildcard", wc, setState),
+                      checkBoxWithLabel("Triple Cap", tc, setState),
+                      checkBoxWithLabel("Free Hit", fh, setState),
+                    ]);
+                  }),
+                  actions: [
+                    MaterialButton(
+                      textColor: Color(0xFF6200EE),
+                      onPressed: () {
+                        FirebaseUsers().resetChips(wc, tc, fh);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Chips reset'),
+                        ));
+                        Navigator.pop(context);
+                      },
+                      child: Text('Yes'),
+                    ),
+                    MaterialButton(
+                      textColor: Color(0xFF6200EE),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('No'),
+                    ),
+                  ],
+                );
+              });
+        });
   }
 
   Widget calcTotalCurrPtsPlayersBtn() {
@@ -202,5 +218,31 @@ class _AdminActionsState extends State<AdminActions> {
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text('Players Pts totalled!')));
         });
+  }
+
+  Widget checkBoxWithLabel(String name, bool val, StateSetter setter) {
+    return Row(children: [
+      Text(name),
+      Checkbox(
+        value: val,
+        onChanged: (checkVal) => setter(() {
+          _setCheck(checkVal, name);
+        }),
+      ),
+    ]);
+  }
+
+  void _setCheck(bool checkVal, String name) {
+    switch (name) {
+      case "Wildcard":
+        wc = checkVal;
+        break;
+      case "Free Hit":
+        fh = checkVal;
+        break;
+      case "Triple Cap":
+        tc = checkVal;
+        break;
+    }
   }
 }

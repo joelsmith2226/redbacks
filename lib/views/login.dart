@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/initial_data.dart';
+import 'package:redbacks/globals/rFirebase/authentication.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/login_form.dart';
@@ -16,6 +18,7 @@ class _LoginViewState extends State<LoginView> {
   LoggedInUser user;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _loadedAdmin;
+  bool _patching = false;
 
   @override
   void initState() {
@@ -25,6 +28,7 @@ class _LoginViewState extends State<LoginView> {
           (_) => setState(
             () {
               _loadedAdmin = true;
+              _patching = user.patchMode == null ? false : user.patchMode;
             },
           ),
         );
@@ -67,9 +71,9 @@ class _LoginViewState extends State<LoginView> {
             ),
           ),
         ),
-        _loadedAdmin && !user.patchMode ? LoginForm() : PatchMode(),
+        _loadedAdmin && _patching ? PatchMode() : LoginForm(),
       ]),
-      floatingActionButton: !user.patchMode ? FloatingActionButton(
+      floatingActionButton: !_patching ? FloatingActionButton(
         child: Text(
           "Sign Up",
           style: TextStyle(fontSize: 14),
@@ -83,7 +87,7 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Future<bool> isLoggedIn() async {
-    var isSignedIn = await user.isLoggedIn();
+    var isSignedIn = Authentication().isLoggedIn();
     if (isSignedIn == null) {
       return false;
     }

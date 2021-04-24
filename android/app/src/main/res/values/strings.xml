@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Redbacks Fantasy League</string>
+    <string name="facebook_app_id">1097590447395439</string>
+    <string name="fb_login_protocol_scheme">fb1097590447395439</string>
+</resources>

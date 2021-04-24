@@ -1,10 +1,9 @@
 import 'dart:async';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:redbacks/globals/rFirebase/authentication.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/pages/leaderboard.dart';
@@ -127,7 +126,7 @@ class _HomeViewState extends State<HomeView> {
       actionBtn("Player Stats", _playerStatsFn),
       actionBtn("Admin", _adminFn),
       actionBtn("Settings", _settingsFn),
-      actionBtn("Logout", _logoutFn)
+      actionBtn("Logout", () => Authentication().logoutFn(context))
     ];
   }
 
@@ -164,11 +163,6 @@ class _HomeViewState extends State<HomeView> {
           ),
           onPressed: onPressed,
         ));
-  }
-
-  Future<void> _logoutFn() async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.pushReplacementNamed(context, Routes.Login);
   }
 
   void _settingsFn() {

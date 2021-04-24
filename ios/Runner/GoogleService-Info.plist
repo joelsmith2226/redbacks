@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>510867103316-cojavrpi8ao9vvol6rkk2r2jcbsj2t77.apps.googleusercontent.com</string>
+	<string>510867103316-ivhumi7o13cu4hk7q88g50pu1um1rbqu.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.510867103316-cojavrpi8ao9vvol6rkk2r2jcbsj2t77</string>
+	<string>com.googleusercontent.apps.510867103316-ivhumi7o13cu4hk7q88g50pu1um1rbqu</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>510867103316-8nj66t0mugsr6e0ajlbt4ga8lp4icoj6.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDg0z8RNrSXxPvI1YDzv0U_Vgv-NAm_qvY</string>
 	<key>GCM_SENDER_ID</key>
@@ -19,16 +21,18 @@
 	<key>STORAGE_BUCKET</key>
 	<string>redbacks-bda72.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false/>
+	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_GCM_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true/>
+	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:510867103316:ios:af1a42c650d1ec14c517c1</string>
+	<string>1:510867103316:ios:e7052138949684d3c517c1</string>
+	<key>DATABASE_URL</key>
+	<string>https://redbacks-bda72-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>

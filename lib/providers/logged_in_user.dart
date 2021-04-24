@@ -111,10 +111,6 @@ class LoggedInUser extends ChangeNotifier {
   }
 
   ///------ DB METHODS ------///
-  bool isLoggedIn() {
-    return FirebaseAuth.instance.currentUser != null;
-  }
-
   Future<void> loadInPlayerAndGWHistoryDB() async {
     this.playerDB = [];
     await FirebaseCore().getPlayers(this.playerDB);
@@ -168,7 +164,7 @@ class LoggedInUser extends ChangeNotifier {
     data.data()["completed-transfers"] != null
         ? completedTransfersFromData(data.get("completed-transfers"))
         : this.completedTransfers = [];
-    this.chips = chipsFromData(data.get("chips"));
+    this.chips = chipsFromData(data);
   }
 
   Future<void> getAdminInfo() async {
@@ -297,10 +293,14 @@ class LoggedInUser extends ChangeNotifier {
     return comTrans;
   }
 
-  List<RFLChip> chipsFromData(List<Map<String, dynamic>> chipData){
+  List<RFLChip> chipsFromData(DocumentSnapshot chipData){
     this.chips = [];
-    chipData.forEach((chipMap) => this.chips.add(RFLChip.fromMap(chipMap)));
-
+    if (chipData.get(["wildcard"]) != null)
+      this.chips.add(RFLChip.fromMap(chipData.get(["wildcard"])));
+    if (chipData.get(["free-hit"]) != null)
+      this.chips.add(RFLChip.fromMap(chipData.get(["free-hit"])));
+    if (chipData.get(["triple-cap"]) != null)
+      this.chips.add(RFLChip.fromMap(chipData.get(["triple-cap"])));
   }
 
   /// A transfer has just been made. Check if you
@@ -336,6 +336,9 @@ class LoggedInUser extends ChangeNotifier {
 
   List<Transfer> currentTransfersInProgress(){
     List<Transfer> pendings = [];
+    if (this.originalModels == null){
+      return [];
+    }
     for (int i = 0; i < this.team.players.length; i++) {
       TeamPlayer newTP = this.team.players[i];
       TeamPlayer oldTP = this.originalModels.team.players[i];
@@ -593,5 +596,15 @@ class LoggedInUser extends ChangeNotifier {
 
   set name(String value) {
     _name = value;
+  }
+
+  List<Map<String, dynamic>> chipsToMap() {
+    List<Map<String, dynamic>> chipMaps = [];
+    this.chips.forEach((chip) { chipMaps.add(chip.toMap());});
+    return chipMaps;
+  }
+
+  bool unlimitedTransfersActive() {
+    return this.chips[0].active || this.chips[1].active;
   }
 }

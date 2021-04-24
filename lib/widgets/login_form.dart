@@ -2,8 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/rFirebase/authentication.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:redbacks/widgets/third_party_signin_button.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -29,58 +31,66 @@ class _LoginFormState extends State<LoginForm> {
     return Scaffold(
         backgroundColor: Colors.transparent,
         body: Container(
-      margin: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      color: Colors.white,
-      alignment: Alignment.center,
-      child: BuildForm(),
-    ));
+          margin: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          color: Colors.white,
+          alignment: Alignment.center,
+          child: BuildForm(),
+        ));
   }
 
   Widget BuildForm() {
     return SingleChildScrollView(
-      physics: AlwaysScrollableScrollPhysics(),
-      child: Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          InkWell(
-            child: Image.asset(
-              'assets/spider.png',
-              width: MediaQuery.of(context).size.width * 0.5,
-            ),
-            onDoubleTap: attemptLoginOnFirebaseAdmin,
-          ),
-          Image.asset(
-            'assets/title.png',
-            width: MediaQuery.of(context).size.width * 0.85,
-          ),
-          FormBuilder(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                LoginTextForm("email", "Enter Email", false),
-                LoginTextForm("pwd", "Enter password", true),
-              ],
-            ),
-          ),
-          MaterialButton(
-            color: Theme.of(context).accentColor,
-            child: Text(
-              "Login",
-              style: TextStyle(color: Colors.white),
-            ),
-            onPressed: () {
-              _formKey.currentState.save();
-              attemptLoginOnFirebase();
-            },
-          ),
-          _loading ? CircularProgressIndicator() : Container(),
-        ],
-      ),)
-    );
+        physics: AlwaysScrollableScrollPhysics(),
+        child: Container(
+            height: MediaQuery.of(context).size.height * 0.8,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  InkWell(
+                    child: Image.asset(
+                      'assets/spider.png',
+                      width: MediaQuery.of(context).size.width * 0.5,
+                    ),
+                    onDoubleTap: attemptLoginOnFirebaseAdmin,
+                  ),
+                  Image.asset(
+                    'assets/title.png',
+                    width: MediaQuery.of(context).size.width * 0.85,
+                  ),
+                  SizedBox(height: 20),
+                  ThirdPartySigninButton(company: "Google"),
+                  ThirdPartySigninButton(company: "Facebook"),
+                  ThirdPartySigninButton(company: "Apple"),
+                  Container(child: Text("...Or signup with email & password"), padding: EdgeInsets.symmetric(vertical:10),),
+                  FormBuilder(
+                    key: _formKey,
+                    child: Column(
+                      children: <Widget>[
+                        LoginTextForm("email", "Enter Email", false),
+                        LoginTextForm("pwd", "Enter password", true),
+                      ],
+                    ),
+                  ),
+                  MaterialButton(
+                    color: Theme.of(context).accentColor,
+                    child: Text(
+                      "Login",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: () {
+                      _formKey.currentState.save();
+                      attemptLoginOnFirebase();
+                    },
+                  ),
+                  _loading ? CircularProgressIndicator() : Container(),
+                ],
+              ),
+            )));
   }
 
   Widget LoginTextForm(String name, String label, bool pwd) {
@@ -108,15 +118,12 @@ class _LoginFormState extends State<LoginForm> {
       setState(() {
         _loading = true;
       });
-      this
-          .auth
-          .signInWithEmailAndPassword(
-              email: _formKey.currentState.value["email"],
-              password: _formKey.currentState.value["pwd"])
-          .then((userCredentials) {
-        print("Successful User Login for ${userCredentials.user.email}");
-        Navigator.pushReplacementNamed(context, Routes.Loading);
-      });
+      String email = _formKey.currentState.value["email"];
+      String pwd = _formKey.currentState.value["pwd"];
+      UserCredential userCredentials =
+          await Authentication().loginUsingEmail(email, pwd);
+      print("Successful User Login for ${userCredentials.user.email}");
+      Navigator.pushReplacementNamed(context, Routes.Loading);
     } catch (e) {
       _errorHandler(e);
       setState(() {
@@ -126,23 +133,21 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   void attemptLoginOnFirebaseAdmin() async {
-    print("Attempting admin hack for joel.smith2226");
-    setState(() {
-      _loading = true;
-    });
-    this
-        .auth
-        .signInWithEmailAndPassword(
-            email: "joel.smith2226@gmail.com", password: "password")
-        .then((UserCredential userCredential) {
+    try {
+      print("Attempting admin hack for joel.smith2226");
+      setState(() {
+        _loading = true;
+      });
+      UserCredential userCredential = await Authentication()
+          .loginUsingEmail("joel.smith2226@gmail.com", "joe063,./");
       print("Successful login ADMIN PLS: ${userCredential.user.uid}");
       Navigator.pushReplacementNamed(context, Routes.Loading);
-    }).onError((error, stackTrace) {
-      _errorHandler(error);
+    } catch (e) {
+      _errorHandler(e);
       setState(() {
         _loading = false;
       });
-    });
+    }
   }
 
   void _errorHandler(error) {
@@ -167,7 +172,8 @@ class _LoginFormState extends State<LoginForm> {
         errorMessage = "Signing in with Email and Password is not enabled.";
         break;
       default:
-        errorMessage = "An undefined Error happened. Most likely bad connection to database, please check your internet connection. If problem persists contact developer${error.code}";
+        errorMessage =
+            "An undefined Error happened. Most likely bad connection to database, please check your internet connection. If problem persists contact developer${error.code}";
     }
     var sb = SnackBar(
       content: Text(errorMessage),

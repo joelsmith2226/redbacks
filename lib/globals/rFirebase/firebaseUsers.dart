@@ -56,6 +56,7 @@ class FirebaseUsers {
         .get()
         .then((DocumentSnapshot doc) {
           if (!doc.exists) {
+            print("User doesnt exist");
             addUserToDB(uid);
           }
         })
@@ -69,7 +70,7 @@ class FirebaseUsers {
 
     return users
         .doc(uid)
-        .set({})
+        .set({}, SetOptions(merge:true))
         .then((value) => print("User Added: ${uid}"))
         .catchError((error) => print("Failed to add user: $error"));
   }
@@ -91,7 +92,9 @@ class FirebaseUsers {
       "free-transfers": user.freeTransfers,
       "completed-transfers": transfersAsStrings,
       "hits": user.hits,
-      "chips": user.chips,
+      "wildcard": user.chips == null ? null : user.chips[0].toMap(),
+      "free-hit": user.chips == null ? null : user.chips[1].toMap(),
+      "triple-cap": user.chips == null ? null : user.chips[2].toMap(),
     })
         .then((value) => print("User Misc Details Added: ${user.uid}"))
         .catchError(
@@ -149,6 +152,37 @@ class FirebaseUsers {
         {
           "curr-gw": user.currGW,
         }
+    );
+  }
+
+  Future<void> resetChips(bool wc, bool tc, bool fh) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference users = firestore.collection('users');
+    QuerySnapshot userList = await users.get();
+    for (int i = 0; i < userList.docs.length; i++) {
+      if (userList.docs[i].id != 'admin')
+        if (wc) {
+          setChip(userList, i, 0, "Wildcard");
+        }
+      if (fh) {
+        setChip(userList, i, 1, "Free Hit");
+      }
+      if (tc) {
+        setChip(userList, i, 2, "Triple Cap");
+      }
+    }
+  }
+
+  void setChip(QuerySnapshot userList, int i, int chipIndex, String name) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    firestore.collection('users').doc(userList.docs[i].id).set(
+      {
+        name: {
+          "active": false,
+          "available": true,
+        }
+      },
+      SetOptions(merge: true)
     );
   }
 
