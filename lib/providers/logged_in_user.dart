@@ -41,6 +41,7 @@ class LoggedInUser extends ChangeNotifier {
 
   // PATCH MODE
   bool patchMode = false;
+
   LoggedInUser();
 
   ///------ INITIALISATION METHODS ------///
@@ -155,6 +156,7 @@ class LoggedInUser extends ChangeNotifier {
   void loadMiscDetailsFromDB() async {
     DocumentSnapshot data = await FirebaseCore().getMiscDetails(this.uid);
     this.totalPts = data.get("total-pts");
+    this.name = data.get("name");
     this.gwPts = data.get("gw-pts");
     this.teamName = data.get("team-name");
     this.budget = data.get("budget");
@@ -164,7 +166,7 @@ class LoggedInUser extends ChangeNotifier {
     data.data()["completed-transfers"] != null
         ? completedTransfersFromData(data.get("completed-transfers"))
         : this.completedTransfers = [];
-    this.chips = chipsFromData(data);
+    chipsFromData(data);
   }
 
   Future<void> getAdminInfo() async {
@@ -293,14 +295,14 @@ class LoggedInUser extends ChangeNotifier {
     return comTrans;
   }
 
-  List<RFLChip> chipsFromData(DocumentSnapshot chipData){
+  List<RFLChip> chipsFromData(DocumentSnapshot chipData) {
     this.chips = [];
-    if (chipData.get(["wildcard"]) != null)
-      this.chips.add(RFLChip.fromMap(chipData.get(["wildcard"])));
-    if (chipData.get(["free-hit"]) != null)
-      this.chips.add(RFLChip.fromMap(chipData.get(["free-hit"])));
-    if (chipData.get(["triple-cap"]) != null)
-      this.chips.add(RFLChip.fromMap(chipData.get(["triple-cap"])));
+    if (chipData.data()["wildcard"] != null)
+      this.chips.add(RFLChip.fromMap(chipData.data()["wildcard"]));
+    if (chipData.data()["free-hit"] != null)
+      this.chips.add(RFLChip.fromMap(chipData.data()["free-hit"]));
+    if (chipData.data()["triple-cap"] != null)
+      this.chips.add(RFLChip.fromMap(chipData.data()["triple-cap"]));
   }
 
   /// A transfer has just been made. Check if you
@@ -321,6 +323,10 @@ class LoggedInUser extends ChangeNotifier {
   /// process
   void addToCompletedTransfers() {
     // List of new completed transfers
+    if (this.signingUp) {
+      this.originalModels.team = Team.blank();
+    }
+
     List<String> newTrans = [];
     for (int i = 0; i < this.team.players.length; i++) {
       TeamPlayer newTP = this.team.players[i];
@@ -334,17 +340,16 @@ class LoggedInUser extends ChangeNotifier {
     }
   }
 
-  List<Transfer> currentTransfersInProgress(){
+  List<Transfer> currentTransfersInProgress() {
     List<Transfer> pendings = [];
-    if (this.originalModels == null){
+    if (this.originalModels == null) {
       return [];
     }
     for (int i = 0; i < this.team.players.length; i++) {
       TeamPlayer newTP = this.team.players[i];
       TeamPlayer oldTP = this.originalModels.team.players[i];
       if (newTP.name != oldTP.name) {
-        pendings
-            .add(Transfer.fromPlayers(incoming: newTP, outgoing: oldTP));
+        pendings.add(Transfer.fromPlayers(incoming: newTP, outgoing: oldTP));
       }
     }
 
@@ -353,9 +358,9 @@ class LoggedInUser extends ChangeNotifier {
     while (i < pendings.length) {
       Transfer curr = pendings[i];
       if (pendings.any((otherTransfer) =>
-      otherTransfer.outgoing.name == curr.incoming.name)) {
-        Transfer merge = pendings.firstWhere((t) =>
-        t.outgoing.name == curr.incoming.name);
+          otherTransfer.outgoing.name == curr.incoming.name)) {
+        Transfer merge =
+            pendings.firstWhere((t) => t.outgoing.name == curr.incoming.name);
         merge.outgoing = curr.outgoing;
         pendings.remove(curr);
       } else {
@@ -370,8 +375,10 @@ class LoggedInUser extends ChangeNotifier {
     addFreeTransferOrSubtractHit();
     print("Incoming is from og squad. add a free or hit. Fix aura");
     // replace with original pricing info from originalTeam
-    TeamPlayer oldOG = originalTeam.players.firstWhere((p) => p.name == currOG.name); // to maintain boughtprice
-    TeamPlayer newIncoming = this.team.players[oldOG.index]; // the diff incoming
+    TeamPlayer oldOG = originalTeam.players
+        .firstWhere((p) => p.name == currOG.name); // to maintain boughtprice
+    TeamPlayer newIncoming =
+        this.team.players[oldOG.index]; // the diff incoming
     int targetOGIndex = currOG.index;
     int targetNewIndex = newIncoming.index;
 
@@ -422,7 +429,7 @@ class LoggedInUser extends ChangeNotifier {
   String benchPlayer(TeamPlayer player) {
     Team original = Team(new List.from(this.team.players));
     this.team.benchPlayer(player);
-    if (this.team.corrupted()){
+    if (this.team.corrupted()) {
       this.team = original;
       return "Team got corrupted somehow with duplicate players";
     } else {
@@ -600,7 +607,9 @@ class LoggedInUser extends ChangeNotifier {
 
   List<Map<String, dynamic>> chipsToMap() {
     List<Map<String, dynamic>> chipMaps = [];
-    this.chips.forEach((chip) { chipMaps.add(chip.toMap());});
+    this.chips.forEach((chip) {
+      chipMaps.add(chip.toMap());
+    });
     return chipMaps;
   }
 

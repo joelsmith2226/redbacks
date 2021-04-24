@@ -14,9 +14,7 @@ class ConfirmTransfersView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
-    print("hmm");
     List<Transfer> pendings = user.currentTransfersInProgress();
-    print('hi there');
 
     return Scaffold(
       key: _scaffoldKey,
@@ -40,7 +38,7 @@ class ConfirmTransfersView extends StatelessWidget {
                 // Transfer list
                 TransferList(transferList: pendings),
                 // chip options
-                ChipsContainer(chips: user.chips),
+                user.signingUp ? Container() : ChipsContainer(chips: user.chips),
                 // confirm
               ],
             ),
@@ -84,13 +82,18 @@ class ConfirmTransfersView extends StatelessWidget {
         if (route == Routes.Home) {
           Navigator.pushReplacementNamed(context, route);
         } else {
-          Navigator.pushReplacementNamed(context, Routes.Login);
-          await FirebaseAuth.instance.signOut();
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text("All signed up! Please login with your details!")));
+          await _signupConfirmationFn(user, context);
         }
         return;
       },
     );
+  }
+
+  Future _signupConfirmationFn(LoggedInUser user, BuildContext context) async {
+    user.confirmTransfersButtonPressed();
+    Navigator.pushReplacementNamed(context, Routes.Login);
+    await FirebaseAuth.instance.signOut();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("All signed up! Please login with your details!")));
   }
 }

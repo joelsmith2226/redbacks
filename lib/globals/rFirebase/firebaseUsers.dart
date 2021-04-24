@@ -186,5 +186,28 @@ class FirebaseUsers {
     );
   }
 
+  void activateDeactivateChip(String uid, String name, bool activeStatus) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    firestore.collection('users').doc(uid).set(
+        {
+          name: {
+            "active": activeStatus,
+          }
+        },
+        SetOptions(merge: true)
+    );
+  }
+
+  void availableUnavailableChip(String uid, String name, bool availableStatus) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    firestore.collection('users').doc(uid).set(
+        {
+          name: {
+            "available": availableStatus,
+          }
+        },
+        SetOptions(merge: true)
+    );
+  }
 
 }

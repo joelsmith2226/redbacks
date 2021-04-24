@@ -30,7 +30,7 @@ class _ChipsContainerState extends State<ChipsContainer> {
               alignment: Alignment.center,
               width: MediaQuery.of(context).size.width * 0.6,
               child: ListView.builder(
-                itemCount: this.widget.chips.length,
+                itemCount: this.widget.chips.length - 1,
                 shrinkWrap: true,
                 padding: EdgeInsets.all(5),
                 physics: AlwaysScrollableScrollPhysics(),
@@ -68,13 +68,25 @@ class _ChipsContainerState extends State<ChipsContainer> {
 
   Widget ChipsContainerRow(RFLChip c, BuildContext context) {
     return Container(
+        margin: EdgeInsets.all(5),
         width: MediaQuery.of(context).size.width,
-        color: Theme.of(context).primaryColor,
-        height: 30,
+        // color: Theme.of(context).primaryColor,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Colors.white,
+            border: Border.all()),
+        height: 50,
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          Container(width: 100, child: Text(c.name, textAlign: TextAlign.center,)),
+          Container(
+              width: 100,
+              child: Text(
+                c.name,
+                textAlign: TextAlign.center,
+              )),
           MaterialButton(
-            child: Text(c.available ? (c.active ? 'Active' : 'Inactive') : 'Unavailable'),
+            child: Text(c.available
+                ? (c.active ? 'Active' : 'Inactive')
+                : 'Unavailable'),
             color: c.active ? Colors.green : Colors.red,
             onPressed: () => setState(() {
               c.active = !c.active;
@@ -90,34 +102,41 @@ class _ChipsContainerState extends State<ChipsContainer> {
       freshHits = (user.hits - user.originalModels.hits) * 4;
     }
 
-    return Column(
-      children:
-        [
-          Row(
-            children: [
+    return Container(
+      margin: EdgeInsets.all(15),
+      width: MediaQuery.of(context).size.width,
+      // color: Theme.of(context).primaryColor,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.white,
+          border: Border.all()),
+      alignment: Alignment.center,
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
               Container(
-                width: 100,
-                child: Text('Free Transfers:')
-              ),
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  child: Text('Free Transfers:')),
               Container(
-                  width: 100,
-                  child: Text('${user.unlimitedTransfersActive() ? UNLIMITED_SYMBOL : user.freeTransfers}')
-              )
-            ]
-          ),
-          Row(
-            children: [
-              Container(
-                  width: 100,
-                  child: Text('Cost: ')
-              ),
-              Container(
-                  width: 100,
-                  child: Text('${user.unlimitedTransfersActive() ? 0 : freshHits}pts')
-              ),
-            ],
-          )
-        ]
+                  width: MediaQuery.of(context).size.width * 0.1,
+                  child: Text(
+                      '${user.unlimitedTransfersActive() || user.freeTransfers == UNLIMITED ? UNLIMITED_SYMBOL : user.freeTransfers}'))
+            ]),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    child: Text('Cost: ')),
+                Container(
+                    width: MediaQuery.of(context).size.width * 0.1,
+                    child: Text(
+                        '${user.unlimitedTransfersActive() ? 0 : freshHits}pts')),
+              ],
+            )
+          ]),
     );
   }
 }

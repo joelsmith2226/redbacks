@@ -47,26 +47,23 @@ class _ThirdPartySigninButtonState extends State<ThirdPartySigninButton> {
 
                 if (user != null) {
                   // Successful third party login!
-
                   Navigator.pushReplacementNamed(context, Routes.Loading);
                 }
               },
               child: FittedBox(
                 fit: BoxFit.scaleDown,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Image(
                         image: AssetImage(_getImageString()),
-                        height: 15.0,
+                        height: 18.0,
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 10),
                         child: Text(
-                          'Sign ${widget.signUp ? "up" : "in"} with ${widget.company}',
+                          '${widget.signUp ? "Sign up" : "Login"} with ${widget.company}',
                           style: TextStyle(
                               fontSize: 14,
                               color: widget.disabled ? Colors.black.withAlpha(100) : (widget.company == "Google"
@@ -76,7 +73,7 @@ class _ThirdPartySigninButtonState extends State<ThirdPartySigninButton> {
                       )
                     ],
                   ),
-                ),
+
               ),
             ),
           );
@@ -86,11 +83,11 @@ class _ThirdPartySigninButtonState extends State<ThirdPartySigninButton> {
     switch (widget.company) {
       case "Google":
         UserCredential user =
-            await Authentication.signInWithGoogle(context: context);
+            await Authentication().signInWithGoogle(context: context);
         return user;
       case "Facebook":
         UserCredential user =
-            await Authentication.signInWithFacebook(context: context);
+            await Authentication().signInWithFacebook(context: context);
         return user;
       case "Apple":
         UserCredential user =

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -131,7 +133,9 @@ class _SignupFormState extends State<SignupForm> {
     columnChildren.addAll([
       ThirdPartySigninButton(signUp: true, company: "Google"),
       ThirdPartySigninButton(signUp: true, company: "Facebook"),
-      ThirdPartySigninButton(signUp: true, company: "Apple"),
+      Platform.isIOS
+          ? ThirdPartySigninButton(signUp: true, company: "Apple")
+          : Container(),
       Container(child: Text("...Or signup with email & password")),
       FormBuilder(
         key: _formKeyUser,
@@ -207,7 +211,8 @@ class _SignupFormState extends State<SignupForm> {
                   this.disabled = false;
 
                   // Set user details
-                  LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+                  LoggedInUser user =
+                      Provider.of<LoggedInUser>(context, listen: false);
                   user.signingUp = true;
                   user.teamName = this.teamName;
                   user.name = this.name;

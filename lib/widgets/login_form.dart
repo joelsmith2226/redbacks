@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -65,8 +67,9 @@ class _LoginFormState extends State<LoginForm> {
                   SizedBox(height: 20),
                   ThirdPartySigninButton(company: "Google"),
                   ThirdPartySigninButton(company: "Facebook"),
-                  ThirdPartySigninButton(company: "Apple"),
-                  Container(child: Text("...Or signup with email & password"), padding: EdgeInsets.symmetric(vertical:10),),
+                  Platform.isIOS ?
+                  ThirdPartySigninButton(company: "Apple") : Container(),
+                  Container(child: Text("...Or login with email & password"), padding: EdgeInsets.symmetric(vertical:10),),
                   FormBuilder(
                     key: _formKey,
                     child: Column(
@@ -152,7 +155,7 @@ class _LoginFormState extends State<LoginForm> {
 
   void _errorHandler(error) {
     var errorMessage;
-    switch (error.code) {
+    switch (error) {
       case "ERROR_INVALID_EMAIL":
         errorMessage = "Your email address appears to be malformed.";
         break;

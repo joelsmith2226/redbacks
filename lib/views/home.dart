@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -93,7 +94,7 @@ class _HomeViewState extends State<HomeView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: drawerActions(),
+              children: drawerActions(user.name),
             ),
           ),
         ),
@@ -120,8 +121,12 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  List<Widget> drawerActions() {
+  List<Widget> drawerActions(String name) {
     return [
+      Text(
+        name,
+        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+      ),
       Image.asset('assets/icon/spider.png'),
       actionBtn("Player Stats", _playerStatsFn),
       actionBtn("Admin", _adminFn),
