@@ -323,8 +323,8 @@ class LoggedInUser extends ChangeNotifier {
   /// process
   void addToCompletedTransfers() {
     // List of new completed transfers
-    if (this.signingUp) {
-      this.originalModels.team = Team.blank();
+    if (this.signingUp || this.originalModels == null) {
+      return;
     }
 
     List<String> newTrans = [];
@@ -342,9 +342,12 @@ class LoggedInUser extends ChangeNotifier {
 
   List<Transfer> currentTransfersInProgress() {
     List<Transfer> pendings = [];
-    if (this.originalModels == null) {
+    if (this.originalModels == null && !this.signingUp) {
       return [];
+    } else if (this.signingUp){
+      this.originalModels = OriginalModels(Team.blank(), 0, 0, [], 0);
     }
+
     for (int i = 0; i < this.team.players.length; i++) {
       TeamPlayer newTP = this.team.players[i];
       TeamPlayer oldTP = this.originalModels.team.players[i];

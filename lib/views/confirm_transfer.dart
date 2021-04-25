@@ -90,6 +90,7 @@ class ConfirmTransfersView extends StatelessWidget {
   }
 
   Future _signupConfirmationFn(LoggedInUser user, BuildContext context) async {
+    print("hello there");
     user.confirmTransfersButtonPressed();
     Navigator.pushReplacementNamed(context, Routes.Login);
     await FirebaseAuth.instance.signOut();

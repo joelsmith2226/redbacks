@@ -111,6 +111,7 @@ class _LoginFormState extends State<LoginForm> {
         ),
         validator: FormBuilderValidators.compose(validators),
         keyboardType: TextInputType.text,
+        textInputAction: TextInputAction.next,
       ),
     );
   }
@@ -124,9 +125,16 @@ class _LoginFormState extends State<LoginForm> {
       String email = _formKey.currentState.value["email"];
       String pwd = _formKey.currentState.value["pwd"];
       UserCredential userCredentials =
-          await Authentication().loginUsingEmail(email, pwd);
-      print("Successful User Login for ${userCredentials.user.email}");
-      Navigator.pushReplacementNamed(context, Routes.Loading);
+          await FirebaseAuth.instance
+              .signInWithEmailAndPassword(email: email, password: pwd);
+      if (userCredentials != null)
+        Navigator.pushReplacementNamed(context, Routes.Loading);
+      else {
+        _errorHandler("ERROR_USER_NOT_FOUND");
+        setState(() {
+          _loading = false;
+        });
+      }
     } catch (e) {
       _errorHandler(e);
       setState(() {
@@ -155,28 +163,29 @@ class _LoginFormState extends State<LoginForm> {
 
   void _errorHandler(error) {
     var errorMessage;
-    switch (error) {
-      case "ERROR_INVALID_EMAIL":
+    print(error.code);
+    switch (error.code) {
+      case "invalid-email":
         errorMessage = "Your email address appears to be malformed.";
         break;
-      case "ERROR_WRONG_PASSWORD":
-        errorMessage = "Your password is wrong.";
+      case "wrong-password":
+        errorMessage = "Your password is wrong";
         break;
-      case "ERROR_USER_NOT_FOUND":
+      case "user-not-found":
         errorMessage = "User with this email doesn't exist.";
         break;
-      case "ERROR_USER_DISABLED":
+      case "user-disabled":
         errorMessage = "User with this email has been disabled.";
         break;
-      case "ERROR_TOO_MANY_REQUESTS":
+      case "too-many-requests":
         errorMessage = "Too many requests. Try again later.";
         break;
-      case "ERROR_OPERATION_NOT_ALLOWED":
+      case "operation-not-allowed":
         errorMessage = "Signing in with Email and Password is not enabled.";
         break;
       default:
         errorMessage =
-            "An undefined Error happened. Most likely bad connection to database, please check your internet connection. If problem persists contact developer${error.code}";
+            "An undefined Error happened. Most likely bad connection to database, please check your internet connection. If problem persists contact developer${error}";
     }
     var sb = SnackBar(
       content: Text(errorMessage),

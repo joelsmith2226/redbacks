@@ -48,7 +48,9 @@ class _PlayerWidgetState extends State<PlayerWidget> {
         child: Column(
           children: [
             Image.asset(
-              "assets/avatar-nobg.png",
+              (widget.teamPlayer.name == "")
+                  ? "assets/avatar-nobg-unset.png"
+                  : "assets/avatar-nobg.png",
               width: MediaQuery.of(context).size.width * 0.15,
             ),
             NameTag(),

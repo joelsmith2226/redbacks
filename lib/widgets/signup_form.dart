@@ -78,6 +78,7 @@ class _SignupFormState extends State<SignupForm> {
                 // valueTransformer: (text) => num.tryParse(text),
                 validator: FormBuilderValidators.compose(validators),
                 keyboardType: keyboard,
+                textInputAction: TextInputAction.next,
               ),
             ),
             isPwd ? showHidePwd(name) : Container()
@@ -163,7 +164,7 @@ class _SignupFormState extends State<SignupForm> {
           color: Theme.of(context).primaryColor,
         ),
         width: MediaQuery.of(context).size.width * 0.7,
-        padding: EdgeInsets.symmetric(vertical: 10),
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
         margin: EdgeInsets.only(bottom: 30),
         child: FittedBox(
           fit: BoxFit.scaleDown,

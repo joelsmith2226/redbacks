@@ -76,7 +76,8 @@ class Authentication {
         final OAuthCredential credential =
             FacebookAuthProvider.credential(loginResult.accessToken.token);
         print(credential);
-        UserCredential u = await FirebaseAuth.instance.signInWithCredential(credential);
+        UserCredential u =
+            await FirebaseAuth.instance.signInWithCredential(credential);
         print("something went wrong i bet");
         return u;
       }
@@ -148,11 +149,9 @@ class Authentication {
   }
 
   Future<UserCredential> loginUsingEmail(String email, String pwd) async {
-    try {
-      UserCredential user = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: pwd);
-      return user;
-    } catch (e) {}
+    UserCredential user = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: pwd);
+    return user;
   }
 
   Future<void> logoutFn(BuildContext context) async {
