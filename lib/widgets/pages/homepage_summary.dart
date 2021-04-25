@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class HomepageSummary extends StatefulWidget {
   Widget body;
-  HomepageSummary({this.body});
+  double bottomMargin;
+  HomepageSummary({this.body, this.bottomMargin=20});
 
   @override
   _HomepageSummaryState createState() => _HomepageSummaryState();
@@ -14,7 +15,7 @@ class _HomepageSummaryState extends State<HomepageSummary> {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 50,
-      margin: EdgeInsets.only(bottom: 20),
+      margin: EdgeInsets.only(bottom: widget.bottomMargin),
       color: Colors.black.withAlpha(100),
       child: widget.body,
       alignment: Alignment.center,
