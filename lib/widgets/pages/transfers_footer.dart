@@ -35,9 +35,9 @@ class _TransfersFooterState extends State<TransfersFooter> {
 
   Widget ChipSummary(int chipIndex) {
     return SummaryContainer(
-        onPress: chipIndex == 0
-            ? () => wildcardDialog(context)
-            : () => freehitDialog(context),
+        // onPress: chipIndex == 0 UNCOMMENT WHEN READY FOR chips todo
+        //     ? () => wildcardDialog(context)
+        //     : () => freehitDialog(context),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -52,10 +52,10 @@ class _TransfersFooterState extends State<TransfersFooter> {
             ),
             Container(
               width: MediaQuery.of(context).size.width * 0.2,
-              child: Text(_containerText(chipIndex),
+              child: Text("Coming Soon", //_containerText(chipIndex),
                   style: TextStyle(fontSize: 11, color: Colors.white),
                   textAlign: TextAlign.center),
-              color: _containerColor(chipIndex),
+              color: Colors.grey //_containerColor(chipIndex),
             )
           ],
         ));
@@ -63,7 +63,6 @@ class _TransfersFooterState extends State<TransfersFooter> {
 
   void wildcardDialog(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-    print("YO");
     if (user.chips[1].active || user.chips[0].active) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(

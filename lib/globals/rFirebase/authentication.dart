@@ -137,7 +137,7 @@ class Authentication {
       // Sign in the user with Firebase. If the nonce we generated earlier does
       // not match the nonce in `appleCredential.identityToken`, sign in will fail.
       return await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e) {// Need pop to remove popup for apple
       _errorHandling(e, context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

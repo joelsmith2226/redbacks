@@ -271,6 +271,7 @@ class LoggedInUser extends ChangeNotifier {
     this.completedTransfers = this.completedTransfers;
     this.originalModels = null;
     this.resetRemovedPlayers();
+    this.resetConsideredPlayers();
   }
 
   List<Transfer> completedTransfersFromData(List<dynamic> transfers) {

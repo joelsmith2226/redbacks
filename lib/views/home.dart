@@ -129,7 +129,7 @@ class _HomeViewState extends State<HomeView> {
       ),
       Image.asset('assets/icon/spider.png'),
       actionBtn("Player Stats", _playerStatsFn),
-      actionBtn("Admin", _adminFn),
+      user.admin ? actionBtn("Admin", _adminFn) : Container(),
       actionBtn("Settings", _settingsFn),
       actionBtn("Logout", () => Authentication().logoutFn(context))
     ];
@@ -173,7 +173,7 @@ class _HomeViewState extends State<HomeView> {
   void _settingsFn() {
     var sb = SnackBar(
         content: Text(
-            "Yeah look would've loved to add settings but ran out of time"));
+            "Settings Page Coming Soon"));
     ScaffoldMessenger.of(context).showSnackBar(sb);
     Navigator.pop(context);
   }

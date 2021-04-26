@@ -27,6 +27,7 @@ class _SignupFormState extends State<SignupForm> {
   bool hidePwd;
   bool hideConPwd;
   bool disabled;
+  bool loading = false;
 
   @override
   void initState() {
@@ -95,6 +96,9 @@ class _SignupFormState extends State<SignupForm> {
       _addThirdPartyButtons(columnChildren);
     }
     columnChildren.add(_submitButton());
+    if (loading)
+      columnChildren.add(CircularProgressIndicator());
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: columnChildren,
@@ -241,15 +245,22 @@ class _SignupFormState extends State<SignupForm> {
     this.pwd = _formKeyUser.currentState.value["pwd"];
     this.conPwd = _formKeyUser.currentState.value["conPwd"];
     if (_formKeyUser.currentState.validate()) {
+      setState(() {
+        loading = true;
+      });
       try {
         UserCredential userCredential =
             await Authentication().signUpUsingEmailAndPassword(email, pwd);
         registerUserOnFirebase(userCredential);
+
       } on FirebaseAuthException catch (e) {
         _errorHandling(e);
       } catch (e) {
         print(e);
       }
+      setState(() {
+        loading = false;
+      });
     } else {
       print("validation failed");
     }

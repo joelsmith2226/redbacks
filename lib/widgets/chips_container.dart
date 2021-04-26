@@ -84,12 +84,12 @@ class _ChipsContainerState extends State<ChipsContainer> {
                 textAlign: TextAlign.center,
               )),
           MaterialButton(
-            child: Text(c.available
-                ? (c.active ? 'Active' : 'Inactive')
-                : 'Unavailable'),
-            color: c.active ? Colors.green : Colors.red,
+            child: Text("N/A"),
+                // ? (c.active ? 'Active' : 'Inactive') todo
+                // : 'Unavailable'),
+            color: Colors.grey,//c.active ? Colors.green : Colors.red,
             onPressed: () => setState(() {
-              c.active = !c.active;
+             // c.active = !c.active;
             }),
           )
         ]));
