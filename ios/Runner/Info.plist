@@ -20,15 +20,6 @@
       <string>fbauth2</string>
       <string>fbshareextension</string>
     </array>
-    <key>CFBundleURLTypes</key>
-    <array>
-      <dict>
-      <key>CFBundleURLSchemes</key>
-      <array>
-        <string>fb2879113039074093</string>
-      </array>
-      </dict>
-    </array>
     <key>FacebookAppID</key>
     <string>2879113039074093</string>
     <key>FacebookDisplayName</key>
@@ -49,7 +40,6 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<key>CFBundleSignature</key>
-	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -73,19 +63,18 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+    <!-- 3rd Party Signin Section -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>com.googleusercontent.apps.510867103316-ivhumi7o13cu4hk7q88g50pu1um1rbqu</string>
+                <string>fb2879113039074093</string>
+            </array>
+        </dict>
+    </array>
 </dict>
-<!-- Put me in the [my_project]/ios/Runner/Info.plist file -->
-<!-- Google Sign-In section -->
-<key>CFBundleURLTypes</key>
-<array>
-	<dict>
-		<key>CFBundleTypeRole</key>
-		<string>Editor</string>
-		<key>CFBundleURLSchemes</key>
-		<array>
-			<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
-            <string>com.googleusercontent.apps.510867103316-cojavrpi8ao9vvol6rkk2r2jcbsj2t77</string>
-        </array>
-	</dict>
-</array>
 </plist>
