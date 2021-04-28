@@ -50,30 +50,28 @@ class _ThirdPartySigninButtonState extends State<ThirdPartySigninButton> {
                   Navigator.pushReplacementNamed(context, Routes.Loading);
                 }
               },
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Image(
-                        image: AssetImage(_getImageString()),
-                        height: 18.0,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: Text(
-                          '${widget.signUp ? "Sign up" : "Login"} with ${widget.company}',
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: widget.disabled ? Colors.black.withAlpha(100) : (widget.company == "Google"
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Image(
+                    image: AssetImage(_getImageString()),
+                    height: 18.0,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Text(
+                      '${widget.signUp ? "Sign up" : "Login"} with ${widget.company}',
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: widget.disabled
+                              ? Colors.black.withAlpha(100)
+                              : (widget.company == "Google"
                                   ? Colors.black
                                   : Colors.white)),
-                        ),
-                      )
-                    ],
-                  ),
-
+                    ),
+                  )
+                ],
               ),
             ),
           );

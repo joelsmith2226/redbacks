@@ -17,7 +17,7 @@ class SummaryContainer extends StatelessWidget {
           color: Colors.black38.withAlpha(170),
         ),
         margin: EdgeInsets.all(3),
-        child: FittedBox(fit: BoxFit.fitWidth, child: body),
+        child: FittedBox(fit: BoxFit.scaleDown, child: body),
       ),
     );
   }

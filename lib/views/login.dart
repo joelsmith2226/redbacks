@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:redbacks/globals/initial_data.dart';
 import 'package:redbacks/globals/rFirebase/authentication.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
@@ -73,16 +72,21 @@ class _LoginViewState extends State<LoginView> {
         ),
         _loadedAdmin && _patching ? PatchMode() : LoginForm(),
       ]),
-      floatingActionButton: !_patching ? FloatingActionButton(
-        child: Text(
-          "Sign Up",
-          style: TextStyle(fontSize: 14),
-          textAlign: TextAlign.center,
-        ),
-        onPressed: () {
-          Navigator.pushNamed(context, Routes.Signup);
-        },
-      ) : Container(),
+      floatingActionButton: !_patching
+          ? FloatingActionButton(
+              child: Padding(
+                padding: EdgeInsets.all(5),
+                child: Text(
+                  "Sign Up",
+                  style: TextStyle(fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, Routes.Signup);
+              },
+            )
+          : Container(),
     );
   }
 

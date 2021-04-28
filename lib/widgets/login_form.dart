@@ -56,13 +56,13 @@ class _LoginFormState extends State<LoginForm> {
                   InkWell(
                     child: Image.asset(
                       'assets/spider.png',
-                      width: MediaQuery.of(context).size.width * 0.5,
+                      width: MediaQuery.of(context).size.width * 0.3,
                     ),
                     onDoubleTap: attemptLoginOnFirebaseAdmin,
                   ),
                   Image.asset(
                     'assets/title.png',
-                    width: MediaQuery.of(context).size.width * 0.85,
+                    width: MediaQuery.of(context).size.width * 0.75,
                   ),
                   SizedBox(height: 20),
                   ThirdPartySigninButton(company: "Google"),
@@ -79,11 +79,12 @@ class _LoginFormState extends State<LoginForm> {
                       ],
                     ),
                   ),
+                  SizedBox(height: 10),
                   MaterialButton(
                     color: Theme.of(context).accentColor,
                     child: Text(
                       "Login",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white, fontSize: 14),
                     ),
                     onPressed: () {
                       _formKey.currentState.save();
