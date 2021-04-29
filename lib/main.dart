@@ -9,27 +9,29 @@ import 'package:redbacks/globals/theme_switcher.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/views/login.dart';
 import 'package:redbacks/views/unknown.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'globals/constants.dart';
 import 'globals/router.dart';
-
-var _themes = {
-  LIGHT_THEME: ThemeData(
-      primarySwatch: MaterialColor(0xFFa01300, colorSwatch),
-      primaryColor: Color(0xFFa01300),
-      accentColor: Color(0xFFa01300).withAlpha(150),
-      textTheme: GoogleFonts.merriweatherSansTextTheme()),
-  DARK_THEME: ThemeData.dark(),
-};
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(); // declaring twice..?
   SharedPreferences prefs = await SharedPreferences.getInstance();
+  Color primaryColor = Color(prefs.get('primaryColor')) ?? Color(0xffa01300);
+  int themeChoice = prefs.get('theme') ?? LIGHT_THEME;
+  var _themes = {
+    LIGHT_THEME: ThemeData(
+        primarySwatch: MaterialColor(0xFFa01300, colorSwatch),
+        primaryColor: primaryColor,
+        accentColor: primaryColor.withAlpha(150),
+        textTheme: GoogleFonts.merriweatherSansTextTheme()),
+    DARK_THEME: ThemeData.dark(),
+  };
 
   runApp(
     ThemeSwitcherWidget(
-      initialTheme: _themes[LIGHT_THEME],
+      initialTheme: _themes[themeChoice],
       child: MyApp(),
     ),
   );

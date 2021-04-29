@@ -99,7 +99,7 @@ class _HomeViewState extends State<HomeView> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Theme.of(context).accentColor,
+        selectedItemColor: Theme.of(context).primaryColor,
         unselectedItemColor: Colors.grey,
         unselectedLabelStyle: TextStyle(color: Colors.grey),
         items: [
@@ -112,7 +112,6 @@ class _HomeViewState extends State<HomeView> {
           BottomNavigationBarItem(icon: Icon(Icons.wine_bar), label: titles[3]),
         ],
         currentIndex: _selectedIndex,
-        // selectedItemColor: Colors.amber[800],
         onTap: (index) {
           _onItemTapped(index);
         },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/pages/homepage_summary.dart';
 import 'package:redbacks/widgets/summary_container.dart';
@@ -35,8 +36,8 @@ class _PickSummaryState extends State<PickSummary> {
             ),
             Container(
               width: MediaQuery.of(context).size.width*0.2,
-              child: Text(_containerText(), style: TextStyle(fontSize: 11, color: Colors.white),textAlign: TextAlign.center),
-              color: _containerColor(),
+              child: Text("Coming Soon", style: TextStyle(fontSize: 11, color: Colors.white),textAlign: TextAlign.center),
+              color: Colors.grey//_containerColor(),
             )
           ],
         )
@@ -62,7 +63,7 @@ class _PickSummaryState extends State<PickSummary> {
     } else if (user.chips[2].active){
       return Colors.green;
     } else {
-      return Theme.of(context).primaryColor.withAlpha(150);
+      return DEFAULT_COLOR.withAlpha(150);
     }
   }
 }

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/theme_switcher.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsView extends StatefulWidget {
   @override
@@ -15,10 +17,12 @@ class _SettingsViewState extends State<SettingsView> {
   Color pickerColor = Color(0xff443a49);
   Color currentColor = Color(0xff443a49);
 
-  void changeColor(Color color) {
+  void changeColor(Color color) async {
     setState(() => pickerColor = color);
-    ThemeSwitcher.of(context)
-        .switchTheme(Theme.of(context).copyWith(primaryColor: color));
+    ThemeSwitcher.of(context).switchTheme(Theme.of(context)
+        .copyWith(primaryColor: color, accentColor: color.withAlpha(150)));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('primaryColor', color.value);
   }
 
   @override
@@ -57,6 +61,11 @@ class _SettingsViewState extends State<SettingsView> {
                     pickerColor: currentColor,
                     onColorChanged: changeColor,
                   ),
+                ),
+                MaterialButton(
+                  child: Text("Default Colour", style: TextStyle(color: Colors.white)),
+                  onPressed: () => changeColor(DEFAULT_COLOR),
+                  color: DEFAULT_COLOR,
                 )
               ],
             ),

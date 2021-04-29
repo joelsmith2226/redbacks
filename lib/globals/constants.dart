@@ -17,6 +17,7 @@ Map<int, Color> colorSwatch = {
   900: Color.fromRGBO(160, 19, 0, 1.0),
 };
 
+const Color DEFAULT_COLOR = Color(0xffa01300);
 const int LIGHT_THEME = 0;
 const int DARK_THEME = 1;
 
