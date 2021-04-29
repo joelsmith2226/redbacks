@@ -12,6 +12,7 @@ import 'package:redbacks/views/point_page_other_user.dart';
 import 'package:redbacks/views/settings.dart';
 import 'package:redbacks/views/signup.dart';
 import 'package:redbacks/views/unknown.dart';
+import 'package:redbacks/views/user.dart';
 
 class Routes {
   // Route name constants
@@ -28,6 +29,7 @@ class Routes {
   static const String Unknown = '/unknown';
   static const String Confirm = '/choose-team/confirm-transfer';
   static const String Settings = '/settings';
+  static const String User = '/user';
 
 
   /// The map used to define our routes, needs to be supplied to [MaterialApp]
@@ -46,6 +48,7 @@ class Routes {
       Routes.Flag: (context) => FlagView(),
       Routes.Confirm: (context) => ConfirmTransfersView(),
       Routes.Settings: (context) => SettingsView(),
+      Routes.User: (context) => UserView(),
     };
   }
 }

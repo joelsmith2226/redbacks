@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
 import 'package:redbacks/globals/rFirebase/firebaseGWHistory.dart';
+import 'package:redbacks/globals/rFirebase/firebaseLeaderboard.dart';
+import 'package:redbacks/models/leaderboard_list_entry.dart';
 import 'package:redbacks/models/original_models.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/rfl_chip.dart';
@@ -38,11 +40,13 @@ class LoggedInUser extends ChangeNotifier {
   int _currGW;
   int _hits;
   List<RFLChip> _chips = [];
+  List<String> _admins = [];
+  int _preAppPoints = 0;
+  List<LeaderboardListEntry> _leaderBoard = [];
 
   // PATCH MODE
   bool patchMode = false;
-  List<String> _admins = [];
-  int _preAppPoints = 0;
+
 
   LoggedInUser();
 
@@ -114,28 +118,25 @@ class LoggedInUser extends ChangeNotifier {
   }
 
   ///------ DB METHODS ------///
-  Future<void> loadInPlayerAndGWHistoryDB() async {
+  Future<void> loadInGlobalDBCollections() async {
     this.playerDB = [];
     await FirebaseCore().getPlayers(this.playerDB);
     await this.loadInGWHistory();
+    this.leaderBoard = await FirebaseLeaderboard().loadUserLeadeboard();
     return;
   }
 
   Future<void> loadInGWHistory() async {
     this.gwHistory = [];
     await FirebaseGWHistory().getGWHistory(this.gwHistory, this.playerDB);
-    print("Should only be here if gw history full: ${this.gwHistory.length}");
     await FirebaseGWHistory().getPlayerGWs(this.gwHistory, this.playerDB);
     return;
   }
 
   Future<void> generalDBPull() async {
-    await this.loadInPlayerAndGWHistoryDB();
+    await this.loadInGlobalDBCollections();
     await this.loadMiscDetailsFromDB();
     await this.getCompleteUserGWHistory();
-    print("At this point: Player/GWhistory/Misc/UGW uploaded: ");
-    print(
-        "PlayerDB: ${this.playerDB.length}, GWHistory: ${this.gwHistory.length}, UGW: ${this.userGWs.length}");
   }
 
   void userDetailsPushDB() {
@@ -155,21 +156,25 @@ class LoggedInUser extends ChangeNotifier {
     FirebaseCore().pushTeamToDB(this.team, this.uid);
   }
 
-  void loadMiscDetailsFromDB() async {
+  Future<void> loadMiscDetailsFromDB() async {
     DocumentSnapshot data = await FirebaseCore().getMiscDetails(this.uid);
-    this.totalPts = data.get("total-pts") ?? 0;
-    this.name = data.get("name") ?? "";
-    this.gwPts = data.get("gw-pts") ?? 0;
-    this.teamName = data.get("team-name") ?? "";
-    this.budget = data.get("budget") ?? 0;
-    this.freeTransfers = data.get("free-transfers") ?? 0;
-    this.hits = data.get("hits") ?? 0;
-    this.teamValue = data.get("team-value") ?? 0;
-    this.preAppPoints = data.get("pre-app-pts") ?? 0;
+    this.totalPts = ifValidReturn("total-pts", data, 0);
+    this.name = ifValidReturn("name", data, "");
+    this.gwPts = ifValidReturn("gw-pts", data, 0);
+    this.teamName = ifValidReturn("team-name", data, "");
+    this.budget = ifValidReturn("budget", data, 0);
+    this.freeTransfers = ifValidReturn("free-transfers", data, 0);
+    this.hits = ifValidReturn("hits", data, 0);
+    this.teamValue = ifValidReturn("team-value", data, 0);
+    this.preAppPoints = ifValidReturn("pre-app-pts", data, 0);
     data.data()["completed-transfers"] != null
         ? completedTransfersFromData(data.get("completed-transfers"))
         : this.completedTransfers = [];
     chipsFromData(data);
+  }
+
+  dynamic ifValidReturn(String key, DocumentSnapshot data, dynamic defaultVal) {
+    return data.data().containsKey(key) ? data.get(key) : defaultVal;
   }
 
   Future<void> getAdminInfo() async {
@@ -348,7 +353,7 @@ class LoggedInUser extends ChangeNotifier {
     List<Transfer> pendings = [];
     if (this.originalModels == null && !this.signingUp) {
       return [];
-    } else if (this.signingUp){
+    } else if (this.signingUp) {
       this.originalModels = OriginalModels(Team.blank(), 0, 0, [], 0);
     }
 
@@ -470,6 +475,25 @@ class LoggedInUser extends ChangeNotifier {
     } catch (e) {
       print("Something's wrong: ${e}");
     }
+  }
+
+  String chipsRemaining() {
+    return this
+        .chips
+        .where((chip) => chip.available)
+        .map((e) => e.name)
+        .join(', ');
+  }
+
+  String chipsUsed() {
+    return this
+        .chips
+        .where((chip) => !chip.available)
+        .map((e) => e.name)
+        .join(', ');  }
+
+  int overallRank() {
+    return this.leaderBoard.indexWhere((user) => user.uid == this.uid) + 1;
   }
 
   ///------ GETTERS/SETTERS ------///
@@ -634,5 +658,11 @@ class LoggedInUser extends ChangeNotifier {
 
   set preAppPoints(int value) {
     _preAppPoints = value;
+  }
+
+  List<LeaderboardListEntry> get leaderBoard => _leaderBoard;
+
+  set leaderBoard(List<LeaderboardListEntry> value) {
+    _leaderBoard = value;
   }
 }

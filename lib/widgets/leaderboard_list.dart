@@ -57,10 +57,15 @@ class _LeaderboardListState extends State<LeaderboardList> {
   }
 
   void _loadEntries() async {
-    this._entries = await FirebaseLeaderboard().loadUserLeadeboard();
+    LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+    if (user.leaderBoard.length == 0) {
+      user.leaderBoard = this._entries = await FirebaseLeaderboard().loadUserLeadeboard();
+    }
+    this._entries = user.leaderBoard;
     setState(() {
       loading = false;
     });
+
   }
 
   Widget loadBtn() {

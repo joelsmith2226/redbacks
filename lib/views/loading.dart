@@ -57,7 +57,7 @@ class _LoadingViewState extends State<LoadingView> {
       this.loginOnce = false;
       LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
       await user
-          .loadInPlayerAndGWHistoryDB(); // ensures player DB loaded before init
+          .loadInGlobalDBCollections(); // ensures player DB loaded before init
       await user.initialiseUserSignup();
       t.cancel();
       Navigator.pushReplacementNamed(context, Routes.ChooseTeam);
@@ -69,7 +69,7 @@ class _LoadingViewState extends State<LoadingView> {
     if (this.loginOnce) {
       this.loginOnce = false;
       await user
-          .loadInPlayerAndGWHistoryDB(); // ensures player DB loaded before init
+          .loadInGlobalDBCollections(); // ensures player DB loaded before init
       await user.initialiseUserLogin();
       print("Finished Loading, user should be fully initialised");
       t.cancel();

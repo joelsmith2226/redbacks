@@ -39,7 +39,7 @@ class _LoginViewState extends State<LoginView> {
     this.user = Provider.of<LoggedInUser>(context);
     // Be sneaky and load players here
     if (user.playerDB == null) {
-      user.loadInPlayerAndGWHistoryDB();
+      user.loadInGlobalDBCollections();
     }
 
     // For persistent logins

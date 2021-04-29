@@ -121,11 +121,8 @@ class _HomeViewState extends State<HomeView> {
 
   List<Widget> drawerActions(String name) {
     return [
-      Text(
-        name,
-        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-      ),
       Image.asset('assets/icon/spider.png'),
+      actionBtn("${name}", _userFn),
       actionBtn("Player Stats", _playerStatsFn),
       user.admin ? actionBtn("Admin", _adminFn) : Container(),
       actionBtn("Settings", _settingsFn),
@@ -171,6 +168,10 @@ class _HomeViewState extends State<HomeView> {
 
   void _settingsFn() {
     Navigator.pushNamed(context, Routes.Settings);
+  }
+
+  void _userFn() {
+    Navigator.pushNamed(context, Routes.User);
   }
 
   refresher(Widget page) {

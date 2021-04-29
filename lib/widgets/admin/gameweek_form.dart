@@ -22,7 +22,7 @@ class _GameweekFormState extends State<GameweekForm> {
   FirebaseAuth auth = FirebaseAuth.instance;
   final GlobalKey<FormBuilderState> _gameFormKey =
       GlobalKey<FormBuilderState>();
-  final double heightMultiplier = 0.5;
+  final double heightMultiplier = 0.3;
 
   LoggedInUser user;
   bool _loading = false;
@@ -51,17 +51,18 @@ class _GameweekFormState extends State<GameweekForm> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.7,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-              margin: EdgeInsets.all(20),
-              color: Colors.white,
-              alignment: Alignment.center,
-              height: MediaQuery.of(context).size.height * heightMultiplier,
-              child: gameScoreForm()),
-          gameScoreActions(),
-        ],
-      ),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+                margin: EdgeInsets.all(20),
+                color: Colors.white,
+                alignment: Alignment.center,
+                height: MediaQuery.of(context).size.height * heightMultiplier,
+                child: gameScoreForm()),
+            gameScoreActions(),
+          ],
+        ),
+
     );
   }
 
@@ -108,7 +109,7 @@ class _GameweekFormState extends State<GameweekForm> {
             String home = _gameFormKey.currentState.value[HOME];
             String away = _gameFormKey.currentState.value[AWAY];
             this.GW.gameScore = "${home}-${away}";
-            this.GW.id = _gameFormKey.currentState.value[GAMEWEEK];
+            this.GW.id = int.parse(_gameFormKey.currentState.value[GAMEWEEK]);
             if (this.GW.id == null) this.GW.id = user.currGW;
             this.GW.opposition = _gameFormKey.currentState.value[OPPOSITION];
             this.GW.stage = 1;

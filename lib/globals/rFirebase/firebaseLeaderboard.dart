@@ -32,4 +32,9 @@ class FirebaseLeaderboard {
     leaderboard.add(LeaderboardListEntry(name, teamName, gwPts, totalPts, uid));
     return leaderboard;
   }
+
+  userRank(String uid) async {
+    List<LeaderboardListEntry> leaderBoard = await this.loadUserLeadeboard();
+    leaderBoard.sort((a, b) => b.totalPts.compareTo(a.totalPts));
+  }
 }
