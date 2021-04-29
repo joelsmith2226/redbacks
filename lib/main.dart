@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -10,7 +11,7 @@ import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/views/login.dart';
 import 'package:redbacks/views/unknown.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/services.dart';
+import 'package:sizer/sizer.dart';
 
 import 'globals/constants.dart';
 import 'globals/router.dart';
@@ -92,14 +93,16 @@ class MyApp extends StatelessWidget {
           FocusManager.instance.primaryFocus.unfocus();
         }
       },
-      child: MaterialApp(
-        title: 'Redbacks Fantasy League',
-        theme: ThemeSwitcher.of(context).themeData,
-        home: LoginView(),
-        routes: Routes.getRoutes(),
-        onUnknownRoute: (settings) =>
-            MaterialPageRoute(builder: (context) => UnknownView()),
-      ),
+      child: Sizer(builder: (context, orientation, screenType) {
+        return MaterialApp(
+          title: 'Redbacks Fantasy League',
+          theme: ThemeSwitcher.of(context).themeData,
+          home: LoginView(),
+          routes: Routes.getRoutes(),
+          onUnknownRoute: (settings) =>
+              MaterialPageRoute(builder: (context) => UnknownView()),
+        );
+      }),
     );
   }
 

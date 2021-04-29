@@ -8,6 +8,7 @@ import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/aura.dart';
 import 'package:redbacks/widgets/player/player_card.dart';
 import 'package:redbacks/widgets/player/player_selector_card.dart';
+import 'package:sizer/sizer.dart';
 
 class PlayerWidget extends StatefulWidget {
   TeamPlayer teamPlayer;
@@ -64,6 +65,8 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   Widget PointPickPlayer() {
     bool smallMode = widget.benched;
     var widthMultiplier = smallMode ? 0.2 : 0.3;
+    if (SizerUtil.deviceType == DeviceType.tablet)
+        widthMultiplier = smallMode ? 0.15 : 0.2;
     double width = MediaQuery.of(context).size.width * widthMultiplier;
     return Container(
       width: width,
@@ -104,6 +107,8 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   Widget PricePlayer() {
     bool smallMode = widget.benched;
     var widthMultiplier = smallMode ? 0.2 : 0.3;
+    if (SizerUtil.deviceType == DeviceType.tablet)
+      widthMultiplier = smallMode ? 0.15 : 0.2;
     double width = MediaQuery.of(context).size.width * widthMultiplier;
     return Container(
       width: width,
