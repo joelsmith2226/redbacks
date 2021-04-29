@@ -43,29 +43,32 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
   Widget CarouselPlayer() {
     return FittedBox(
-        child: Container(
-      child: InkWell(
-        child: Column(
-          children: [
-            Image.asset(
-              (widget.player.name == "")
-                  ? "assets/avatar-nobg-unset.png"
-                  : "assets/avatar-nobg.png",
-              width: MediaQuery.of(context).size.width * 0.15,
-            ),
-            NameTag(),
-          ],
+      child: Container(
+        child: InkWell(
+          child: Column(
+            children: [
+              Image.asset(
+                (widget.player.name == "")
+                    ? "assets/avatar-nobg-unset.png"
+                    : "assets/avatar-nobg.png",
+                width: MediaQuery.of(context).size.width * 0.15,
+              ),
+              NameTag(),
+            ],
+          ),
         ),
       ),
-    ),);
+    );
   }
 
   Widget PointPickPlayer() {
     bool smallMode = widget.benched;
-    var widthMultiplier = smallMode ? 0.15 : 0.25;
+    var widthMultiplier = smallMode ? 0.2 : 0.3;
     double width = MediaQuery.of(context).size.width * widthMultiplier;
-    return FittedBox(
-      child: Container(
+    return Container(
+      width: width,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
         child: InkWell(
           onTap: showPlayerCardFn(),
           child: Stack(
@@ -80,6 +83,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                               widget.teamPlayer.removed == true)
                           ? "assets/avatar-nobg-unset.png"
                           : "assets/avatar-nobg.png",
+                      fit: BoxFit.scaleDown,
                       width: width,
                     ),
                     NameTag(),
@@ -99,10 +103,12 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
   Widget PricePlayer() {
     bool smallMode = widget.benched;
-    var widthMultiplier = smallMode ? 0.15 : 0.25;
+    var widthMultiplier = smallMode ? 0.2 : 0.3;
     double width = MediaQuery.of(context).size.width * widthMultiplier;
-    return FittedBox(
-      child: Container(
+    return Container(
+      width: width,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
         child: InkWell(
           onTap: showPlayerCardFn(),
           child: Stack(
@@ -114,7 +120,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                   children: [
                     Image.asset(
                       (widget.teamPlayer.name == "" ||
-                          widget.teamPlayer.removed == true)
+                              widget.teamPlayer.removed == true)
                           ? "assets/avatar-nobg-unset.png"
                           : "assets/avatar-nobg.png",
                       width: width,

@@ -9,6 +9,7 @@ import 'package:redbacks/views/loading.dart';
 import 'package:redbacks/views/login.dart';
 import 'package:redbacks/views/player_stats.dart';
 import 'package:redbacks/views/point_page_other_user.dart';
+import 'package:redbacks/views/settings.dart';
 import 'package:redbacks/views/signup.dart';
 import 'package:redbacks/views/unknown.dart';
 
@@ -26,6 +27,7 @@ class Routes {
   static const String PointPageOther = '/home/point-page-other-user';
   static const String Unknown = '/unknown';
   static const String Confirm = '/choose-team/confirm-transfer';
+  static const String Settings = '/settings';
 
 
   /// The map used to define our routes, needs to be supplied to [MaterialApp]
@@ -43,6 +45,7 @@ class Routes {
       Routes.Unknown: (context) => UnknownView(),
       Routes.Flag: (context) => FlagView(),
       Routes.Confirm: (context) => ConfirmTransfersView(),
+      Routes.Settings: (context) => SettingsView(),
     };
   }
 }

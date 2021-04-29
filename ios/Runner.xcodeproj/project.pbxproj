@@ -14,21 +14,8 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		F93C3FB926394A7C003A1CFB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F93C3FB826394A7C003A1CFB /* GoogleService-Info.plist */; };
-		FC94A43BEEF56BDC555C0CE5 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4D4AD0C4D1037FC216960F0 /* Pods_Runner.framework */; };
+		F9CE3579263A3D3100D000AD /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4D4AD0C4D1037FC216960F0 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		9705A1C41CF9048500538489 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		00B976A70DC0E4A379636DD6 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
@@ -57,7 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FC94A43BEEF56BDC555C0CE5 /* Pods_Runner.framework in Frameworks */,
+				F9CE3579263A3D3100D000AD /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,7 +128,6 @@
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
-				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				AA35E05D583BF18E85A9E811 /* [CP] Embed Pods Frameworks */,
 				B87623F3B2842C6C4410B681 /* [CP] Copy Pods Resources */,

@@ -86,9 +86,8 @@ class _HomeViewState extends State<HomeView> {
         width: MediaQuery.of(context).size.width * 0.35,
         child: Theme(
           data: Theme.of(context).copyWith(
-            // Set the transparency here
             canvasColor: Colors.black.withAlpha(
-                180), //or any other color you want. e.g Colors.blue.withOpacity(0.5)
+                80),
           ),
           child: Drawer(
             child: Column(
@@ -156,9 +155,10 @@ class _HomeViewState extends State<HomeView> {
 
   Widget actionBtn(String title, Function onPressed) {
     return Container(
-        width: 150,
+        width: MediaQuery.of(context).size.width * 0.3,
         padding: EdgeInsets.all(10),
         child: MaterialButton(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           color: Theme.of(context).accentColor,
           child: FittedBox(
             child: Text(
@@ -171,11 +171,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void _settingsFn() {
-    var sb = SnackBar(
-        content: Text(
-            "Settings Page Coming Soon"));
-    ScaffoldMessenger.of(context).showSnackBar(sb);
-    Navigator.pop(context);
+    Navigator.pushNamed(context, Routes.Settings);
   }
 
   refresher(Widget page) {

@@ -7,7 +7,7 @@ import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/models/player_gameweek.dart';
 import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
-import 'package:redbacks/widgets/player/player_gameweek_form.dart';
+import 'package:redbacks/widgets/admin/player_gameweek_form.dart';
 
 class GameweekForm extends StatefulWidget {
   Gameweek loadedGW;
@@ -42,7 +42,9 @@ class _GameweekFormState extends State<GameweekForm> {
     }
     _stage = this.GW.stage;
 
-    return this._stage == 0 ? GameweekForm() : PlayerGameweekForm(loadedGW: widget.loadedGW);
+    return this._stage == 0
+        ? GameweekForm()
+        : PlayerGameweekForm(loadedGW: widget.loadedGW);
   }
 
   Widget GameweekForm() {
@@ -132,9 +134,11 @@ class _GameweekFormState extends State<GameweekForm> {
           padding: EdgeInsets.all(10),
           child: ListView(
             physics: AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.all(10),
             shrinkWrap: true,
             children: [
-              NumberForm(gwNum, GAMEWEEK, "Gameweek #"),
+              TextForm(GAMEWEEK, "Gameweek #",
+                  req: true, initial: "${gwNum}", width: 0.3, numMode: true),
               TextForm(OPPOSITION, "Enter Opposition", initial: opposition),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 TextForm(HOME, "Redbacks",
@@ -156,7 +160,10 @@ class _GameweekFormState extends State<GameweekForm> {
   }
 
   Widget TextForm(String name, String label,
-      {req = false, String initial = "", double width = 0.75, bool numMode = false}) {
+      {req = false,
+      String initial = "",
+      double width = 0.75,
+      bool numMode = false}) {
     var validators = [
       FormBuilderValidators.required(context),
     ];
@@ -171,39 +178,41 @@ class _GameweekFormState extends State<GameweekForm> {
           labelText: label,
         ),
         validator: FormBuilderValidators.compose(validators),
-        keyboardType: numMode? TextInputType.number : TextInputType.text,
+        keyboardType: numMode ? TextInputType.number : TextInputType.text,
         onEditingComplete: () => saveCurrPlayerGWState(this._gameFormKey),
       ),
     );
   }
 
   Widget NumberForm(int value, String name, String label) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(height: 5),
-        Text(
-          "${label}",
-          style: TextStyle(color: Colors.black.withAlpha(160), fontSize: 10),
-        ),
-        FormBuilderField(
-          name: name,
-          builder: (FormFieldState<dynamic> field) {
-            return TouchSpin(
-              textStyle: TextStyle(fontSize: 16),
-              value: field.value == null ? value : field.value,
-              min: 0,
-              step: 1,
-              iconSize: 15.0,
-              onChanged: (val) {
-                field.setValue(val);
-                saveCurrPlayerGWState(
-                    this._stage == 0 ? this._gameFormKey : this._currKey);
-              },
-            );
-          },
-        ),
-      ],
+    return Container(
+      padding: EdgeInsets.all(10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "${label}",
+            style: TextStyle(color: Colors.black.withAlpha(160), fontSize: 10),
+          ),
+          FormBuilderField(
+            name: name,
+            builder: (FormFieldState<dynamic> field) {
+              return TouchSpin(
+                textStyle: TextStyle(fontSize: 16),
+                value: field.value == null ? value : field.value,
+                min: 0,
+                step: 1,
+                iconSize: 15.0,
+                onChanged: (val) {
+                  field.setValue(val);
+                  saveCurrPlayerGWState(
+                      this._stage == 0 ? this._gameFormKey : this._currKey);
+                },
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 

@@ -40,37 +40,41 @@ class TeamWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        alignment: Alignment.topCenter,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Row(
-              children: playersToWidgets(r1Players),
-              mainAxisAlignment: MainAxisAlignment.center,
-            ),
-            SizedBox(height: 10),
-            Row(
-              children: playersToWidgets(r2Players),
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            ),
-            SizedBox(height: 10),
-            Row(
-              children: playersToWidgets(r3Players),
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-            ),
-            this.bench
-                ? Bench(
-                    player: (PlayerWidget.fromTeamPlayer(
-                      this.benchPlayer,
-                      this.mode,
-                      benched: true,
-                    )),
-                  )
-                : Container(),
-          ],
+      child: FittedBox(
+        fit: BoxFit.fitWidth,
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          width: MediaQuery.of(context).size.width,
+          alignment: Alignment.topCenter,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Row(
+                children: playersToWidgets(r1Players),
+                mainAxisAlignment: MainAxisAlignment.center,
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: playersToWidgets(r2Players),
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: playersToWidgets(r3Players),
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+              ),
+              this.bench
+                  ? Bench(
+                      player: (PlayerWidget.fromTeamPlayer(
+                        this.benchPlayer,
+                        this.mode,
+                        benched: true,
+                      )),
+                    )
+                  : Container(),
+            ],
+          ),
         ),
       ),
     );

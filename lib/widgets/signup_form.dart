@@ -61,12 +61,12 @@ class _SignupFormState extends State<SignupForm> {
 
     bool isPwd = ["pwd", "conPwd"].contains(name);
     return Container(
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+      padding: EdgeInsets.symmetric(vertical:10),
+      child: Stack(
+          alignment: Alignment.center,
           children: [
             Container(
-              width: MediaQuery.of(context).size.width * (isPwd ? 0.52 : 0.65),
+              width: MediaQuery.of(context).size.width * 0.65,
               child: FormBuilderTextField(
                 name: name,
                 textCapitalization: keyboard == TextInputType.name
@@ -96,12 +96,14 @@ class _SignupFormState extends State<SignupForm> {
       _addThirdPartyButtons(columnChildren);
     }
     columnChildren.add(_submitButton());
-    if (loading)
-      columnChildren.add(CircularProgressIndicator());
+    if (loading) columnChildren.add(CircularProgressIndicator());
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: columnChildren,
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.8,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: columnChildren,
+      ),
     );
   }
 
@@ -189,10 +191,11 @@ class _SignupFormState extends State<SignupForm> {
           this.disabled
               ? Container()
               : MaterialButton(
+                  padding: EdgeInsets.symmetric(vertical:10, horizontal:20),
                   color: Theme.of(context).accentColor,
                   child: Text(
                     "Back",
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   onPressed: () async {
                     setState(() {
@@ -202,9 +205,10 @@ class _SignupFormState extends State<SignupForm> {
                 ),
           MaterialButton(
             color: Theme.of(context).accentColor,
+            padding: EdgeInsets.symmetric(vertical:10, horizontal:20),
             child: Text(
               this.disabled ? "Next" : "Submit",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white, fontSize: 16),
             ),
             onPressed: () async {
               if (this.disabled &&
@@ -252,7 +256,6 @@ class _SignupFormState extends State<SignupForm> {
         UserCredential userCredential =
             await Authentication().signUpUsingEmailAndPassword(email, pwd);
         registerUserOnFirebase(userCredential);
-
       } on FirebaseAuthException catch (e) {
         _errorHandling(e);
       } catch (e) {
@@ -292,8 +295,12 @@ class _SignupFormState extends State<SignupForm> {
     Function onPress = name == 'pwd'
         ? () => (setState(() => hidePwd = !hidePwd))
         : () => (setState(() => hideConPwd = !hideConPwd));
-    return IconButton(
+    return Positioned.directional(
+        textDirection: TextDirection.ltr,
+        end: 0,
+        child: IconButton(
         icon: Icon(showHide ? Icons.visibility_off : Icons.visibility),
-        onPressed: onPress);
+        onPressed: onPress)
+    );
   }
 }

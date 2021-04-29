@@ -15,7 +15,7 @@ class _BenchState extends State<Bench> {
   Widget build(BuildContext context) {
     return Container(
         width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.15,
+        height: MediaQuery.of(context).size.height * 0.12,
         color: Colors.black.withAlpha(100),
         child: Stack(
           alignment: Alignment.center,

@@ -74,12 +74,15 @@ class _LoginViewState extends State<LoginView> {
       ]),
       floatingActionButton: !_patching
           ? FloatingActionButton(
-              child: Padding(
-                padding: EdgeInsets.all(5),
-                child: Text(
-                  "Sign Up",
-                  style: TextStyle(fontSize: 14),
-                  textAlign: TextAlign.center,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text(
+                    "Sign\nup",
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
               onPressed: () {

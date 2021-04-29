@@ -44,57 +44,64 @@ class _LoginFormState extends State<LoginForm> {
 
   Widget BuildForm() {
     return SingleChildScrollView(
-        physics: AlwaysScrollableScrollPhysics(),
-        child: Container(
-            height: MediaQuery.of(context).size.height * 0.8,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
+      physics: AlwaysScrollableScrollPhysics(),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.8,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            InkWell(
+              child: Image.asset(
+                'assets/spider.png',
+                width: MediaQuery.of(context).size.width * 0.3,
+              ),
+            ),
+            Image.asset(
+              'assets/title.png',
+              width: MediaQuery.of(context).size.width * 0.75,
+            ),
+            SizedBox(height: 20),
+            ThirdPartySigninButton(company: "Google"),
+            ThirdPartySigninButton(company: "Facebook"),
+            Platform.isIOS
+                ? ThirdPartySigninButton(company: "Apple")
+                : Container(),
+            Container(
+              child: Text("...Or login with email & password"),
+              padding: EdgeInsets.symmetric(vertical: 10),
+            ),
+            FormBuilder(
+              key: _formKey,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  InkWell(
-                    child: Image.asset(
-                      'assets/spider.png',
-                      width: MediaQuery.of(context).size.width * 0.3,
-                    ),
-                    onDoubleTap: attemptLoginOnFirebaseAdmin,
-                  ),
-                  Image.asset(
-                    'assets/title.png',
-                    width: MediaQuery.of(context).size.width * 0.75,
-                  ),
-                  SizedBox(height: 20),
-                  ThirdPartySigninButton(company: "Google"),
-                  ThirdPartySigninButton(company: "Facebook"),
-                  Platform.isIOS ?
-                  ThirdPartySigninButton(company: "Apple") : Container(),
-                  Container(child: Text("...Or login with email & password"), padding: EdgeInsets.symmetric(vertical:10),),
-                  FormBuilder(
-                    key: _formKey,
-                    child: Column(
-                      children: <Widget>[
-                        LoginTextForm("email", "Enter Email", false),
-                        LoginTextForm("pwd", "Enter password", true),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  MaterialButton(
-                    color: Theme.of(context).accentColor,
-                    child: Text(
-                      "Login",
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                    onPressed: () {
-                      _formKey.currentState.save();
-                      attemptLoginOnFirebase();
-                    },
-                  ),
-                  _loading ? CircularProgressIndicator() : Container(),
+                children: <Widget>[
+                  LoginTextForm("email", "Enter Email", false),
+                  LoginTextForm("pwd", "Enter password", true),
                 ],
               ),
-            )));
+            ),
+            MaterialButton(
+              color: Theme.of(context).accentColor,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text(
+                    "Login",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ),
+              ),
+              onPressed: () {
+                _formKey.currentState.save();
+                attemptLoginOnFirebase();
+              },
+            ),
+            _loading ? CircularProgressIndicator() : Container(),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget LoginTextForm(String name, String label, bool pwd) {
@@ -125,9 +132,8 @@ class _LoginFormState extends State<LoginForm> {
       });
       String email = _formKey.currentState.value["email"];
       String pwd = _formKey.currentState.value["pwd"];
-      UserCredential userCredentials =
-          await FirebaseAuth.instance
-              .signInWithEmailAndPassword(email: email, password: pwd);
+      UserCredential userCredentials = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: pwd);
       if (userCredentials != null)
         Navigator.pushReplacementNamed(context, Routes.Loading);
       else {
@@ -136,24 +142,6 @@ class _LoginFormState extends State<LoginForm> {
           _loading = false;
         });
       }
-    } catch (e) {
-      _errorHandler(e);
-      setState(() {
-        _loading = false;
-      });
-    }
-  }
-
-  void attemptLoginOnFirebaseAdmin() async {
-    try {
-      print("Attempting admin hack for joel.smith2226");
-      setState(() {
-        _loading = true;
-      });
-      UserCredential userCredential = await Authentication()
-          .loginUsingEmail("joel.smith2226@gmail.com", "joe063,./");
-      print("Successful login ADMIN PLS: ${userCredential.user.uid}");
-      Navigator.pushReplacementNamed(context, Routes.Loading);
     } catch (e) {
       _errorHandler(e);
       setState(() {

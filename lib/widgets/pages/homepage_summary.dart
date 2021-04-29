@@ -14,7 +14,7 @@ class _HomepageSummaryState extends State<HomepageSummary> {
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: 50,
+      height: MediaQuery.of(context).size.height*0.07,
       margin: EdgeInsets.only(bottom: widget.bottomMargin),
       color: Colors.black.withAlpha(100),
       child: widget.body,

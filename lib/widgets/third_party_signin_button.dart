@@ -23,7 +23,8 @@ class _ThirdPartySigninButtonState extends State<ThirdPartySigninButton> {
     return _isSigningIn
         ? CircularProgressIndicator()
         : Container(
-            width: 250,
+            width: MediaQuery.of(context).size.width * 0.6,
+            height: MediaQuery.of(context).size.height * 0.04,
             child: OutlinedButton(
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(_getColor()),
@@ -50,28 +51,34 @@ class _ThirdPartySigninButtonState extends State<ThirdPartySigninButton> {
                   Navigator.pushReplacementNamed(context, Routes.Loading);
                 }
               },
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Image(
-                    image: AssetImage(_getImageString()),
-                    height: 18.0,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: Text(
-                      '${widget.signUp ? "Sign up" : "Login"} with ${widget.company}',
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: widget.disabled
-                              ? Colors.black.withAlpha(100)
-                              : (widget.company == "Google"
-                                  ? Colors.black
-                                  : Colors.white)),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Image(
+                        image: AssetImage(_getImageString()),
+                        height: 18.0,
+                      ),
                     ),
-                  )
-                ],
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Text(
+                        '${widget.signUp ? "Sign up" : "Login"} with ${widget.company}',
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: widget.disabled
+                                ? Colors.black.withAlpha(100)
+                                : (widget.company == "Google"
+                                    ? Colors.black
+                                    : Colors.white)),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           );

@@ -5,9 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/gameweek.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
-import 'package:redbacks/widgets/admin_actions.dart';
-import 'package:redbacks/widgets/edit_gameweeks.dart';
-import 'package:redbacks/widgets/gameweek_form.dart';
+import 'package:redbacks/widgets/admin/admin_actions.dart';
+import 'package:redbacks/widgets/admin/edit_gameweeks.dart';
+import 'package:redbacks/widgets/admin/gameweek_form.dart';
 
 class AdminView extends StatefulWidget {
   @override
@@ -46,8 +46,7 @@ class _AdminViewState extends State<AdminView> {
     bool loaded = true;
     this._pages = [
       ChangeNotifierProvider(
-          create: (context) => Gameweek(user.playerDB),
-          child: GameweekForm()),
+          create: (context) => Gameweek(user.playerDB), child: GameweekForm()),
       EditGameweeks(),
       AdminActions(),
       Text("Edit past gws?"),
@@ -89,19 +88,35 @@ class _AdminViewState extends State<AdminView> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                MaterialButton(
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  padding: EdgeInsets.all(10),
+                  child: MaterialButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      color: Theme.of(context).accentColor,
+                      child: FittedBox(
+                          child: Text("Go Back",
+                              style: TextStyle(color: Colors.white))),
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, Routes.Home);
+                      }),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  padding: EdgeInsets.all(10),
+                  child: MaterialButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
                     color: Theme.of(context).accentColor,
-                    child: Text("Go Back", style: TextStyle(color: Colors.white)),
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(context, Routes.Home);
-                    }),
-                MaterialButton(
-                  color: Theme.of(context).accentColor,
-                  child: Text("Logout", style: TextStyle(color: Colors.white)),
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                    Navigator.pushReplacementNamed(context, "/login");
-                  },
+                    child: FittedBox(
+                        child: Text("Logout",
+                            style: TextStyle(color: Colors.white))),
+                    onPressed: () async {
+                      await FirebaseAuth.instance.signOut();
+                      Navigator.pushReplacementNamed(context, "/login");
+                    },
+                  ),
                 )
               ],
             ),

@@ -28,6 +28,7 @@ class _PointsPageState extends State<PointsPage> {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
     if (user.userGWs.isEmpty) {
       return Container(
+        margin: EdgeInsets.all(20),
         child: Text("NO POINTS TO SHOW"),
         color: Colors.white,
         alignment: Alignment.center,
@@ -46,14 +47,14 @@ class _PointsPageState extends State<PointsPage> {
           : null;
 
       return Container(
-        height: MediaQuery.of(context).size.height*0.9,
+        height: MediaQuery.of(context).size.height * 0.85,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             PointsSummary(
                 ugw, currentWeek, (val) => setState(() => currentWeek = val)),
             ugw == null
-                ? Container(child: Text("No points for this GW"))
+                ? Container(margin: EdgeInsets.all(20), child: Text("No points for this GW"))
                 : TeamWidget(ugw.team, bench: true, mode: POINTS),
           ],
         ),

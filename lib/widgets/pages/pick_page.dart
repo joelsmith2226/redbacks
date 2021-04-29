@@ -24,9 +24,10 @@ class _PickPageState extends State<PickPage> {
       height: MediaQuery
           .of(context)
           .size
-          .height * 0.9,
+          .height*0.85,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           PickSummary(summaryDialogFn: () => tripleCapDialog(context),),
           TeamWidget(user.team, bench: true, mode: PICK),

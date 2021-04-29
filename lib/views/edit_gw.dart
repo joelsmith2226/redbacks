@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:redbacks/providers/gameweek.dart';
-import 'package:redbacks/widgets/gameweek_form.dart';
+import 'package:redbacks/widgets/admin/gameweek_form.dart';
 
 class EditGWView extends StatefulWidget {
   @override

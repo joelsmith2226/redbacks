@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/models/flag.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
-import 'package:redbacks/widgets/edit_flag.dart';
+import 'package:redbacks/widgets/admin/edit_flag.dart';
 import 'package:redbacks/widgets/player/player_carousel.dart';
 
 class FlagView extends StatefulWidget {

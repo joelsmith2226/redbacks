@@ -28,14 +28,13 @@ class _LeaderboardListState extends State<LeaderboardList> {
     _entries.sort((a, b) => b.totalPts.compareTo(a.totalPts));
 
     return Container(
-      color: Colors.white.withAlpha(200),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: loading
             ? CircularProgressIndicator()
             : Container(
                 height: MediaQuery.of(context).size.height * 0.7,
-                width: MediaQuery.of(context).size.width * 0.95,
+                width: MediaQuery.of(context).size.width * 0.9,
                 child: ListView.builder(
                   itemCount: _entries.length,
                   shrinkWrap: true,
@@ -95,16 +94,15 @@ class CategoryListTile extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
-        border: Border.all(
-          color: Colors.black.withAlpha(100),
-        ),
+        borderRadius: BorderRadius.vertical(top:Radius.circular(20)),
       ),
       height: 50,
+      width: MediaQuery.of(context).size.width * 0.9,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          categoryColumnCell("", 0.14),
-          categoryColumnCell("Name", 0.43),
+          categoryColumnCell("", 0.1),
+          categoryColumnCell("Name", 0.4),
           categoryColumnCell("GW Pts", 0.1),
           categoryColumnCell("Total Pts", 0.1),
         ],
@@ -139,6 +137,7 @@ class LeaderboardListTile extends StatelessWidget {
     this.context = context;
     LoggedInUser user = Provider.of<LoggedInUser>(context);
     return ListTile(
+      tileColor: Colors.white,
       contentPadding: EdgeInsets.symmetric(horizontal: 10),
       onTap: () {
         Navigator.pushNamed(context, Routes.PointPageOther,
@@ -159,7 +158,7 @@ class LeaderboardListTile extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          columnCell('${this.entry.teamName}', 0.4, subtitle: this.entry.name),
+          columnCell('${this.entry.teamName}', 0.35, subtitle: this.entry.name),
           columnCell("${this.entry.gwPts}pts", 0.16,
               align: Alignment.centerRight),
           columnCell("${this.entry.totalPts}pts", 0.16,

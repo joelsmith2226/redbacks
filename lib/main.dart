@@ -5,22 +5,37 @@ import 'package:flutter/physics.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:redbacks/globals/theme_switcher.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/views/login.dart';
 import 'package:redbacks/views/unknown.dart';
 
 import 'globals/constants.dart';
-import 'globals/initial_data.dart';
 import 'globals/router.dart';
+
+var _themes = {
+  LIGHT_THEME: ThemeData(
+      primarySwatch: MaterialColor(0xFFa01300, colorSwatch),
+      primaryColor: Color(0xFFa01300),
+      accentColor: Color(0xFFa01300).withAlpha(150),
+      textTheme: GoogleFonts.merriweatherSansTextTheme()),
+  DARK_THEME: ThemeData.dark(),
+};
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(); // declaring twice..?
-  runApp(MyApp());
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  runApp(
+    ThemeSwitcherWidget(
+      initialTheme: _themes[LIGHT_THEME],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -41,8 +56,6 @@ class MyApp extends StatelessWidget {
           return ChangeNotifierProvider(
             create: (context) => LoggedInUser(),
             child: RefreshConfiguration(
-              // headerBuilder: () => WaterDropHeader(),
-              // footerBuilder:  () => ClassicFooter(),
               headerTriggerDistance: 80.0,
               springDescription:
                   SpringDescription(stiffness: 170, damping: 16, mass: 1.9),
@@ -67,17 +80,14 @@ class MyApp extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+        if (!currentFocus.hasPrimaryFocus &&
+            currentFocus.focusedChild != null) {
           FocusManager.instance.primaryFocus.unfocus();
         }
       },
       child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-            primarySwatch: MaterialColor(0xFFa01300, colorSwatch),
-            primaryColor: Color(0xFFa01300),
-            accentColor: Color(0xFFa01300).withAlpha(150),
-            textTheme: GoogleFonts.merriweatherSansTextTheme()),
+        title: 'Redbacks Fantasy League',
+        theme: ThemeSwitcher.of(context).themeData,
         home: LoginView(),
         routes: Routes.getRoutes(),
         onUnknownRoute: (settings) =>

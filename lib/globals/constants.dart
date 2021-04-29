@@ -1,5 +1,9 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+
+// THEMING //
+
 Map<int, Color> colorSwatch = {
   50: Color.fromRGBO(160, 19, 0, .1),
   100: Color.fromRGBO(160, 19, 0, .2),
@@ -13,7 +17,8 @@ Map<int, Color> colorSwatch = {
   900: Color.fromRGBO(160, 19, 0, 1.0),
 };
 
-const List<String> admins = ["joel.smith2226@gmail.com"];
+const int LIGHT_THEME = 0;
+const int DARK_THEME = 1;
 
 // MODES
 const String CAPTAIN = "cap";

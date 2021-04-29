@@ -140,6 +140,7 @@ class FirebaseUsers {
     users.doc('admin').get().then((DocumentSnapshot docs) {
       user.currGW = docs.data()["curr-gw"];
       user.patchMode = docs.data()["patch-mode"];
+      user.admins = docs.data()["admins"];
     }).onError((error, stackTrace) {
       print("Error in getting admin data: ${error}");
     });

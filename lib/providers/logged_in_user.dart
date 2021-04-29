@@ -41,6 +41,7 @@ class LoggedInUser extends ChangeNotifier {
 
   // PATCH MODE
   bool patchMode = false;
+  List<String> _admins = [];
 
   LoggedInUser();
 
@@ -56,7 +57,7 @@ class LoggedInUser extends ChangeNotifier {
     if (user != null) {
       this.email = user.email;
       this.uid = user.uid;
-      this.admin = admins.contains(this.email);
+      this.admin = this.admins.contains(this.email);
       this.pendingTransfer = []; //Resets any residual transfers
       this.team = await FirebaseCore().getTeam(this.uid, this.playerDB);
       this.calculatePoints();
@@ -78,8 +79,7 @@ class LoggedInUser extends ChangeNotifier {
     if (user != null) {
       this.email = user.email;
       this.uid = user.uid;
-      this.admin = admins.contains(this.email);
-      //this.teamName = teamName;
+      this.admin = this.admins.contains(this.email);
       this.gwPts = 0;
       this.totalPts = 0;
       this.pendingTransfer = []; //Resets any residual transfers
@@ -619,5 +619,11 @@ class LoggedInUser extends ChangeNotifier {
 
   bool unlimitedTransfersActive() {
     return this.chips[0].active || this.chips[1].active;
+  }
+
+  List<String> get admins => _admins;
+
+  set admins(List<dynamic> values) {
+    _admins = values.map((v) => v as String).toList();
   }
 }
