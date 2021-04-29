@@ -23,7 +23,8 @@ class PlayerCard extends StatelessWidget {
       {this.player, this.context, this.mode, this.callback, this.teamPlayer}) {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
     this.pc = AlertDialog(
-      insetPadding: EdgeInsets.all(27.0),
+      contentPadding: EdgeInsets.all(5),
+      insetPadding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 25),
       title: Text(
         '${this.player.name}',
         textAlign: TextAlign.center,
@@ -175,13 +176,14 @@ class PlayerCard extends StatelessWidget {
   }
 
   Widget rankCheckBox(rank) {
+    String capn = rank == CAPTAIN ? "Captain" : "Vice Captain";
     return Container(
         child: Column(children: [
       Checkbox(
         value: this.teamPlayer.rank == rank,
         onChanged: (value) => updateCaptaincy(value, rank),
       ),
-      Text(rank)
+      Text(capn)
     ]));
   }
 

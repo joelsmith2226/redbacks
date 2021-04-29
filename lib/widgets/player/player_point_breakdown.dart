@@ -26,54 +26,66 @@ class _PlayerPointBreakdownState extends State<PlayerPointBreakdown> {
     } catch (e) {
       return Container();
     }
-    TextStyle style =
-        TextStyle(color: Colors.white, fontWeight: FontWeight.w400);
     return Container(
       padding: EdgeInsets.all(10),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Container(
-            height: 30,
-            decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(10), bottom: Radius.circular(this.show ? 0 : 10))),
-            child: InkWell(
-              onTap: _onPressed,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    "GW-${widget.gw.id}",
-                    style: style,
-                  ),
-                  Text(
-                    'Score: ${widget.gw.gameScore}',
-                    style: style,
-                  ),
-                  Text(
-                    '${pgw.gwPts}pts',
-                    style: style,
-                  ),
-                  this.show
-                      ? Icon(
-                          Icons.arrow_drop_down,
-                          size: 30,
-                          color: Colors.white,
-                        )
-                      : Icon(
-                          Icons.arrow_drop_up,
-                          size: 30,
-                          color: Colors.white,
-                        ),
-                ],
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Container(
+              height: 30,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(10),
+                      bottom: Radius.circular(this.show ? 0 : 10))),
+              child: InkWell(
+                onTap: _onPressed,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    categoryContainer("GW-${widget.gw.id}", 0.15),
+                    categoryContainer("${widget.gw.opposition}", 0.3),
+                    categoryContainer("${widget.gw.gameScore}", 0.15),
+                    categoryContainer('${pgw.gwPts}pts', 0.15),
+                    this.show
+                        ? Icon(
+                            Icons.arrow_drop_down,
+                            size: 30,
+                            color: Colors.white,
+                          )
+                        : Icon(
+                            Icons.arrow_drop_up,
+                            size: 30,
+                            color: Colors.white,
+                          ),
+                  ],
+                ),
               ),
             ),
-          ),
-          this.show ? pointBreakdown(pgw) : Container(),
-        ],
+            this.show ? pointBreakdown(pgw) : Container(),
+          ],
+        ),
       ),
     );
+  }
+
+  Widget categoryContainer(String text, double width) {
+    TextStyle style =
+        TextStyle(color: Colors.white, fontWeight: FontWeight.w400);
+
+    return Container(
+        width: MediaQuery.of(context).size.width * width,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            text,
+            style: style,
+          ),
+        ));
   }
 
   Widget pointBreakdown(PlayerGameweek pgw) {
@@ -81,9 +93,12 @@ class _PlayerPointBreakdownState extends State<PlayerPointBreakdown> {
     pgw.pointBreakdown.pointBreakdownRows.forEach((pbr) {
       pbrs.add(pointBreakdownRows(pbr));
     });
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: pbrs,
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: pbrs,
+      ),
     );
   }
 
