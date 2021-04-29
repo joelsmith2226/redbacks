@@ -10,15 +10,20 @@ import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/views/login.dart';
 import 'package:redbacks/views/unknown.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 import 'globals/constants.dart';
 import 'globals/router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Removes landscape option
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
   await Firebase.initializeApp(); // declaring twice..?
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  Color primaryColor = Color(prefs.get('primaryColor')) ?? Color(0xffa01300);
+  Color primaryColor = Color(prefs.get('primarsdyColor') ?? 0xffa01300);
   int themeChoice = prefs.get('theme') ?? LIGHT_THEME;
   var _themes = {
     LIGHT_THEME: ThemeData(

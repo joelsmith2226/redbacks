@@ -25,59 +25,108 @@ class _SettingsViewState extends State<SettingsView> {
     await prefs.setInt('primaryColor', color.value);
   }
 
+  void changeColorUsingPicker(Color color) async {
+    setState(() => pickerColor = color);
+  }
+
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
 
-    return Scaffold(
-      key: _scaffoldKey,
-      body: Stack(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/background.jpeg"),
-                fit: BoxFit.fill,
+    return DefaultTabController(
+      initialIndex: 1,
+      length: 2,
+      child: Scaffold(
+        key: _scaffoldKey,
+        body: Stack(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/background.jpeg"),
+                  fit: BoxFit.fill,
+                ),
               ),
             ),
-          ),
-          Container(
-            color: Colors.white,
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            margin: EdgeInsets.all(30),
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Text("Change App Theme Color?",
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  child: BlockPicker(
-                    pickerColor: currentColor,
-                    onColorChanged: changeColor,
+            Container(
+              color: Colors.white,
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              margin: EdgeInsets.all(30),
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text("Change App Theme Color?",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    child: TabBarView(
+                      physics: NeverScrollableScrollPhysics(),
+                      children: <Widget>[
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.6,
+                            child: BlockPicker(
+                              pickerColor: currentColor,
+                              onColorChanged: changeColor,
+                            ),
+                          ),
+                        ),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.6,
+                            child: MaterialPicker(
+                                pickerColor: pickerColor,
+                                onColorChanged: changeColor,
+                                enableLabel: true, // only on portrait mode
+                              ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                MaterialButton(
-                  child: Text("Default Colour", style: TextStyle(color: Colors.white)),
-                  onPressed: () => changeColor(DEFAULT_COLOR),
-                  color: DEFAULT_COLOR,
-                )
-              ],
+                  TabBar(
+                    labelColor: pickerColor,
+                    tabs: <Widget>[
+                      Tab(
+                        icon: Icon(
+                          Icons.grid_on,
+                          color: pickerColor,
+                        ),
+                      ),
+                      Tab(
+                        icon: Icon(
+                          Icons.table_chart,
+                          color: pickerColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  MaterialButton(
+                    child: Text("Default Colour",
+                        style: TextStyle(color: Colors.white)),
+                    onPressed: () => changeColor(DEFAULT_COLOR),
+                    color: DEFAULT_COLOR,
+                  )
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-      appBar: AppBar(
-        title: Text(
-          "Settings",
-          style: GoogleFonts.merriweatherSans(),
+          ],
         ),
-        centerTitle: true,
+        appBar: AppBar(
+          title: Text(
+            "Settings",
+            style: GoogleFonts.merriweatherSans(),
+          ),
+          centerTitle: true,
+        ),
       ),
     );
   }

@@ -200,7 +200,6 @@ class _HomeViewState extends State<HomeView> {
   void _onRefresh(LoggedInUser user) async {
     try {
       await user.generalDBPull();
-      print("the problem is simple: Dont be here until above is complete");
       user.calculatePoints();
     } catch (e) {
       _onError(e);
