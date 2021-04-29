@@ -42,6 +42,7 @@ class LoggedInUser extends ChangeNotifier {
   // PATCH MODE
   bool patchMode = false;
   List<String> _admins = [];
+  int _preAppPoints = 0;
 
   LoggedInUser();
 
@@ -84,6 +85,7 @@ class LoggedInUser extends ChangeNotifier {
       this.totalPts = 0;
       this.pendingTransfer = []; //Resets any residual transfers
       this.completedTransfers = [];
+      this.preAppPoints = 0;
       this.setInitialTeam();
       this.setInitialChips();
 
@@ -155,14 +157,15 @@ class LoggedInUser extends ChangeNotifier {
 
   void loadMiscDetailsFromDB() async {
     DocumentSnapshot data = await FirebaseCore().getMiscDetails(this.uid);
-    this.totalPts = data.get("total-pts");
-    this.name = data.get("name");
-    this.gwPts = data.get("gw-pts");
-    this.teamName = data.get("team-name");
-    this.budget = data.get("budget");
-    this.freeTransfers = data.get("free-transfers");
-    this.hits = data.get("hits");
-    this.teamValue = data.get("team-value");
+    this.totalPts = data.get("total-pts") ?? 0;
+    this.name = data.get("name") ?? "";
+    this.gwPts = data.get("gw-pts") ?? 0;
+    this.teamName = data.get("team-name") ?? "";
+    this.budget = data.get("budget") ?? 0;
+    this.freeTransfers = data.get("free-transfers") ?? 0;
+    this.hits = data.get("hits") ?? 0;
+    this.teamValue = data.get("team-value") ?? 0;
+    this.preAppPoints = data.get("pre-app-pts") ?? 0;
     data.data()["completed-transfers"] != null
         ? completedTransfersFromData(data.get("completed-transfers"))
         : this.completedTransfers = [];
@@ -625,5 +628,11 @@ class LoggedInUser extends ChangeNotifier {
 
   set admins(List<dynamic> values) {
     _admins = values.map((v) => v as String).toList();
+  }
+
+  int get preAppPoints => _preAppPoints;
+
+  set preAppPoints(int value) {
+    _preAppPoints = value;
   }
 }

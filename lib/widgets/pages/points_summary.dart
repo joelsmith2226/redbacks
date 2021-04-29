@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'package:redbacks/models/user_GW.dart';
-import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/pages/homepage_summary.dart';
 import 'package:redbacks/widgets/summary_container.dart';
 
@@ -20,13 +17,18 @@ class PointsSummary extends StatefulWidget {
 class _PointsSummaryState extends State<PointsSummary> {
   @override
   Widget build(BuildContext context) {
+    List<Widget> children;
+    if (widget.currGW == 0) {
+      children = rowChildrenPreAppPoints(context);
+    } else if (widget.userGW == null) {
+      children = rowChildrenNoUserGW(context);
+    } else {
+      children = rowChildrenWithUserGW(context);
+    }
+
     return HomepageSummary(
-        body: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: widget.userGW == null
-          ? rowChildrenNoUserGW(context)
-          : rowChildrenWithUserGW(context),
-    ));
+      body: Row(mainAxisAlignment: MainAxisAlignment.center, children: children),
+    );
   }
 
   List<Widget> rowChildrenWithUserGW(BuildContext context) {
@@ -72,6 +74,26 @@ class _PointsSummaryState extends State<PointsSummary> {
       SummaryContainer(
           body: PointsText(
               "?", " hits", Colors.white, Theme.of(context).primaryColor)),
+      IconButton(
+        icon: Icon(Icons.arrow_forward),
+        onPressed: () => widget.onPressed(widget.currGW + 1),
+        color: Theme.of(context).primaryColor,
+        padding: EdgeInsets.zero,
+      )
+    ];
+  }
+
+  List<Widget> rowChildrenPreAppPoints(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.arrow_back),
+        onPressed: () => widget.onPressed(widget.currGW - 1),
+        color: Theme.of(context).primaryColor,
+        padding: EdgeInsets.zero,
+      ),
+      SummaryContainer(
+          body: PointsText("Pre App ", "\nPoints",
+              Theme.of(context).primaryColor, Colors.white)),
       IconButton(
         icon: Icon(Icons.arrow_forward),
         onPressed: () => widget.onPressed(widget.currGW + 1),

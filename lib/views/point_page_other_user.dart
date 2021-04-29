@@ -6,6 +6,7 @@ import 'package:redbacks/globals/rFirebase/firebaseGWHistory.dart';
 import 'package:redbacks/models/user_GW.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/pages/points_summary.dart';
+import 'package:redbacks/widgets/pre_app_points.dart';
 import 'package:redbacks/widgets/team_widget.dart';
 
 class PointPageOtherUser extends StatefulWidget {
@@ -42,18 +43,14 @@ class _PointPageOtherUserState extends State<PointPageOtherUser> {
     } // load once
 
     UserGW ugw;
-    print("before: ${currentWeek}");
     // CurrentWeek Controller
     if (!loading && currentWeek > userGWHistory.length)
       currentWeek = userGWHistory.length;
-    else if (currentWeek <= 0) currentWeek = 1;
-
-    print(currentWeek);
-    print(userGWHistory.length);
+    else if (currentWeek < 0) currentWeek = 0;
 
     if (loading)
       _loadInUserGWHistory();
-    else if (!loading && userGWHistory.isNotEmpty) {
+    else if (!loading && userGWHistory.isNotEmpty && currentWeek != 0) {
       userGWHistory.sort((a, b) => a.id.compareTo(b.id));
       ugw = userGWHistory[currentWeek - 1];
     }
@@ -73,16 +70,19 @@ class _PointPageOtherUserState extends State<PointPageOtherUser> {
           Container(
             child: loading
                 ? CircularProgressIndicator()
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      PointsSummary(ugw, currentWeek,
-                          (val) => setState(() => currentWeek = val)),
-                      ugw == null
-                          ? Container(child: Text("No points for this GW"))
-                          : TeamWidget(ugw.team, bench: true, mode: POINTS),
-                    ],
-                  ),
+                : currentWeek == 0
+                    ? PreAppPoints(
+                        callback: (val) => setState(() => currentWeek = val))
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          PointsSummary(ugw, currentWeek,
+                              (val) => setState(() => currentWeek = val)),
+                          ugw == null
+                              ? Container(child: Text("No points for this GW"))
+                              : TeamWidget(ugw.team, bench: true, mode: POINTS),
+                        ],
+                      ),
             alignment: Alignment.center,
           ),
         ],

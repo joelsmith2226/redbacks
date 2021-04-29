@@ -92,6 +92,7 @@ class FirebaseUsers {
       "free-transfers": user.freeTransfers,
       "completed-transfers": transfersAsStrings,
       "hits": user.hits,
+      "pre-app-pts": user.preAppPoints,
       "wildcard": user.chips == null ? null : user.chips[0].toMap(),
       "free-hit": user.chips == null ? null : user.chips[1].toMap(),
       "triple-cap": user.chips == null ? null : user.chips[2].toMap(),
