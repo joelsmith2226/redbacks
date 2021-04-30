@@ -137,7 +137,8 @@ class Authentication {
       // Sign in the user with Firebase. If the nonce we generated earlier does
       // not match the nonce in `appleCredential.identityToken`, sign in will fail.
       return await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-    } on FirebaseAuthException catch (e) {// Need pop to remove popup for apple
+    } on FirebaseAuthException catch (e) {
+      // Need pop to remove popup for apple
       _errorHandling(e, context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -161,7 +162,8 @@ class Authentication {
         await googleSignIn.signOut();
       }
       await FirebaseAuth.instance.signOut();
-      Navigator.pushReplacementNamed(context, Routes.Login);
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil(Routes.Root, (route) => false);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         Authentication.customSnackBar(
@@ -200,4 +202,6 @@ class Authentication {
       return "No email found for this sign up method: ${e}";
     }
   }
+
+  void logoutAllNonAdmin() {}
 }

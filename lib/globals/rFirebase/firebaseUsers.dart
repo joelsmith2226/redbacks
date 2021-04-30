@@ -135,27 +135,38 @@ class FirebaseUsers {
   }
 
   // GLOBAL ADMIN INFO
-  Future<void> getAdminInfo(LoggedInUser user) {
+  Future<void> getAdminInfo(LoggedInUser user) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference users = firestore.collection('users');
-    users.doc('admin').get().then((DocumentSnapshot docs) {
-      user.currGW = docs.data()["curr-gw"];
-      user.patchMode = docs.data()["patch-mode"];
-      user.admins = docs.data()["admins"];
-    }).onError((error, stackTrace) {
-      print("Error in getting admin data: ${error}");
-    });
+    DocumentSnapshot docs = await users.doc('admin').get();
+    user.currGW = docs.data()["curr-gw"];
+    user.patchMode = docs.data()["patch-mode"];
+    user.admins = docs.data()["admins"];
   }
 
-  Future<void> pushAdminInfo(LoggedInUser user) {
+  Future<void> pushAdminCurrGW(LoggedInUser user) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference users = firestore.collection('users');
     return users.doc('admin').set(
         {
           "curr-gw": user.currGW,
-        }
+        },
+        SetOptions(merge: true),
     );
   }
+
+
+  Future<void> pushPatchMode(LoggedInUser user) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference users = firestore.collection('users');
+    return users.doc('admin').set(
+        {
+          "patch-mode": user.patchMode,
+        },
+        SetOptions(merge: true),
+    );
+  }
+
 
   Future<void> resetChips(bool wc, bool tc, bool fh) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;

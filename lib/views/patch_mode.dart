@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:redbacks/globals/rFirebase/authentication.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/login_form.dart';
+import 'package:redbacks/widgets/patch_mode.dart';
 
-class LoginView extends StatefulWidget {
-  @override
-  _LoginViewState createState() => _LoginViewState();
-}
-
-class _LoginViewState extends State<LoginView> {
-  LoggedInUser user;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
+class PatchModeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("Login", style: GoogleFonts.merriweatherSans()),
+        title: Text("Patching", style: GoogleFonts.merriweatherSans()),
         centerTitle: true,
         actions: [],
         automaticallyImplyLeading: false,
@@ -35,24 +30,8 @@ class _LoginViewState extends State<LoginView> {
             ),
           ),
         ),
-        LoginForm(),
+        PatchMode(),
       ]),
-      floatingActionButton: FloatingActionButton(
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Padding(
-            padding: EdgeInsets.all(10),
-            child: Text(
-              "Sign\nup",
-              style: TextStyle(fontSize: 14),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-        onPressed: () {
-          Navigator.pushNamed(context, Routes.Signup);
-        },
-      ),
     );
   }
 }

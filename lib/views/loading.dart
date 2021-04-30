@@ -80,7 +80,7 @@ class _LoadingViewState extends State<LoadingView> {
   void _setTimer() {
     t = Timer(
       Duration(seconds: 10),
-          () => showDialog(
+      () => showDialog(
         context: this.context,
         builder: (BuildContext context) {
           return AlertDialog(

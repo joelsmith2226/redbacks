@@ -6,6 +6,8 @@ import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
 import 'package:redbacks/globals/rFirebase/firebaseGWHistory.dart';
 import 'package:redbacks/globals/rFirebase/firebaseLeaderboard.dart';
+import 'package:redbacks/globals/rFirebase/firebaseUsers.dart';
+import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/leaderboard_list_entry.dart';
 import 'package:redbacks/models/original_models.dart';
 import 'package:redbacks/models/player.dart';
@@ -45,8 +47,7 @@ class LoggedInUser extends ChangeNotifier {
   List<LeaderboardListEntry> _leaderBoard = [];
 
   // PATCH MODE
-  bool patchMode = false;
-
+  bool _patchMode = false;
 
   LoggedInUser();
 
@@ -123,6 +124,7 @@ class LoggedInUser extends ChangeNotifier {
     await FirebaseCore().getPlayers(this.playerDB);
     await this.loadInGWHistory();
     this.leaderBoard = await FirebaseLeaderboard().loadUserLeadeboard();
+    await this.getAdminInfo();
     return;
   }
 
@@ -178,7 +180,7 @@ class LoggedInUser extends ChangeNotifier {
   }
 
   Future<void> getAdminInfo() async {
-    await FirebaseCore().getAdminInfo(this);
+    await FirebaseUsers().getAdminInfo(this);
   }
 
   Future<void> getCompleteUserGWHistory() async {
@@ -490,7 +492,8 @@ class LoggedInUser extends ChangeNotifier {
         .chips
         .where((chip) => !chip.available)
         .map((e) => e.name)
-        .join(', ');  }
+        .join(', ');
+  }
 
   int overallRank() {
     return this.leaderBoard.indexWhere((user) => user.uid == this.uid) + 1;
@@ -665,4 +668,35 @@ class LoggedInUser extends ChangeNotifier {
   set leaderBoard(List<LeaderboardListEntry> value) {
     _leaderBoard = value;
   }
+
+  bool get patchMode => _patchMode;
+
+  set patchMode(bool value) {
+    if (value != _patchMode) {
+      _patchMode = value;
+      // If patchmode set, sign user out if still in
+      if (value && FirebaseAuth.instance.currentUser != null && !this.admin) {
+        FirebaseAuth.instance.signOut();
+        notifyListeners();
+      } else {
+        notifyListeners();
+      }
+    }
+  }
+
+  // void listenForAuthChanges(BuildContext context) {
+  //   print("HELLO AUTH CHANGE");
+  //   FirebaseAuth.instance.authStateChanges().listen((User user) {
+  //   //   // Builder(builder: (context) {
+  //   //   //   if (user == null && ModalRoute
+  //   //   //       .of(context)
+  //   //   //       .settings
+  //   //   //       .name != Routes.Root) {
+  //   //   //     Navigator.of(context)
+  //   //   //         .pushNamedAndRemoveUntil(Routes.Root, (route) => false);
+  //   //     }
+  //   //     return Container();
+  //   //   });
+  //   });
+  // }
 }

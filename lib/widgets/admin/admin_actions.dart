@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/initial_data.dart';
+import 'package:redbacks/globals/rFirebase/authentication.dart';
 import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
 import 'package:redbacks/globals/rFirebase/firebasePlayers.dart';
 import 'package:redbacks/globals/rFirebase/firebaseUsers.dart';
@@ -39,7 +40,13 @@ class _AdminActionsState extends State<AdminActions> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           calcTotalCurrPtsPlayersBtn(),
-          setFlagButton(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              setFlagButton(),
+              activatePatchModeBtn(context, user),
+            ],
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -67,11 +74,62 @@ class _AdminActionsState extends State<AdminActions> {
           FirebaseCore().deadlineButton(user.currGW);
           user.currGW++;
           // Shift curr gw forward
-          FirebaseCore().pushAdminInfo(user);
+          FirebaseCore().pushAdminCurrGW(user);
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text("DEADLINE ACTIVATED: new curr gw ${user.currGW}"),
           ));
           setState(() {});
+        });
+  }
+
+  // This button will activate patchmode, logging out all users and allow deadline/point entry to occur
+  // It will also revert patch mode
+  Widget activatePatchModeBtn(context, LoggedInUser user) {
+    String msg = user.patchMode
+        ? "Deactivating patchmode will allow users back into app. Are you sure?"
+        : "Activating patchmode will logout all users, backup DB, ready for "
+            "deadline button to be pressed and points entered. Are you sure?";
+
+    return MaterialButton(
+        child: Text(
+          "${user.patchMode ? "Deactivate" : "Activate"} Patch Mode",
+          style: TextStyle(color: Colors.white),
+        ),
+        color: Colors.black,
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Toggle Patch mode'),
+                  content: Text(msg),
+                  actions: [
+                    MaterialButton(
+                      textColor: Color(0xFF6200EE),
+                      onPressed: () {
+                        user.patchMode = !user.patchMode;
+                        FirebaseCore().pushPatchMode(user);
+                        Authentication().logoutAllNonAdmin();
+                        FirebaseCore().backupDB();
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                              "Patch Mode ${user.patchMode ? "ACTIVATED" : "DEACTIVATED"}"),
+                        ));
+                        setState(() {});
+                        Navigator.pop(context);
+                      },
+                      child: Text(user.patchMode ? "Deactivate" : "Activate"),
+                    ),
+                    MaterialButton(
+                      textColor: Color(0xFF6200EE),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Cancel'),
+                    ),
+                  ],
+                );
+              });
         });
   }
 
@@ -108,7 +166,7 @@ class _AdminActionsState extends State<AdminActions> {
             color: Theme.of(context).primaryColor,
             onPressed: () {
               user.currGW = _currGW;
-              FirebaseCore().pushAdminInfo(user);
+              FirebaseCore().pushAdminCurrGW(user);
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text("New active currGW: ${user.currGW}"),
               ));

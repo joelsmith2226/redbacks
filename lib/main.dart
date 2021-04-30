@@ -9,6 +9,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:redbacks/globals/theme_switcher.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/views/login.dart';
+import 'package:redbacks/views/root.dart';
 import 'package:redbacks/views/unknown.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
@@ -24,7 +25,7 @@ void main() async {
 
   await Firebase.initializeApp(); // declaring twice..?
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  Color primaryColor = Color(prefs.get('primarsdyColor') ?? 0xffa01300);
+  Color primaryColor = Color(prefs.get('primaryColor') ?? 0xffa01300);
   int themeChoice = prefs.get('theme') ?? LIGHT_THEME;
   var _themes = {
     LIGHT_THEME: ThemeData(
@@ -97,7 +98,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: 'Redbacks Fantasy League',
           theme: ThemeSwitcher.of(context).themeData,
-          home: LoginView(),
+          home: RootView(),
           routes: Routes.getRoutes(),
           onUnknownRoute: (settings) =>
               MaterialPageRoute(builder: (context) => UnknownView()),

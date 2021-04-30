@@ -93,8 +93,12 @@ class FirebaseCore {
     return firebaseUsers.getAdminInfo(user);
   }
 
-  Future<void> pushAdminInfo(LoggedInUser user) {
-    return firebaseUsers.pushAdminInfo(user);
+  Future<void> pushAdminCurrGW(LoggedInUser user) {
+    return firebaseUsers.pushAdminCurrGW(user);
+  }
+
+  Future<void> pushPatchMode(LoggedInUser user) {
+    return firebaseUsers.pushPatchMode(user);
   }
 
   // GW History Management
@@ -173,4 +177,7 @@ class FirebaseCore {
     }).catchError((error) => print("Failed to copy collection: ${error}"));
   }
 
+  void backupDB() {
+
+  }
 }

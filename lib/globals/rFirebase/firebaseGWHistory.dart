@@ -74,10 +74,14 @@ class FirebaseGWHistory {
       teamGWPts -= (hits * 4);
 
       int prevTotal = 0;
-      if (gw.id > 1) {
-        DocumentSnapshot prevGWHistory =
-            await getUserGWHistory("GW-${gw.id - 1}", doc.reference.id);
-        prevTotal = prevGWHistory.get("total-pts");
+      try {
+        if (gw.id > 1) {
+          DocumentSnapshot prevGWHistory =
+          await getUserGWHistory("GW-${gw.id - 1}", doc.reference.id);
+          prevTotal = prevGWHistory.get("total-pts");
+        }
+      } catch (e) {
+        print("something went wrong, couldnt find a document probs but we caught it");
       }
       int newTotal = prevTotal + teamGWPts;
       // Add misc details

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/constants.dart';
+import 'package:redbacks/globals/rFirebase/authentication.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/team.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
@@ -16,6 +17,11 @@ class ChooseTeamView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
+    // Immediately logout if in patchmode
+    if (user.patchMode && !user.admin || !Authentication().isLoggedIn()) {
+      Authentication().logoutFn(context);
+    }
+
     Team team = user.team;
     return Scaffold(
       key: _scaffoldKey,

@@ -41,6 +41,12 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     List<String> titles = ["Transfers", "Points", "Pick Team", "Leaderboard"];
     user = Provider.of<LoggedInUser>(context);
+
+    // Immediately logout if in patchmode
+    if (user.patchMode && !user.admin || !Authentication().isLoggedIn()) {
+      Authentication().logoutFn(context);
+    }
+
     bool loaded = user.team != null;
     if (loaded) {
       user.team.checkCaptain();

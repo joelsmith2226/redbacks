@@ -7,8 +7,10 @@ import 'package:redbacks/views/flag.dart';
 import 'package:redbacks/views/home.dart';
 import 'package:redbacks/views/loading.dart';
 import 'package:redbacks/views/login.dart';
+import 'package:redbacks/views/patch_mode.dart';
 import 'package:redbacks/views/player_stats.dart';
 import 'package:redbacks/views/point_page_other_user.dart';
+import 'package:redbacks/views/root.dart';
 import 'package:redbacks/views/settings.dart';
 import 'package:redbacks/views/signup.dart';
 import 'package:redbacks/views/unknown.dart';
@@ -30,6 +32,8 @@ class Routes {
   static const String Confirm = '/choose-team/confirm-transfer';
   static const String Settings = '/settings';
   static const String User = '/user';
+  static const String Root = '/root';
+  static const String Patch = '/patch';
 
 
   /// The map used to define our routes, needs to be supplied to [MaterialApp]
@@ -49,6 +53,8 @@ class Routes {
       Routes.Confirm: (context) => ConfirmTransfersView(),
       Routes.Settings: (context) => SettingsView(),
       Routes.User: (context) => UserView(),
+      Routes.Root: (context) => RootView(),
+      Routes.Patch: (context) => PatchModeView(),
     };
   }
 }
