@@ -173,6 +173,24 @@ class Authentication {
     }
   }
 
+  Future<void> logoutFnFromHome(BuildContext context) async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    try {
+      if (!kIsWeb) {
+        await googleSignIn.signOut();
+      }
+      await FirebaseAuth.instance.signOut();
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil(Routes.Login, (route) => false);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        Authentication.customSnackBar(
+          content: 'Error signing out. Try again.',
+        ),
+      );
+    }
+  }
+
   bool isLoggedIn() {
     return FirebaseAuth.instance.currentUser != null;
   }
@@ -204,4 +222,8 @@ class Authentication {
   }
 
   void logoutAllNonAdmin() {}
+
+  Future<void> sendForgotPwdEmail(String email) async {
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  }
 }

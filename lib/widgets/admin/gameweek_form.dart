@@ -106,6 +106,11 @@ class _GameweekFormState extends State<GameweekForm> {
         _gameFormKey.currentState.save();
         if (_gameFormKey.currentState.validate()) {
           setState(() {
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            if (!currentFocus.hasPrimaryFocus &&
+                currentFocus.focusedChild != null) {
+              FocusManager.instance.primaryFocus.unfocus();
+            }
             String home = _gameFormKey.currentState.value[HOME];
             String away = _gameFormKey.currentState.value[AWAY];
             this.GW.gameScore = "${home}-${away}";

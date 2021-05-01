@@ -15,7 +15,7 @@ class PlayerListTile extends StatelessWidget {
   BuildContext context;
 
   PlayerListTile({this.player, this.outgoing, this.mode = TRANSFER});
-  
+
   @override
   Widget build(BuildContext context) {
     this.context = context;
@@ -40,8 +40,8 @@ class PlayerListTile extends StatelessWidget {
     Navigator.pop(context);
     // on error after attempting transfer
     user.beginTransfer(this.outgoing);
-    String result = user.completeTransfer(this.outgoing,
-        TeamPlayer.fromPlayer(this.player, this.outgoing.index));
+    String result = user.completeTransfer(
+        this.outgoing, TeamPlayer.fromPlayer(this.player, this.outgoing.index));
     print(
         "Transfer was attempted and now removed: length - ${user.pendingTransfer.length}");
     if (result != "") {
@@ -97,20 +97,19 @@ class PlayerListTile extends StatelessWidget {
     Flag f = this.player.flag;
     TextStyle t = TextStyle(color: Colors.black);
     Color c = Colors.white;
-    if (f != null && showFlag){
+    if (f != null && showFlag) {
       c = f.severity == 1 ? Colors.amber : Colors.red;
       t = TextStyle(color: Colors.white);
     }
 
     return Container(
-      height: 20,
+      height: MediaQuery.of(context).size.height * 0.1,
       width: MediaQuery.of(context).size.width * width,
       color: c,
-      child: Text(
-        value,
-        textAlign: TextAlign.center,
-        textScaleFactor: 0.8,
-        style: t
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(value,
+            textAlign: TextAlign.center, textScaleFactor: 0.8, style: t),
       ),
     );
   }

@@ -70,15 +70,40 @@ class _AdminActionsState extends State<AdminActions> {
         ),
         color: Theme.of(context).primaryColor,
         onPressed: () {
-          // Push teams, create new GW history collections
-          FirebaseCore().deadlineButton(user.currGW);
-          user.currGW++;
-          // Shift curr gw forward
-          FirebaseCore().pushAdminCurrGW(user);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text("DEADLINE ACTIVATED: new curr gw ${user.currGW}"),
-          ));
-          setState(() {});
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Activate Deadline'),
+                  content: Text(
+                      "Are you sure you want to activate deadline for ${user.currGW}"),
+                  actions: [
+                    MaterialButton(
+                      textColor: Color(0xFF6200EE),
+                      onPressed: () {
+                        // Push teams, create new GW history collections
+                        FirebaseCore().deadlineButton(user.currGW);
+                        user.currGW++;
+                        // Shift curr gw forward
+                        FirebaseCore().pushAdminCurrGW(user);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                              "DEADLINE ACTIVATED: new curr gw ${user.currGW}"),
+                        ));
+                        setState(() {});
+                      },
+                      child: Text("Confirm Deadline"),
+                    ),
+                    MaterialButton(
+                      textColor: Color(0xFF6200EE),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Cancel'),
+                    ),
+                  ],
+                );
+              });
         });
   }
 

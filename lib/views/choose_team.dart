@@ -23,66 +23,70 @@ class ChooseTeamView extends StatelessWidget {
     }
 
     Team team = user.team;
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-          title: Text(user.signingUp ? "Choose Team" : "Transfers",
-              style: GoogleFonts.merriweatherSans()),
-          centerTitle: true,
-          leading: user.signingUp
-              ? Container()
-              : MaterialButton(
-                  onPressed: () {
-                    user.restoreOriginals();
-                    Navigator.of(context).pushReplacementNamed(Routes.Home);
-                  },
-                  child: Icon(
-                    Icons.keyboard_backspace,
-                    color: Colors.white,
-                  ),
-                )),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/background.jpeg"),
-            fit: BoxFit.fill,
-          ),
-        ),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ChooseTeamSummary(),
-              TeamWidget(team, mode: PRICE, bench: false),
-              Container(
-                margin: EdgeInsets.all(20),
-                child: MaterialButton(
-                  padding: EdgeInsets.all(20),
-                  color: Theme.of(context).canvasColor,
-                  onPressed: () {
-                    String errMsg = "";
-                    print(team.corrupted());
-                    if (!team.isComplete()) {
-                      errMsg =
-                          "Team is incomplete! Make sure no ? players left";
-                    } else if (user.budget < 0) {
-                      errMsg = "Not enough budget for this team!";
-                    } else if (team.corrupted()) {
-                      errMsg = "Team was corrupted somehow with duplicate players, please try transfer process again!";
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+            title: Text(user.signingUp ? "Choose Team" : "Transfers",
+                style: GoogleFonts.merriweatherSans()),
+            centerTitle: true,
+            leading: user.signingUp
+                ? Container()
+                : MaterialButton(
+                    onPressed: () {
                       user.restoreOriginals();
                       Navigator.of(context).pushReplacementNamed(Routes.Home);
-                    } else {
-                      Navigator.of(context).pushNamed(Routes.Confirm);
+                    },
+                    child: Icon(
+                      Icons.keyboard_backspace,
+                      color: Colors.white,
+                    ),
+                  )),
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/background.jpeg"),
+              fit: BoxFit.fill,
+            ),
+          ),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ChooseTeamSummary(),
+                TeamWidget(team, mode: PRICE, bench: false),
+                Container(
+                  margin: EdgeInsets.all(20),
+                  child: MaterialButton(
+                    padding: EdgeInsets.all(20),
+                    color: Theme.of(context).canvasColor,
+                    onPressed: () {
+                      String errMsg = "";
+                      print(team.corrupted());
+                      if (!team.isComplete()) {
+                        errMsg =
+                            "Team is incomplete! Make sure no ? players left";
+                      } else if (user.budget < 0) {
+                        errMsg = "Not enough budget for this team!";
+                      } else if (team.corrupted()) {
+                        errMsg =
+                            "Team was corrupted somehow with duplicate players, please try transfer process again!";
+                        user.restoreOriginals();
+                        Navigator.of(context).pushReplacementNamed(Routes.Home);
+                      } else {
+                        Navigator.of(context).pushNamed(Routes.Confirm);
                       }
-                    if (errMsg != '')
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text(errMsg)));
-                    return;
-                  },
-                  child: Text('Confirm'),
+                      if (errMsg != '')
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(content: Text(errMsg)));
+                      return;
+                    },
+                    child: Text('Confirm'),
+                  ),
                 ),
-              ),
-            ]),
+              ]),
+        ),
       ),
     );
   }

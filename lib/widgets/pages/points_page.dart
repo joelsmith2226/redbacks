@@ -47,10 +47,7 @@ class _PointsPageState extends State<PointsPage> {
         : null;
 
     return Container(
-      height: MediaQuery
-          .of(context)
-          .size
-          .height * 0.85,
+      height: double.maxFinite,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -58,7 +55,8 @@ class _PointsPageState extends State<PointsPage> {
               ugw, currentWeek, (val) => setState(() => currentWeek = val)),
           ugw == null
               ? Container(
-              margin: EdgeInsets.all(20), child: Text("No points for this GW"))
+                  margin: EdgeInsets.all(20),
+                  child: Text("No points for this GW"))
               : TeamWidget(ugw.team, bench: true, mode: POINTS),
         ],
       ),

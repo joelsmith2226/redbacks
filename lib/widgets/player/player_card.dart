@@ -80,6 +80,7 @@ class PlayerCard extends StatelessWidget {
                       .showSnackBar(SnackBar(content: Text(result)));
                 }
                 Navigator.pop(context);
+                user.pushTeamToDB();
               },
               child: Text('Bench'),
             )

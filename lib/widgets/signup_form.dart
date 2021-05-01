@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:redbacks/globals/rFirebase/authentication.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:redbacks/widgets/player_pic_grid.dart';
 import 'package:redbacks/widgets/third_party_signin_button.dart';
 
 class SignupForm extends StatefulWidget {
@@ -98,11 +99,20 @@ class _SignupFormState extends State<SignupForm> {
     columnChildren.add(_submitButton());
     if (loading) columnChildren.add(CircularProgressIndicator());
 
+    // Make up for white space with a picture
+    if (disabled) {
+      columnChildren.add(PlayerPicGrid());
+    }
     return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
+      height: MediaQuery.of(context).size.height,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: columnChildren,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: columnChildren.map(
+              (e) => Padding(
+            padding: const EdgeInsets.all(8),
+            child: e,
+          ),
+        ).toList(),
       ),
     );
   }

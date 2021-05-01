@@ -68,13 +68,11 @@ class _PlayerListState extends State<PlayerList> {
 
   void _onCategoryTap(String category) {
     setState(() {
-      bool _unoReverseCard = false;
       if (_currCategory == category) {
         this._ascending = !this._ascending;
-        _unoReverseCard = true;
       }
       this._currCategory = category;
-      this.sortByCategory(_unoReverseCard, category);
+      this.sortByCategory(this._ascending, category);
     });
   }
 

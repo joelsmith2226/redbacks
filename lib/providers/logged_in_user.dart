@@ -181,6 +181,7 @@ class LoggedInUser extends ChangeNotifier {
 
   Future<void> getAdminInfo() async {
     await FirebaseUsers().getAdminInfo(this);
+    this.admin = this.admins.contains(this.email);
   }
 
   Future<void> getCompleteUserGWHistory() async {

@@ -27,22 +27,29 @@ class _LoadingViewState extends State<LoadingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
+      backgroundColor: Color(0xffFEB6BE),
       body: Container(
+        height: MediaQuery.of(context).size.height,
+        alignment: Alignment.center,
+        child: Stack(
+          clipBehavior: Clip.none,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/background.jpeg"),
-              fit: BoxFit.fill,
+          children: [
+            Container(
+                height: MediaQuery.of(context).size.height * 0.1,
+                child: Image.asset("assets/spider.png")),
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.3,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                ],
+              ),
             ),
-          ),
-          child: CircularProgressIndicator()),
-      appBar: AppBar(
-        title: Text(
-          "Loading",
-          style: GoogleFonts.merriweatherSans(),
+          ],
         ),
-        centerTitle: true,
       ),
     );
   }

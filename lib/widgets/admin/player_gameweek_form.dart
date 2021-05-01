@@ -80,7 +80,7 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
   Widget playerForm() {
     List<Widget> formElements = <Widget>[
       dropdownForm(APPEARANCE, "Made appearance?", ["Yes", "No"],
-          initial: "Yes")
+          initial: "")
     ];
     try {
       if (this._currKey.currentState == null ||
@@ -181,7 +181,7 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
             ),
             onPressed: () {
               saveStateToGWObject();
-              print("Player saved");
+              print("Player saved: ${this._currKey.currentState.value}");
               // Shift to next available index
               if (this.GW.currPlayerIndex <
                   this.GW.playerGameweeks.length - 1) {

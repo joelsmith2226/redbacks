@@ -61,66 +61,69 @@ class _HomeViewState extends State<HomeView> {
       });
     }
 
-    return Scaffold(
-      key: _scaffoldKey,
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/background.jpeg"),
-                fit: BoxFit.fill,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        key: _scaffoldKey,
+        body: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/background.jpeg"),
+                  fit: BoxFit.fill,
+                ),
+              ),
+            ),
+            loaded
+                ? refresher(_pages[_selectedIndex])
+                : Container(
+                    child: CircularProgressIndicator(),
+                    alignment: Alignment.center,
+                  ),
+          ],
+        ),
+        appBar: AppBar(
+          title: Text(
+            titles[_selectedIndex],
+            style: GoogleFonts.merriweatherSans(),
+          ),
+          centerTitle: true,
+        ),
+        drawer: Container(
+          width: MediaQuery.of(context).size.width * 0.35,
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              canvasColor: Colors.black.withAlpha(80),
+            ),
+            child: Drawer(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: drawerActions(user.name),
               ),
             ),
           ),
-          loaded
-              ? refresher(_pages[_selectedIndex])
-              : Container(
-                  child: CircularProgressIndicator(),
-                  alignment: Alignment.center,
-                ),
-        ],
-      ),
-      appBar: AppBar(
-        title: Text(
-          titles[_selectedIndex],
-          style: GoogleFonts.merriweatherSans(),
         ),
-        centerTitle: true,
-      ),
-      drawer: Container(
-        width: MediaQuery.of(context).size.width * 0.35,
-        child: Theme(
-          data: Theme.of(context).copyWith(
-            canvasColor: Colors.black.withAlpha(
-                80),
-          ),
-          child: Drawer(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: drawerActions(user.name),
-            ),
-          ),
+        bottomNavigationBar: BottomNavigationBar(
+          selectedItemColor: Theme.of(context).primaryColor,
+          unselectedItemColor: Colors.grey,
+          unselectedLabelStyle: TextStyle(color: Colors.grey),
+          items: [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.compare_arrows), label: titles[0]),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.sports_baseball), label: titles[1]),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.arrow_forward), label: titles[2]),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.wine_bar), label: titles[3]),
+          ],
+          currentIndex: _selectedIndex,
+          onTap: (index) {
+            _onItemTapped(index);
+          },
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.grey,
-        unselectedLabelStyle: TextStyle(color: Colors.grey),
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.compare_arrows), label: titles[0]),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.sports_baseball), label: titles[1]),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.arrow_forward), label: titles[2]),
-          BottomNavigationBarItem(icon: Icon(Icons.wine_bar), label: titles[3]),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          _onItemTapped(index);
-        },
       ),
     );
   }
@@ -132,7 +135,7 @@ class _HomeViewState extends State<HomeView> {
       actionBtn("Player Stats", _playerStatsFn),
       user.admin ? actionBtn("Admin", _adminFn) : Container(),
       actionBtn("Settings", _settingsFn),
-      actionBtn("Logout", () => Authentication().logoutFn(context))
+      actionBtn("Logout", () => Authentication().logoutFnFromHome(context))
     ];
   }
 
@@ -160,7 +163,8 @@ class _HomeViewState extends State<HomeView> {
         width: MediaQuery.of(context).size.width * 0.3,
         padding: EdgeInsets.all(10),
         child: MaterialButton(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           color: Theme.of(context).accentColor,
           child: FittedBox(
             child: Text(

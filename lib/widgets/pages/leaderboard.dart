@@ -17,7 +17,7 @@ class _LeaderboardState extends State<Leaderboard> {
     return Container(
       alignment: Alignment.center,
       margin: EdgeInsets.all(15),
-      height: MediaQuery.of(context).size.height * 0.8,
+      height: double.maxFinite,
       width: MediaQuery.of(context).size.width,
       child: LeaderboardList(),
     );

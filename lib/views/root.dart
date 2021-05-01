@@ -37,7 +37,6 @@ class _RootViewState extends State<RootView> {
 
     // Build patchmode, login or loading depending on status of user/patching
     // Will reload when patchmode notifys listeners
-    print("this is a print from root level");
     if (_loadNextView && _loadedAdmin) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         if (user.patchMode && !user.admin) {
@@ -70,17 +69,6 @@ class _RootViewState extends State<RootView> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   CircularProgressIndicator(),
-                  Container(
-                    margin: EdgeInsets.all(20),
-                    child: MaterialButton(
-                      color: Theme.of(context).primaryColor,
-                      textColor: Colors.white,
-                      child: Text("Refresh"),
-                      onPressed: () => setState(() {
-                        _loadInfo();
-                      }),
-                    ),
-                  ),
                 ],
               ),
             ),

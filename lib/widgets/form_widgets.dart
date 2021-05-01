@@ -6,17 +6,17 @@ class FormWidgets {
   FormWidgets();
 
   Widget TextForm(String name, String label, BuildContext context,
-      {req = false, String initial = "", double width = 0.75}) {
+      {req = false, String initial = "", double width = 0.75, TextEditingController controller}) {
     var validators = [
       FormBuilderValidators.required(context),
     ];
-    UniqueKey key = UniqueKey();
+
     return Container(
       width: MediaQuery.of(context).size.width * width,
       child: FormBuilderTextField(
-        key: key,
+        key: UniqueKey(),
         textAlign: TextAlign.center,
-        initialValue: initial,
+        controller: controller,
         name: name,
         decoration: InputDecoration(
           labelText: label,

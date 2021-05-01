@@ -21,7 +21,7 @@ class TransfersPage extends StatelessWidget {
       );
     }
     return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
+      height: double.maxFinite,
       child: Stack(
         children: [
           Column(

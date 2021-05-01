@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:redbacks/globals/rFirebase/authentication.dart';
 import 'package:redbacks/globals/router.dart';
+import 'package:redbacks/providers/logged_in_user.dart';
 
 class ThirdPartySigninButton extends StatefulWidget {
   bool signUp = false;
@@ -48,6 +50,8 @@ class _ThirdPartySigninButtonState extends State<ThirdPartySigninButton> {
 
                 if (user != null) {
                   // Successful third party login!
+                  LoggedInUser userProvider = Provider.of<LoggedInUser>(context, listen: false);
+                  userProvider.signingUp = widget.signUp;
                   Navigator.pushReplacementNamed(context, Routes.Loading);
                 }
               },
