@@ -36,7 +36,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       case CAROUSEL:
         return CarouselPlayer();
       case PRICE:
-        return PointPickPlayer();
+        return PricePlayer();
       default:
         return PointPickPlayer();
     }
@@ -111,35 +111,25 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     double width = MediaQuery.of(context).size.width * widthMultiplier;
     return Container(
       width: width,
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: InkWell(
-          onTap: showPlayerCardFn(),
-          child: Stack(
-            alignment: Alignment.center,
+      child: InkWell(
+        onTap: showPlayerCardFn(),
+        child: Aura(
+          teamPlayer: widget.teamPlayer,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Aura(
-                teamPlayer: widget.teamPlayer,
-                child: Column(
-                  children: [
-                    Image.asset(
-                      (widget.teamPlayer.name == "" ||
-                              widget.teamPlayer.removed == true)
-                          ? "assets/avatar-nobg-unset.png"
-                          : "assets/avatar-nobg.png",
-                      width: width,
-                    ),
-                    NameTag(),
-                    SecondaryTag(_getSecondaryValue())
-                  ],
+              Expanded(
+                child: Image.asset(
+                  (widget.teamPlayer.name == "" ||
+                          widget.teamPlayer.removed == true)
+                      ? "assets/avatar-nobg-unset.png"
+                      : "assets/avatar-nobg.png",
+                  width: width,
                 ),
               ),
-              widget.mode == PRICE
-                  ? Container()
-                  : Positioned(
-                      right: 10,
-                      child: CaptainsArmband(widget.teamPlayer.rank),
-                    )
+              NameTag(),
+              SecondaryTag(_getSecondaryValue())
             ],
           ),
         ),
@@ -216,14 +206,14 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       right: MediaQuery.of(context).size.width * 0.05,
       bottom: MediaQuery.of(context).size.width * 0.12,
       child: Container(
-          width: MediaQuery.of(context).size.width * 0.07,
-          child: Image.asset(
-              widget.teamPlayer.rank == CAPTAIN
-                  ? "assets/captain.png"
-                  : "assets/vice.png",
-              alignment: Alignment.bottomRight,
-            ),
-          ),
+        width: MediaQuery.of(context).size.width * 0.07,
+        child: Image.asset(
+          widget.teamPlayer.rank == CAPTAIN
+              ? "assets/captain.png"
+              : "assets/vice.png",
+          alignment: Alignment.bottomRight,
+        ),
+      ),
     );
   }
 

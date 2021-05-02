@@ -70,7 +70,7 @@ class _SignupFormState extends State<SignupForm> {
               width: MediaQuery.of(context).size.width * 0.65,
               child: FormBuilderTextField(
                 name: name,
-                textCapitalization: keyboard == TextInputType.name
+                textCapitalization: keyboard == TextInputType.text
                     ? TextCapitalization.words
                     : TextCapitalization.none,
                 obscureText: pwd,
@@ -136,11 +136,11 @@ class _SignupFormState extends State<SignupForm> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           SignupTextForm("firstName", "First Name *", false,
-              keyboard: TextInputType.name),
+              keyboard: TextInputType.text),
           SignupTextForm("lastName", "Last Name *", false,
-              keyboard: TextInputType.name),
+              keyboard: TextInputType.text),
           SignupTextForm("teamName", "Enter Team Name *", false,
-              keyboard: TextInputType.name),
+              keyboard: TextInputType.text),
         ],
       ),
     ));

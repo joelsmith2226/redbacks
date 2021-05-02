@@ -45,7 +45,7 @@ class _LoginViewState extends State<LoginView> {
             left: 10,
             bottom: 16,
             child: FloatingActionButton(
-              key: UniqueKey(),
+              heroTag: "pwdBtn",
               backgroundColor: Colors.purple.withAlpha(150),
               child: FittedBox(
                 fit: BoxFit.scaleDown,
@@ -65,7 +65,7 @@ class _LoginViewState extends State<LoginView> {
           ),
         ]),
         floatingActionButton: FloatingActionButton(
-          key: UniqueKey(),
+          heroTag: "signupBtn",
           child: FittedBox(
             fit: BoxFit.scaleDown,
             child: Padding(
