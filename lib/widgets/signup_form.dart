@@ -104,7 +104,7 @@ class _SignupFormState extends State<SignupForm> {
       columnChildren.add(PlayerPicGrid());
     }
     return Container(
-      height: MediaQuery.of(context).size.height,
+      height: MediaQuery.of(context).size.height*1.3,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: columnChildren.map(

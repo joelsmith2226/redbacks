@@ -34,17 +34,20 @@ class ChooseTeamView extends StatelessWidget {
             leading: user.signingUp
                 ? Container()
                 : MaterialButton(
-                    onPressed: () {
-                      user.restoreOriginals();
-                      Navigator.of(context).pushReplacementNamed(Routes.Home);
-                    },
-                    child: Icon(
-                      Icons.keyboard_backspace,
-                      color: Colors.white,
-                    ),
-                  )),
+              onPressed: () {
+                user.restoreOriginals();
+                Navigator.of(context).pushReplacementNamed(Routes.Home);
+              },
+              child: Icon(
+                Icons.keyboard_backspace,
+                color: Colors.white,
+              ),
+            )),
         body: Container(
-          height: MediaQuery.of(context).size.height,
+          height: MediaQuery
+              .of(context)
+              .size
+              .height,
           decoration: BoxDecoration(
             image: DecorationImage(
               image: AssetImage("assets/background.jpeg"),
@@ -55,23 +58,27 @@ class ChooseTeamView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ChooseTeamSummary(),
-                TeamWidget(team, mode: PRICE, bench: false),
+                Expanded(
+                  child: Container(
+                    child: TeamWidget(team, mode: PRICE, bench: false),),),
                 Container(
                   margin: EdgeInsets.all(20),
                   child: MaterialButton(
                     padding: EdgeInsets.all(20),
-                    color: Theme.of(context).canvasColor,
+                    color: Theme
+                        .of(context)
+                        .canvasColor,
                     onPressed: () {
                       String errMsg = "";
                       print(team.corrupted());
                       if (!team.isComplete()) {
                         errMsg =
-                            "Team is incomplete! Make sure no ? players left";
+                        "Team is incomplete! Make sure no ? players left";
                       } else if (user.budget < 0) {
                         errMsg = "Not enough budget for this team!";
                       } else if (team.corrupted()) {
                         errMsg =
-                            "Team was corrupted somehow with duplicate players, please try transfer process again!";
+                        "Team was corrupted somehow with duplicate players, please try transfer process again!";
                         user.restoreOriginals();
                         Navigator.of(context).pushReplacementNamed(Routes.Home);
                       } else {

@@ -57,7 +57,9 @@ class _PointsPageState extends State<PointsPage> {
               ? Container(
                   margin: EdgeInsets.all(20),
                   child: Text("No points for this GW"))
-              : TeamWidget(ugw.team, bench: true, mode: POINTS),
+              : Expanded(
+                  child: TeamWidget(ugw.team, bench: true, mode: POINTS),
+                ),
         ],
       ),
     );

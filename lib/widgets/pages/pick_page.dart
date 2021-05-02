@@ -26,10 +26,13 @@ class _PickPageState extends State<PickPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          PickSummary(
-            summaryDialogFn: () => null //tripleCapDialog(context),
+          PickSummary(summaryDialogFn: () => null //tripleCapDialog(context),
+              ),
+          Expanded(
+            child: Container(
+              child: TeamWidget(user.team, bench: true, mode: PICK),
+            ),
           ),
-          TeamWidget(user.team, bench: true, mode: PICK),
         ],
       ),
     );

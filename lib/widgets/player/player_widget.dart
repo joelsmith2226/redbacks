@@ -36,7 +36,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       case CAROUSEL:
         return CarouselPlayer();
       case PRICE:
-        return PricePlayer();
+        return PointPickPlayer();
       default:
         return PointPickPlayer();
     }
@@ -66,39 +66,38 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     bool smallMode = widget.benched;
     var widthMultiplier = smallMode ? 0.2 : 0.3;
     if (SizerUtil.deviceType == DeviceType.tablet)
-        widthMultiplier = smallMode ? 0.15 : 0.2;
+      widthMultiplier = smallMode ? 0.15 : 0.2;
+
     double width = MediaQuery.of(context).size.width * widthMultiplier;
     return Container(
       width: width,
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: InkWell(
-          onTap: showPlayerCardFn(),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Aura(
-                player: widget.player,
-                child: Column(
-                  children: [
-                    Image.asset(
+      child: InkWell(
+        onTap: showPlayerCardFn(),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Aura(
+              player: widget.player,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Image.asset(
                       (widget.teamPlayer.name == "" ||
                               widget.teamPlayer.removed == true)
                           ? "assets/avatar-nobg-unset.png"
                           : "assets/avatar-nobg.png",
-                      fit: BoxFit.scaleDown,
-                      width: width,
+                      // fit: BoxFit.scaleDown,
                     ),
-                    NameTag(),
-                    SecondaryTag(_getSecondaryValue())
-                  ],
-                ),
+                  ),
+                  NameTag(),
+                  SecondaryTag(_getSecondaryValue())
+                ],
               ),
-              widget.mode == PRICE
-                  ? Container()
-                  : CaptainsArmband(widget.teamPlayer.rank),
-            ],
-          ),
+            ),
+            widget.mode == PRICE
+                ? Container()
+                : CaptainsArmband(widget.teamPlayer.rank),
+          ],
         ),
       ),
     );
@@ -137,7 +136,10 @@ class _PlayerWidgetState extends State<PlayerWidget> {
               ),
               widget.mode == PRICE
                   ? Container()
-                  : CaptainsArmband(widget.teamPlayer.rank),
+                  : Positioned(
+                      right: 10,
+                      child: CaptainsArmband(widget.teamPlayer.rank),
+                    )
             ],
           ),
         ),
@@ -211,17 +213,17 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       return Container();
     }
     return Positioned(
-      right: 10,
-      bottom: 40,
+      right: MediaQuery.of(context).size.width * 0.05,
+      bottom: MediaQuery.of(context).size.width * 0.12,
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.08,
-        child: Image.asset(
-          widget.teamPlayer.rank == CAPTAIN
-              ? "assets/captain.png"
-              : "assets/vice.png",
-          alignment: Alignment.bottomRight,
-        ),
-      ),
+          width: MediaQuery.of(context).size.width * 0.07,
+          child: Image.asset(
+              widget.teamPlayer.rank == CAPTAIN
+                  ? "assets/captain.png"
+                  : "assets/vice.png",
+              alignment: Alignment.bottomRight,
+            ),
+          ),
     );
   }
 

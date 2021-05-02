@@ -22,22 +22,16 @@ class TransfersPage extends StatelessWidget {
     }
     return Container(
       height: double.maxFinite,
-      child: Stack(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TransfersSummary(),
-              TeamWidget(
-                user.team,
-                mode: PRICE,
-                bench: false,
-              ),
-            ],
-          ),
-          Positioned(
-            bottom: MediaQuery.of(context).size.height * 0.1,
-            child: Container(),
+          TransfersSummary(),
+          Expanded(
+            child: TeamWidget(
+              user.team,
+              mode: PRICE,
+              bench: false,
+            ),
           )
         ],
       ),

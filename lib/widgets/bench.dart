@@ -29,7 +29,6 @@ class _BenchState extends State<Bench> {
           ],
         ),
         alignment: Alignment.center,
-
     );
   }
 }

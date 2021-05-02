@@ -37,11 +37,12 @@ class _RootViewState extends State<RootView> {
 
     // Build patchmode, login or loading depending on status of user/patching
     // Will reload when patchmode notifys listeners
+    bool result = isLoggedIn();
     if (_loadNextView && _loadedAdmin) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         if (user.patchMode && !user.admin) {
           Navigator.pushNamed(context, Routes.Patch);
-        } else if (isLoggedIn()) {
+        } else if (result) {
           Navigator.pushNamed(context, Routes.Loading);
         } else {
           Navigator.pushNamed(context, Routes.Login);
