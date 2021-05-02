@@ -203,7 +203,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       return Container();
     }
     return Positioned(
-      right: MediaQuery.of(context).size.width * 0.05,
+      right: MediaQuery.of(context).size.width * 0.04,
       bottom: MediaQuery.of(context).size.width * 0.12,
       child: Container(
         width: MediaQuery.of(context).size.width * 0.07,

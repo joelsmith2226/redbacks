@@ -12,10 +12,11 @@ class SettingsView extends StatefulWidget {
   _SettingsViewState createState() => _SettingsViewState();
 }
 
-class _SettingsViewState extends State<SettingsView> {
+class _SettingsViewState extends State<SettingsView> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Color pickerColor = Color(0xff443a49);
   Color currentColor = Color(0xff443a49);
+  TabController _controller;
 
   void changeColor(Color color) async {
     setState(() => pickerColor = color);
@@ -27,6 +28,12 @@ class _SettingsViewState extends State<SettingsView> {
 
   void changeColorUsingPicker(Color color) async {
     setState(() => pickerColor = color);
+  }
+
+  @override
+  void initState() {
+    _controller = new TabController(length: 2, vsync: this);
+    super.initState();
   }
 
   @override
@@ -66,6 +73,7 @@ class _SettingsViewState extends State<SettingsView> {
                     width: MediaQuery.of(context).size.width * 0.6,
                     height: MediaQuery.of(context).size.height * 0.5,
                     child: TabBarView(
+                      controller: _controller,
                       physics: NeverScrollableScrollPhysics(),
                       children: <Widget>[
                         FittedBox(
@@ -93,6 +101,7 @@ class _SettingsViewState extends State<SettingsView> {
                     ),
                   ),
                   TabBar(
+                    controller: _controller,
                     labelColor: pickerColor,
                     tabs: <Widget>[
                       Tab(

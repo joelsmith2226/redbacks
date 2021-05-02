@@ -80,7 +80,12 @@ class _PointPageOtherUserState extends State<PointPageOtherUser> {
                               (val) => setState(() => currentWeek = val)),
                           ugw == null
                               ? Container(child: Text("No points for this GW"))
-                              : TeamWidget(ugw.team, bench: true, mode: POINTS),
+                              : Expanded(
+                                  child: Container(
+                                    child: TeamWidget(ugw.team,
+                                        bench: true, mode: POINTS),
+                                  ),
+                                ),
                         ],
                       ),
             alignment: Alignment.center,
