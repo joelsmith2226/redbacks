@@ -77,7 +77,10 @@ class PlayerGameweek {
       gwPts += this.penaltiesMissed * POINT_SYSTEM[position][PENS];
       gwPts += this.bonus * POINT_SYSTEM[position][BONUS];
     }
+    // Clear existing point breakdown first then readd
+    this.pointBreakdown.empty();
     generatePointBreakdown();
+    print(this.pointBreakdown.toMap());
   }
 
   void generatePointBreakdown() {
@@ -85,7 +88,7 @@ class PlayerGameweek {
       _addPointBreakdownBool(APPEARANCE, this.appearance);
       _addPointBreakdown(GOALS, this.goals);
       _addPointBreakdown(ASSISTS, this.assists);
-      _addPointBreakdown(GOALS, this.saves);
+      _addPointBreakdown(SAVES, this.saves);
       _addPointBreakdownBool(QUARTER_CLEAN, this.quarterClean);
       _addPointBreakdownBool(HALF_CLEAN, this.halfClean);
       _addPointBreakdownBool(FULL_CLEAN, this.fullClean);

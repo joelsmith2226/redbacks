@@ -25,6 +25,10 @@ class PointBreakdown{
     });
     return pointBreakdownMap;
   }
+
+  void empty() {
+     this.pointBreakdownRows = [];
+  }
 }
 
 class PointBreakdownRow {

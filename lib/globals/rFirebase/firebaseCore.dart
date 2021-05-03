@@ -134,7 +134,6 @@ class FirebaseCore {
   // User + GW history
   Future<void> updateUsersGW(Gameweek gw) {
     // update user-GW-history with 1) gwpts achieved 2) add gwPts to totalPts
-    print("After all the player GW added pls");
     performMethodOnAllUsers(
         (QueryDocumentSnapshot val) => updateUserGWHistoryInDB(val, gw));
   }

@@ -44,7 +44,10 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
     this.context = context;
 
     return Container(
-      height: MediaQuery.of(context).size.height * 0.75,
+      height: MediaQuery
+          .of(context)
+          .size
+          .height * 0.75,
       child: Column(
         children: [
           PlayerCarousel(gw: this.GW),
@@ -52,7 +55,10 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
             margin: EdgeInsets.all(20),
             color: Colors.white,
             alignment: Alignment.center,
-            height: MediaQuery.of(context).size.height * heightMultiplier,
+            height: MediaQuery
+                .of(context)
+                .size
+                .height * heightMultiplier,
             child: playerForm(),
           ),
           playerFormActions(),
@@ -158,12 +164,17 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
 
   Widget playerFormActions() {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.04,
+      height: MediaQuery
+          .of(context)
+          .size
+          .height * 0.04,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           MaterialButton(
-            color: Theme.of(context).primaryColor,
+            color: Theme
+                .of(context)
+                .primaryColor,
             child: Text(
               "Back",
               style: TextStyle(color: Colors.white),
@@ -174,23 +185,29 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
             },
           ),
           MaterialButton(
-            color: Theme.of(context).primaryColor,
+            color: Theme
+                .of(context)
+                .primaryColor,
             child: Text(
               "Save Player",
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () {
               saveStateToGWObject();
-              print("Player saved: ${this._currKey.currentState.value}");
-              // Shift to next available index
-              if (this.GW.currPlayerIndex <
-                  this.GW.playerGameweeks.length - 1) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(
+                  "Player saved: ${this._currKey.currentState.value} => points: ${this.currPlayerGW.gwPts}pts")));
+                  // Shift to next available index
+                  if (this.GW.currPlayerIndex <
+                  this.GW.playerGameweeks.length - 1)
+              {
                 this.GW.currPlayerIndex += 1;
               }
             },
           ),
           MaterialButton(
-            color: Theme.of(context).primaryColor,
+            color: Theme
+                .of(context)
+                .primaryColor,
             child: Text(
               "Submit to DB",
               style: TextStyle(color: Colors.white),
@@ -212,7 +229,10 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
     ];
     UniqueKey key = UniqueKey();
     return Container(
-      width: MediaQuery.of(context).size.width * width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width * width,
       child: FormBuilderTextField(
         key: key,
         textAlign: TextAlign.center,
@@ -269,12 +289,13 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
       spacing: 5,
       options: List.generate(
           options.length,
-          (index) => FormBuilderFieldOption(
-              value: options[index],
-              child: Text(
-                options[index],
-                style: TextStyle(fontSize: 10),
-              ))),
+              (index) =>
+              FormBuilderFieldOption(
+                  value: options[index],
+                  child: Text(
+                    options[index],
+                    style: TextStyle(fontSize: 10),
+                  ))),
       onChanged: (val) {
         saveCurrPlayerGWState(this._currKey);
       },
@@ -319,13 +340,17 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              NumberForm(this.currPlayerGW.yellowCards, YELLOW, "Number of yellow cards"),
+              NumberForm(this.currPlayerGW.yellowCards, YELLOW,
+                  "Number of yellow cards"),
               NumberForm(this.currPlayerGW.redCards, RED, "Red card received"),
             ]),
             Row(children: [
-              NumberForm(this.currPlayerGW.ownGoals, OWNS, "Own goals conceded"),
-              NumberForm(this.currPlayerGW.penaltiesMissed, PENS, "Penalties Missed"),
-              NumberForm(this.currPlayerGW.goalsConceded, CONCEDED, "2x Goals conceded")
+              NumberForm(
+                  this.currPlayerGW.ownGoals, OWNS, "Own goals conceded"),
+              NumberForm(
+                  this.currPlayerGW.penaltiesMissed, PENS, "Penalties Missed"),
+              NumberForm(this.currPlayerGW.goalsConceded, CONCEDED,
+                  "2x Goals conceded")
             ])
           ]),
     );
@@ -338,7 +363,7 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
         textAlign: TextAlign.center,
       ),
       content:
-          Text("Are you sure you are happy to overwrite GW-${this.GW.id} in DB?"),
+      Text("Are you sure you are happy to overwrite GW-${this.GW.id} in DB?"),
       actions: [
         MaterialButton(
           textColor: Color(0xFF6200EE),
@@ -374,10 +399,16 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
 
   cleansGoalsAgainst() {
     return Container(
-        width: MediaQuery.of(context).size.width * 0.6,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width * 0.6,
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Container(
-            width: MediaQuery.of(context).size.width * 0.55,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width * 0.55,
             child: dropdownForm(CLEANS, "Cleans kept",
                 [NO_CLEAN, QUARTER_CLEAN, HALF_CLEAN, FULL_CLEAN],
                 initial: "0"),
