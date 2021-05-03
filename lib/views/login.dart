@@ -6,6 +6,7 @@ import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/form_widgets.dart';
 import 'package:redbacks/widgets/login_form.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginView extends StatefulWidget {
   @override
@@ -15,6 +16,12 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   LoggedInUser user;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    welcomeDialog();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,16 +129,18 @@ class _LoginViewState extends State<LoginView> {
           TextEditingController _controller = new TextEditingController();
           return AlertDialog(
             title: Text("Forgot your password?"),
-            content: FormWidgets().TextForm("email", "Enter your email", this.context, controller: _controller),
+            content: FormWidgets().TextForm(
+                "email", "Enter your email", this.context,
+                controller: _controller),
             actions: [
               MaterialButton(
                 textColor: Color(0xFF6200EE),
                 onPressed: () {
                   String email = _controller.value.text;
                   Authentication().sendForgotPwdEmail(email);
-                  Navigator.pop(context, true);// exit app
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text("Reset password sent to $email")));
+                  Navigator.pop(context, true); // exit app
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Reset password sent to $email")));
                 },
                 child: Text('OK'),
               ),
@@ -145,5 +154,72 @@ class _LoginViewState extends State<LoginView> {
             ],
           );
         });
+  }
+
+  void welcomeDialog() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool showWelcome = prefs.get("welcome") ?? true;
+    if (showWelcome)
+      showDialog(
+          context: this.context,
+          builder: (BuildContext context) {
+            bool showWelcome = prefs.get("welcome") ?? true;
+            return StatefulBuilder(builder: (context, setState) {
+              return AlertDialog(
+                title: Column(children: [
+                  Image.asset(
+                    'assets/spider.png',
+                    width: MediaQuery.of(context).size.width * 0.3,
+                  ),
+                  Image.asset(
+                    'assets/title.png',
+                    width: MediaQuery.of(context).size.width * 0.75,
+                  ),
+                ]),
+                content: Text(
+                    "Welcome!\n\nThank you for downloading!\n\nPress 'Sign up' to begin!"),
+                actions: [
+                  MaterialButton(
+                    textColor: Color(0xFF6200EE),
+                    onPressed: () async {
+                      Navigator.pop(context, false);
+                    },
+                    child: Text('Close'),
+                  ),
+                  Column(children: [
+                    Checkbox(
+                      value: !showWelcome,
+                      onChanged: (val) {
+                        showWelcome = !val;
+                        prefs.setBool("welcome", !val);
+                        print(showWelcome);
+                        setState(() {});
+                      },
+                    ),
+                    Text("Do not show this again",
+                        style: TextStyle(fontSize: 10)),
+                  ]),
+                  FloatingActionButton(
+                    heroTag: "signUpPopUp",
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, Routes.Signup);
+                    },
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          "Sign\nup",
+                          style: TextStyle(fontSize: 14),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            });
+          });
   }
 }

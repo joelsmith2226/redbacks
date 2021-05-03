@@ -3,7 +3,9 @@ import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:redbacks/globals/rFirebase/authentication.dart';
 import 'package:redbacks/globals/router.dart';
+import 'package:redbacks/models/my_upgrader_messages.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:upgrader/upgrader.dart';
 
 class RootView extends StatefulWidget {
   @override
@@ -53,27 +55,34 @@ class _RootViewState extends State<RootView> {
 
     return Scaffold(
       backgroundColor: Color(0xffFEB6BE),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        alignment: Alignment.center,
-        child: Stack(
-          clipBehavior: Clip.none,
+      body: UpgradeAlert(
+        messages: MyUpgraderMessages(),
+        debugAlwaysUpgrade: false,
+        showReleaseNotes: true,
+        dialogStyle: UpgradeDialogStyle.material,
+        showIgnore: false,
+        child: Container(
+          height: MediaQuery.of(context).size.height,
           alignment: Alignment.center,
-          children: [
-            Container(
-                height: MediaQuery.of(context).size.height * 0.1,
-                child: Image.asset("assets/spider.png")),
-            Positioned(
-              top: MediaQuery.of(context).size.height * 0.3,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                ],
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              Container(
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  child: Image.asset("assets/spider.png")),
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.3,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

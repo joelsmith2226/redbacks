@@ -118,7 +118,6 @@ class MyApp extends StatelessWidget {
   }
 
   Widget Loading() {
-    print("loading..");
     return MaterialApp(
       home: Scaffold(
         body: Container(
