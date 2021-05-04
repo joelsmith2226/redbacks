@@ -130,7 +130,7 @@ class _ThirdPartySigninButtonState extends State<ThirdPartySigninButton> {
       case "Facebook":
         return Colors.blue;
       case "Apple":
-        return Colors.grey;
+        return Colors.black;
       default:
         return Colors.white;
     }

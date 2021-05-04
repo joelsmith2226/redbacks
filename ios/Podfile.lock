@@ -217,6 +217,8 @@ PODS:
     - AppAuth/ExternalUserAgent (= 1.4.0)
   - AppAuth/Core (1.4.0)
   - AppAuth/ExternalUserAgent (1.4.0)
+  - apple_sign_in (0.0.1):
+    - Flutter
   - BoringSSL-GRPC (0.0.7):
     - BoringSSL-GRPC/Implementation (= 0.0.7)
     - BoringSSL-GRPC/Interface (= 0.0.7)
@@ -226,6 +228,8 @@ PODS:
   - cloud_firestore (1.0.7):
     - Firebase/Firestore (= 7.11.0)
     - firebase_core
+    - Flutter
+  - device_info (0.0.1):
     - Flutter
   - FBSDKCoreKit (9.1.0):
     - FBSDKCoreKit/Basics (= 9.1.0)
@@ -343,6 +347,8 @@ PODS:
     - nanopb/encode (= 2.30908.0)
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
+  - package_info (0.0.1):
+    - Flutter
   - path_provider (0.0.1):
     - Flutter
   - PromisesObjC (1.2.12)
@@ -350,17 +356,23 @@ PODS:
     - Flutter
   - sign_in_with_apple (0.0.1):
     - Flutter
+  - url_launcher (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
+  - apple_sign_in (from `.symlinks/plugins/apple_sign_in/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
+  - device_info (from `.symlinks/plugins/device_info/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - Flutter (from `Flutter`)
   - flutter_facebook_auth (from `.symlinks/plugins/flutter_facebook_auth/ios`)
   - google_sign_in (from `.symlinks/plugins/google_sign_in/ios`)
+  - package_info (from `.symlinks/plugins/package_info/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
+  - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
 
 SPEC REPOS:
   trunk:
@@ -386,8 +398,12 @@ SPEC REPOS:
     - PromisesObjC
 
 EXTERNAL SOURCES:
+  apple_sign_in:
+    :path: ".symlinks/plugins/apple_sign_in/ios"
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
+  device_info:
+    :path: ".symlinks/plugins/device_info/ios"
   firebase_auth:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
@@ -398,18 +414,24 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_facebook_auth/ios"
   google_sign_in:
     :path: ".symlinks/plugins/google_sign_in/ios"
+  package_info:
+    :path: ".symlinks/plugins/package_info/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
   sign_in_with_apple:
     :path: ".symlinks/plugins/sign_in_with_apple/ios"
+  url_launcher:
+    :path: ".symlinks/plugins/url_launcher/ios"
 
 SPEC CHECKSUMS:
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
+  apple_sign_in: 7716c7ddfa195aeab7dec0dc374ef4ff45d1adb4
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
   cloud_firestore: 5dbb01f115c77f4380e2248852518f52830d631f
+  device_info: d7d233b645a32c40dfdc212de5cf646ca482f175
   FBSDKCoreKit: a00fe2efd780c195a5e09201bf51c56106245b40
   FBSDKLoginKit: d98498c598ec09de657385a9349a1f21119b7f86
   Firebase: c121feb35e4126c0b355e3313fa9b487d47319fd
@@ -431,11 +453,13 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
+  package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   sign_in_with_apple: 34f3f5456a45fd7ac5fb42905e2ad31dae061b4a
+  url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
 
-PODFILE CHECKSUM: eb77cd5a845e928c3a70e9656aa1e50b7131e89b
+PODFILE CHECKSUM: fe0e1ee7f3d1f7d00b11b474b62dd62134535aea
 
 COCOAPODS: 1.10.1

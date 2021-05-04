@@ -75,11 +75,17 @@ class Authentication {
         // Create a credential from the access token
         final OAuthCredential credential =
             FacebookAuthProvider.credential(loginResult.accessToken.token);
-        print(credential);
-        UserCredential u =
-            await FirebaseAuth.instance.signInWithCredential(credential);
-        print("something went wrong i bet");
-        return u;
+        // String result = await shouldLoginFromCredential(credential, context);
+        String result = "";
+        if (result == "") {
+          return await FirebaseAuth.instance.signInWithCredential(credential);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            Authentication.customSnackBar(
+              content: 'Error occurred using Facebook Sign-In. Try again.',
+            ),
+          );
+        }
       }
     } on FirebaseAuthException catch (e) {
       _errorHandling(e, context);
@@ -127,16 +133,22 @@ class Authentication {
           AppleIDAuthorizationScopes.fullName,
         ],
         nonce: nonce,
+        webAuthenticationOptions: WebAuthenticationOptions(
+          clientId:
+          'com.joelsmithinc.redbacks.appleSignIn',
+          redirectUri: Uri.parse(
+            'https://magic-lyrical-gondola.glitch.me/callbacks/sign_in_with_apple',
+          ),
+        ),
       );
-
-      // Create an `OAuthCredential` from the credential returned by Apple.
-      final oauthCredential = OAuthProvider("apple.com").credential(
-        idToken: appleCredential.identityToken,
-        rawNonce: rawNonce,
-      );
-      // Sign in the user with Firebase. If the nonce we generated earlier does
-      // not match the nonce in `appleCredential.identityToken`, sign in will fail.
-      return await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+        // Create an `OAuthCredential` from the credential returned by Apple.
+        final oauthCredential = OAuthProvider("apple.com").credential(
+          idToken: appleCredential.identityToken,
+          rawNonce: rawNonce,
+        );
+        // Sign in the user with Firebase. If the nonce we generated earlier does
+        // not match the nonce in `appleCredential.identityToken`, sign in will fail.
+        return await FirebaseAuth.instance.signInWithCredential(oauthCredential);
     } on FirebaseAuthException catch (e) {
       // Need pop to remove popup for apple
       _errorHandling(e, context);
