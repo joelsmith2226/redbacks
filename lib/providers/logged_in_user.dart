@@ -58,24 +58,33 @@ class LoggedInUser extends ChangeNotifier {
         : initialiseUserLogin().whenComplete(() => null);
   }
 
-  Future<void> initialiseUserLogin() async {
+  Future<String> initialiseUserLogin() async {
     User user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      this.email = user.email;
-      this.uid = user.uid;
-      this.admin = this.admins.contains(this.email);
-      this.pendingTransfer = []; //Resets any residual transfers
-      this.team = await FirebaseCore().getTeam(this.uid, this.playerDB);
-      this.calculatePoints();
-      this.loadMiscDetailsFromDB();
-      print(
-          "Loaded user successfully ${this.uid}. Should proceed to home page");
-      this.signingUp = false; // safety ensured check
-      this.team.checkCaptain();
-      await this.getCompleteUserGWHistory();
-      // notifyListeners();
-    } else {
-      print('User is currently signed out! Continue with login');
+
+    try {
+      if (user != null) {
+        this.email = user.email;
+        this.uid = user.uid;
+        this.admin = this.admins.contains(this.email);
+        this.pendingTransfer = []; //Resets any residual transfers
+        this.team = await FirebaseCore().getTeam(this.uid, this.playerDB);
+        if (this.team == null || this.team.players.length != 6) throw Exception;
+        this.calculatePoints();
+        this.loadMiscDetailsFromDB();
+        print(
+            "Loaded user successfully ${this.uid}. Should proceed to home page");
+        this.signingUp = false; // safety ensured check
+        this.team.checkCaptain();
+        await this.getCompleteUserGWHistory();
+        return "";
+        // notifyListeners();
+      } else {
+        print('User is currently signed out! Continue with login');
+        return "";
+      }
+    } catch (e) {
+      print("OK something went wrong here and we caught it in init user ${e}");
+      return "no-user-found";
     }
   }
 

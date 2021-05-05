@@ -155,7 +155,7 @@ class Authentication {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         Authentication.customSnackBar(
-          content: 'Error occurred using Apple Sign-In. Try again.',
+          content: 'Error occurred using Apple Sign-In. Try again. ${e}',
         ),
       );
     }

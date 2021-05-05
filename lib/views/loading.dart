@@ -16,6 +16,7 @@ class _LoadingViewState extends State<LoadingView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool loginOnce = true;
   Timer t;
+  bool cancelLoading = false;
 
   @override
   void initState() {
@@ -44,7 +45,7 @@ class _LoadingViewState extends State<LoadingView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(),
+                  cancelLoading ? Container() : CircularProgressIndicator(),
                 ],
               ),
             ),
@@ -77,10 +78,19 @@ class _LoadingViewState extends State<LoadingView> {
       this.loginOnce = false;
       await user
           .loadInGlobalDBCollections(); // ensures player DB loaded before init
-      await user.initialiseUserLogin();
-      print("Finished Loading, user should be fully initialised");
-      t.cancel();
-      Navigator.pushReplacementNamed(context, Routes.Home);
+      String result = await user.initialiseUserLogin();
+      print("result: ${result}");
+      if (result == "") {
+        print("Finished Loading, user should be fully initialised");
+        t.cancel();
+        Navigator.pushReplacementNamed(context, Routes.Home);
+      } else {
+        t.cancel();
+        setState(() {
+          cancelLoading = true;
+        });
+        _areYouANewUserDialog();
+      }
     }
   }
 
@@ -115,6 +125,52 @@ class _LoadingViewState extends State<LoadingView> {
           );
         },
       ),
+    );
+  }
+
+  void _areYouANewUserDialog() {
+      showDialog(
+        context: this.context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("New user"),
+            content: Text(
+                "Hi there!\n\nYou've tried to login without signing up first."
+                    "\n\nPress Sign Up below or return back to the login screen"),
+            actions: [
+              MaterialButton(
+                textColor: Color(0xFF6200EE),
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.pushReplacementNamed(context, Routes.Login);
+                },
+                child: Text('Back to Login'),
+              ),
+              FloatingActionButton(
+                heroTag: "signUpPopUp",
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.pushReplacementNamed(context, Routes.Login);
+                  Navigator.pushNamed(context, Routes.Signup);
+                },
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      "Sign\nup",
+                      style: TextStyle(fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
     );
   }
 }
