@@ -21,6 +21,16 @@ const Color DEFAULT_COLOR = Color(0xffa01300);
 const int LIGHT_THEME = 0;
 const int DARK_THEME = 1;
 
+// LOGIN RESPONSE CODES
+const int SUCCESS = 0;
+const int EMAIL_ALREADY_REGISTERED = 1;
+const int NO_USER_EXISTS = 2;
+const int USER_LINKED_OTHER_COMPANY = 3;
+const int ERROR = 4;
+
+
+
+
 // MODES
 const String CAPTAIN = "cap";
 const String VICE = "vice";

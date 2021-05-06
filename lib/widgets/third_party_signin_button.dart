@@ -8,10 +8,10 @@ import 'package:redbacks/providers/logged_in_user.dart';
 class ThirdPartySigninButton extends StatefulWidget {
   bool signUp = false;
   String company = "Google";
-  bool disabled = false;
+  Function successCallback = () => null;
 
   ThirdPartySigninButton(
-      {this.signUp = false, this.company = "Google", this.disabled = false});
+      {this.signUp = false, this.company = "Google", this.successCallback});
 
   @override
   _ThirdPartySigninButtonState createState() => _ThirdPartySigninButtonState();
@@ -37,7 +37,6 @@ class _ThirdPartySigninButtonState extends State<ThirdPartySigninButton> {
                 ),
               ),
               onPressed: () async {
-                if (widget.disabled) return;
                 setState(() {
                   _isSigningIn = true;
                 });
@@ -50,9 +49,14 @@ class _ThirdPartySigninButtonState extends State<ThirdPartySigninButton> {
 
                 if (user != null) {
                   // Successful third party login!
-                  LoggedInUser userProvider = Provider.of<LoggedInUser>(context, listen: false);
+                  LoggedInUser userProvider =
+                      Provider.of<LoggedInUser>(context, listen: false);
                   userProvider.signingUp = widget.signUp;
-                  Navigator.pushReplacementNamed(context, Routes.Loading);
+                  userProvider.setNameFromCredential(user);
+                  if (!userProvider.signingUp)
+                    Navigator.pushReplacementNamed(context, Routes.Loading);
+                  else
+                    widget.successCallback();
                 }
               },
               child: FittedBox(
@@ -74,11 +78,9 @@ class _ThirdPartySigninButtonState extends State<ThirdPartySigninButton> {
                         '${widget.signUp ? "Sign up" : "Login"} with ${widget.company}',
                         style: TextStyle(
                             fontSize: 14,
-                            color: widget.disabled
-                                ? Colors.black.withAlpha(100)
-                                : (widget.company == "Google"
+                            color: widget.company == "Google"
                                     ? Colors.black
-                                    : Colors.white)),
+                                    : Colors.white),
                       ),
                     )
                   ],
@@ -91,16 +93,16 @@ class _ThirdPartySigninButtonState extends State<ThirdPartySigninButton> {
   Future<UserCredential> thirdPartyAuthLogin(BuildContext context) async {
     switch (widget.company) {
       case "Google":
-        UserCredential user =
-            await Authentication().signInWithGoogle(context: context);
+        UserCredential user = await Authentication()
+            .signInWithGoogle(context: context, signUp: widget.signUp);
         return user;
       case "Facebook":
-        UserCredential user =
-            await Authentication().signInWithFacebook(context: context);
+        UserCredential user = await Authentication()
+            .signInWithFacebook(context: context, signUp: widget.signUp);
         return user;
       case "Apple":
-        UserCredential user =
-            await Authentication().signInWithApple(context: context);
+        UserCredential user = await Authentication()
+            .signInWithApple(context: context, signUp: widget.signUp);
         return user;
       default:
         return null;
@@ -121,9 +123,6 @@ class _ThirdPartySigninButtonState extends State<ThirdPartySigninButton> {
   }
 
   Color _getColor() {
-    if (widget.disabled) {
-      return Colors.grey.withAlpha(100);
-    }
     switch (widget.company) {
       case "Google":
         return Colors.white;

@@ -7,7 +7,6 @@ import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
 import 'package:redbacks/globals/rFirebase/firebaseGWHistory.dart';
 import 'package:redbacks/globals/rFirebase/firebaseLeaderboard.dart';
 import 'package:redbacks/globals/rFirebase/firebaseUsers.dart';
-import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/leaderboard_list_entry.dart';
 import 'package:redbacks/models/original_models.dart';
 import 'package:redbacks/models/player.dart';
@@ -125,6 +124,12 @@ class LoggedInUser extends ChangeNotifier {
       RFLChip("Free Hit", true, false),
       RFLChip("Triple Cap", true, false)
     ];
+  }
+
+  void setNameFromCredential(UserCredential user) {
+    this.name = user.additionalUserInfo.profile.containsKey("name")
+        ? user.additionalUserInfo.profile["name"]
+        : "";
   }
 
   ///------ DB METHODS ------///
@@ -693,20 +698,4 @@ class LoggedInUser extends ChangeNotifier {
       }
     }
   }
-
-  // void listenForAuthChanges(BuildContext context) {
-  //   print("HELLO AUTH CHANGE");
-  //   FirebaseAuth.instance.authStateChanges().listen((User user) {
-  //   //   // Builder(builder: (context) {
-  //   //   //   if (user == null && ModalRoute
-  //   //   //       .of(context)
-  //   //   //       .settings
-  //   //   //       .name != Routes.Root) {
-  //   //   //     Navigator.of(context)
-  //   //   //         .pushNamedAndRemoveUntil(Routes.Root, (route) => false);
-  //   //     }
-  //   //     return Container();
-  //   //   });
-  //   });
-  // }
 }

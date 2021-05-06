@@ -4,7 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/constants.dart';
+import 'package:redbacks/globals/rFirebase/authentication.dart';
 import 'package:redbacks/globals/router.dart';
+import 'package:redbacks/models/login_response_message.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/third_party_signin_button.dart';
 
@@ -90,6 +93,12 @@ class _LoginFormState extends State<LoginForm> {
                 ),
               ),
               onPressed: () {
+                // Dismiss keyboard
+                FocusScopeNode currentFocus = FocusScope.of(context);
+                if (!currentFocus.hasPrimaryFocus &&
+                    currentFocus.focusedChild != null) {
+                  FocusManager.instance.primaryFocus.unfocus();
+                }
                 _formKey.currentState.save();
                 attemptLoginOnFirebase();
                 user.signingUp =
@@ -131,12 +140,20 @@ class _LoginFormState extends State<LoginForm> {
       });
       String email = _formKey.currentState.value["email"];
       String pwd = _formKey.currentState.value["pwd"];
-      UserCredential userCredentials = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: pwd);
-      if (userCredentials != null)
-        Navigator.pushReplacementNamed(context, Routes.Loading);
-      else {
-        _errorHandler("ERROR_USER_NOT_FOUND");
+      LoginResponseMessage result = await Authentication().shouldLoginEmail(email, "password", context, false);
+      if (result.errCode == SUCCESS) {
+        UserCredential userCredentials = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: pwd);
+        if (userCredentials != null)
+          Navigator.pushReplacementNamed(context, Routes.Loading);
+        else {
+          _errorHandler("ERROR_USER_NOT_FOUND");
+          setState(() {
+            _loading = false;
+          });
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result.msg)));
         setState(() {
           _loading = false;
         });
@@ -151,7 +168,6 @@ class _LoginFormState extends State<LoginForm> {
 
   void _errorHandler(error) {
     var errorMessage;
-    print(error.code);
     switch (error.code) {
       case "invalid-email":
         errorMessage = "Your email address appears to be malformed.";

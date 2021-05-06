@@ -1,14 +1,10 @@
 import 'dart:io';
 
-import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:provider/provider.dart';
 import 'package:redbacks/globals/rFirebase/authentication.dart';
 import 'package:redbacks/globals/router.dart';
-import 'package:redbacks/providers/logged_in_user.dart';
-import 'package:redbacks/widgets/player_pic_grid.dart';
 import 'package:redbacks/widgets/third_party_signin_button.dart';
 
 class SignupForm extends StatefulWidget {
@@ -16,26 +12,21 @@ class SignupForm extends StatefulWidget {
   _SignupFormState createState() => _SignupFormState();
 }
 
-final _formKeyName = GlobalKey<FormBuilderState>();
 final _formKeyUser = GlobalKey<FormBuilderState>();
 
 class _SignupFormState extends State<SignupForm> {
   String email;
-  String teamName;
   String pwd;
   String conPwd;
-  String name;
   FirebaseAuth auth = FirebaseAuth.instance;
   bool hidePwd;
   bool hideConPwd;
-  bool disabled;
   bool loading = false;
 
   @override
   void initState() {
     hidePwd = true;
     hideConPwd = true;
-    disabled = true;
     super.initState();
   }
 
@@ -55,7 +46,7 @@ class _SignupFormState extends State<SignupForm> {
   }
 
   Widget SignupTextForm(String name, String label, bool pwd,
-      {TextInputType keyboard = TextInputType.text}) {
+      {TextInputType keyboard = TextInputType.text, String initial = ""}) {
     var validators = [
       FormBuilderValidators.required(context),
       FormBuilderValidators.max(context, 70)
@@ -63,57 +54,50 @@ class _SignupFormState extends State<SignupForm> {
 
     bool isPwd = ["pwd", "conPwd"].contains(name);
     return Container(
-      padding: EdgeInsets.symmetric(vertical:10),
-      child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width * 0.65,
-              child: FormBuilderTextField(
-                name: name,
-                textCapitalization: keyboard == TextInputType.text
-                    ? TextCapitalization.words
-                    : TextCapitalization.none,
-                obscureText: pwd,
-                decoration: InputDecoration(
-                  labelText: label,
-                ),
-                // valueTransformer: (text) => num.tryParse(text),
-                validator: FormBuilderValidators.compose(validators),
-                keyboardType: keyboard,
-                textInputAction: TextInputAction.next,
-              ),
+      padding: EdgeInsets.symmetric(vertical: 10),
+      child: Stack(alignment: Alignment.center, children: [
+        Container(
+          width: MediaQuery.of(context).size.width * 0.65,
+          child: FormBuilderTextField(
+            initialValue: initial,
+            name: name,
+            textCapitalization: keyboard == TextInputType.text
+                ? TextCapitalization.words
+                : TextCapitalization.none,
+            obscureText: pwd,
+            decoration: InputDecoration(
+              labelText: label,
             ),
-            isPwd ? showHidePwd(name) : Container()
-          ]),
+            // valueTransformer: (text) => num.tryParse(text),
+            validator: FormBuilderValidators.compose(validators),
+            keyboardType: keyboard,
+            textInputAction: TextInputAction.next,
+          ),
+        ),
+        isPwd ? showHidePwd(name) : Container()
+      ]),
     );
   }
 
   Widget BuildForm() {
     List<Widget> columnChildren = _columnChildrenWithTitle();
-    if (disabled) {
-      _addNameForm(columnChildren);
-    } else {
-      _insertNameSummary(columnChildren);
-      _addThirdPartyButtons(columnChildren);
-    }
+    _addThirdPartyButtons(columnChildren);
+
     columnChildren.add(_submitButton());
     if (loading) columnChildren.add(CircularProgressIndicator());
 
-    // Make up for white space with a picture
-    if (disabled) {
-      columnChildren.add(PlayerPicGrid());
-    }
     return Container(
-      height: MediaQuery.of(context).size.height*1.3,
+      height: MediaQuery.of(context).size.height * 1.3,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: columnChildren.map(
+        children: columnChildren
+            .map(
               (e) => Padding(
-            padding: const EdgeInsets.all(8),
-            child: e,
-          ),
-        ).toList(),
+                padding: const EdgeInsets.all(8),
+                child: e,
+              ),
+            )
+            .toList(),
       ),
     );
   }
@@ -121,38 +105,35 @@ class _SignupFormState extends State<SignupForm> {
   List<Widget> _columnChildrenWithTitle() {
     List<Widget> columnChildren = [
       Container(
-        child: Text(
-            this.disabled ? "Enter Name Details" : "Choose Signup Method",
-            style: TextStyle(fontSize: 20)),
+        child: Text("Choose Signup Method", style: TextStyle(fontSize: 20)),
         padding: EdgeInsets.symmetric(vertical: 10),
       ),
     ];
     return columnChildren;
   }
 
-  void _addNameForm(List<Widget> columnChildren) {
-    columnChildren.add(FormBuilder(
-      key: _formKeyName,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          SignupTextForm("firstName", "First Name *", false,
-              keyboard: TextInputType.text),
-          SignupTextForm("lastName", "Last Name *", false,
-              keyboard: TextInputType.text),
-          SignupTextForm("teamName", "Enter Team Name *", false,
-              keyboard: TextInputType.text),
-        ],
-      ),
-    ));
-  }
-
   void _addThirdPartyButtons(List<Widget> columnChildren) {
     columnChildren.addAll([
-      ThirdPartySigninButton(signUp: true, company: "Google"),
-      ThirdPartySigninButton(signUp: true, company: "Facebook"),
+      ThirdPartySigninButton(
+        signUp: true,
+        company: "Google",
+        successCallback: () => setState(() {
+          Navigator.pushReplacementNamed(context, Routes.NameSignup);
+        }),
+      ),
+      ThirdPartySigninButton(
+          signUp: true,
+          company: "Facebook",
+          successCallback: () => setState(() {
+                Navigator.pushReplacementNamed(context, Routes.NameSignup);
+              })),
       Platform.isIOS
-          ? ThirdPartySigninButton(signUp: true, company: "Apple")
+          ? ThirdPartySigninButton(
+              signUp: true,
+              company: "Apple",
+              successCallback: () => setState(() {
+                    Navigator.pushReplacementNamed(context, Routes.NameSignup);
+                  }))
           : Container(),
       Container(child: Text("...Or signup with email & password")),
       FormBuilder(
@@ -172,84 +153,19 @@ class _SignupFormState extends State<SignupForm> {
     ]);
   }
 
-  void _insertNameSummary(List<Widget> columnChildren) {
-    columnChildren.insert(
-      0,
-      Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Theme.of(context).primaryColor,
-        ),
-        width: MediaQuery.of(context).size.width * 0.7,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-        margin: EdgeInsets.only(bottom: 30),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text('${this.name} - ${this.teamName}',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 25, color: Colors.white)),
-        ),
-      ),
-    );
-  }
-
   Widget _submitButton() {
     return Container(
       alignment: Alignment.center,
-      child: ButtonBar(
-        alignment: MainAxisAlignment.spaceBetween,
-        children: [
-          this.disabled
-              ? Container()
-              : MaterialButton(
-                  padding: EdgeInsets.symmetric(vertical:10, horizontal:20),
-                  color: Theme.of(context).accentColor,
-                  child: Text(
-                    "Back",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  onPressed: () async {
-                    setState(() {
-                      this.disabled = true;
-                    });
-                  },
-                ),
-          MaterialButton(
-            color: Theme.of(context).accentColor,
-            padding: EdgeInsets.symmetric(vertical:10, horizontal:20),
-            child: Text(
-              this.disabled ? "Next" : "Submit",
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-            onPressed: () async {
-              if (this.disabled &&
-                  _formKeyName.currentState.saveAndValidate()) {
-                setState(() {
-                  this.name =
-                      '${_formKeyName.currentState.value["firstName"]} ${_formKeyName.currentState.value["lastName"]}';
-                  this.teamName = _formKeyName.currentState.value["teamName"];
-                  this.disabled = false;
-
-                  // Set user details
-                  LoggedInUser user =
-                      Provider.of<LoggedInUser>(context, listen: false);
-                  user.signingUp = true;
-                  user.teamName = this.teamName;
-                  user.name = this.name;
-
-                  // Dismiss keyboard
-                  FocusScopeNode currentFocus = FocusScope.of(context);
-                  if (!currentFocus.hasPrimaryFocus &&
-                      currentFocus.focusedChild != null) {
-                    FocusManager.instance.primaryFocus.unfocus();
-                  }
-                });
-              } else {
-                await _submitButtonFn();
-              }
-            },
-          ),
-        ],
+      child: MaterialButton(
+        color: Theme.of(context).accentColor,
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        child: Text(
+          "Next",
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
+        onPressed: () async {
+          await _submitButtonFn();
+        },
       ),
     );
   }
@@ -264,6 +180,11 @@ class _SignupFormState extends State<SignupForm> {
         loading = true;
       });
       try {
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus &&
+            currentFocus.focusedChild != null) {
+          FocusManager.instance.primaryFocus.unfocus();
+        }
         UserCredential userCredential =
             await Authentication().signUpUsingEmailAndPassword(email, pwd);
         registerUserOnFirebase(userCredential);
@@ -310,8 +231,7 @@ class _SignupFormState extends State<SignupForm> {
         textDirection: TextDirection.ltr,
         end: 0,
         child: IconButton(
-        icon: Icon(showHide ? Icons.visibility_off : Icons.visibility),
-        onPressed: onPress)
-    );
+            icon: Icon(showHide ? Icons.visibility_off : Icons.visibility),
+            onPressed: onPress));
   }
 }

@@ -7,6 +7,7 @@ import 'package:redbacks/views/flag.dart';
 import 'package:redbacks/views/home.dart';
 import 'package:redbacks/views/loading.dart';
 import 'package:redbacks/views/login.dart';
+import 'package:redbacks/views/name_signup.dart';
 import 'package:redbacks/views/patch_mode.dart';
 import 'package:redbacks/views/player_stats.dart';
 import 'package:redbacks/views/point_page_other_user.dart';
@@ -20,6 +21,7 @@ class Routes {
   // Route name constants
   static const String Login = '/login';
   static const String Signup = '/signup';
+  static const String NameSignup = '/signup/name';
   static const String ChooseTeam = '/choose-team';
   static const String Home = '/home';
   static const String Loading = '/loading';
@@ -41,6 +43,7 @@ class Routes {
     return {
       Routes.Login: (context) => LoginView(),
       Routes.Signup: (context) => SignupView(),
+      Routes.NameSignup: (context) => NameSignupView(),
       Routes.Home: (context) => HomeView(),
       Routes.ChooseTeam: (context) => ChooseTeamView(),
       Routes.Loading: (context) => LoadingView(),

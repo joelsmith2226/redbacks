@@ -8,32 +8,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/router.dart';
+import 'package:redbacks/models/login_response_message.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class Authentication {
-  Future<UserCredential> signInWithGoogle({BuildContext context}) async {
+  Future<UserCredential> signInWithGoogle(
+      {BuildContext context, bool signUp = false}) async {
     try {
       FirebaseAuth auth = FirebaseAuth.instance;
       final GoogleSignInAccount googleSignInAccount =
           await GoogleSignIn().signIn();
       if (googleSignInAccount != null) {
-        String result = await shouldLogin(googleSignInAccount.email, context);
-        if (result == "") {
-          final GoogleSignInAuthentication googleSignInAuthentication =
-              await googleSignInAccount.authentication;
-          final AuthCredential credential = GoogleAuthProvider.credential(
-            accessToken: googleSignInAuthentication.accessToken,
-            idToken: googleSignInAuthentication.idToken,
-          );
-          return await auth.signInWithCredential(credential);
+        LoginResponseMessage result = await shouldLoginEmail(
+            googleSignInAccount.email, "google.com", context, signUp);
+        if (result.errCode == SUCCESS) {
+          return await getGoogleCredentials(googleSignInAccount, auth);
+          // If sign in method clicked and no user exists, bypass first sign up screen
+        } else if (result.errCode == NO_USER_EXISTS) {
+          LoggedInUser userProvider =
+          Provider.of<LoggedInUser>(context, listen: false);
+          userProvider.signingUp = true;
+          UserCredential user =  await getGoogleCredentials(googleSignInAccount, auth);
+          userProvider.setNameFromCredential(user);
+          Navigator.pushReplacementNamed(context, Routes.NameSignup);
+          return null;
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             Authentication.customSnackBar(
-              content: result == null
-                  ? "Google account not signed up to RFL, please click sign up"
-                  : result,
+              content: result.msg,
             ),
           );
           return null;
@@ -52,6 +57,16 @@ class Authentication {
     return null;
   }
 
+  Future<UserCredential> getGoogleCredentials(GoogleSignInAccount googleSignInAccount, FirebaseAuth auth) async {
+    final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
+    return await auth.signInWithCredential(credential);
+  }
+
   static void _errorHandling(FirebaseAuthException e, BuildContext context) {
     if (e.code == 'account-exists-with-different-credential') {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -68,21 +83,33 @@ class Authentication {
     }
   }
 
-  Future<UserCredential> signInWithFacebook({BuildContext context}) async {
+  Future<UserCredential> signInWithFacebook(
+      {BuildContext context, bool signUp = false}) async {
     try {
       final LoginResult loginResult = await FacebookAuth.instance.login();
       if (loginResult.status == LoginStatus.success) {
         // Create a credential from the access token
         final OAuthCredential credential =
             FacebookAuthProvider.credential(loginResult.accessToken.token);
-        // String result = await shouldLoginFromCredential(credential, context);
-        String result = "";
-        if (result == "") {
+
+        final userData = await FacebookAuth.instance.getUserData();
+        LoginResponseMessage result = await shouldLoginEmail(
+            userData["email"], "facebook.com", context, signUp);
+        if (result.errCode == SUCCESS) {
           return await FirebaseAuth.instance.signInWithCredential(credential);
+          // If sign in method clicked and no user exists, bypass first sign up screen
+        } else if (result.errCode == NO_USER_EXISTS) {
+          LoggedInUser userProvider =
+          Provider.of<LoggedInUser>(context, listen: false);
+          userProvider.signingUp = true;
+          UserCredential user =  await FirebaseAuth.instance.signInWithCredential(credential);
+          userProvider.setNameFromCredential(user);
+          Navigator.pushReplacementNamed(context, Routes.NameSignup);
+          return null;
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             Authentication.customSnackBar(
-              content: 'Error occurred using Facebook Sign-In. Try again.',
+              content: result.msg,
             ),
           );
         }
@@ -117,7 +144,8 @@ class Authentication {
     return digest.toString();
   }
 
-  Future<UserCredential> signInWithApple({BuildContext context}) async {
+  Future<UserCredential> signInWithApple(
+      {BuildContext context, bool signUp = false}) async {
     // To prevent replay attacks with the credential returned from Apple, we
     // include a nonce in the credential request. When signing in in with
     // Firebase, the nonce in the id token returned by Apple, is expected to
@@ -134,21 +162,41 @@ class Authentication {
         ],
         nonce: nonce,
         webAuthenticationOptions: WebAuthenticationOptions(
-          clientId:
-          'com.joelsmithinc.redbacks.appleSignIn',
+          clientId: 'com.joelsmithinc.redbacks.appleSignIn',
           redirectUri: Uri.parse(
             'https://magic-lyrical-gondola.glitch.me/callbacks/sign_in_with_apple',
           ),
         ),
       );
-        // Create an `OAuthCredential` from the credential returned by Apple.
-        final oauthCredential = OAuthProvider("apple.com").credential(
-          idToken: appleCredential.identityToken,
-          rawNonce: rawNonce,
+      // Create an `OAuthCredential` from the credential returned by Apple.
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
+        rawNonce: rawNonce,
+      );
+      // Sign in the user with Firebase. If the nonce we generated earlier does
+      // not match the nonce in `appleCredential.identityToken`, sign in will fail.
+      LoginResponseMessage result = await shouldLoginEmail(
+          "insert apple email here", "apple.com", context, signUp);
+      if (result.errCode == SUCCESS) {
+        return await FirebaseAuth.instance
+            .signInWithCredential(oauthCredential);
+        // If sign in method clicked and no user exists, bypass first sign up screen
+      } else if (result.errCode == NO_USER_EXISTS) {
+        LoggedInUser userProvider =
+        Provider.of<LoggedInUser>(context, listen: false);
+        userProvider.signingUp = true;
+        UserCredential user = await FirebaseAuth.instance.signInWithCredential(
+            oauthCredential);
+        userProvider.setNameFromCredential(user);
+        Navigator.pushReplacementNamed(context, Routes.NameSignup);
+        return null;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          Authentication.customSnackBar(
+            content: result.msg,
+          ),
         );
-        // Sign in the user with Firebase. If the nonce we generated earlier does
-        // not match the nonce in `appleCredential.identityToken`, sign in will fail.
-        return await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+      }
     } on FirebaseAuthException catch (e) {
       // Need pop to remove popup for apple
       _errorHandling(e, context);
@@ -221,15 +269,31 @@ class Authentication {
         .createUserWithEmailAndPassword(email: email, password: pwd);
   }
 
-  Future<String> shouldLogin(String email, BuildContext context) async {
-    LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+  Future<LoginResponseMessage> shouldLoginEmail(
+      String email, String company, BuildContext context, bool signUp) async {
     try {
-      int signinMethods =
-          (await FirebaseAuth.instance.fetchSignInMethodsForEmail(email))
-              .length;
-      if (user.signingUp || signinMethods > 0) return "";
+      List<String> signInMethods =
+          await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+      print(signInMethods);
+      if (signUp && signInMethods.length > 0)
+        return LoginResponseMessage(
+            errCode: EMAIL_ALREADY_REGISTERED,
+            msg: "Email already registered with ${signInMethods[0]}");
+      else if (!signUp && signInMethods.length == 0)
+        return LoginResponseMessage(
+            errCode: NO_USER_EXISTS,
+            msg: "No user set up with email: ${email}. Click Sign Up");
+      else if (!signUp && !signInMethods.contains(company))
+        return LoginResponseMessage(
+            errCode: USER_LINKED_OTHER_COMPANY,
+            msg:
+                "User ${email} is not linked to ${company} but is linked to ${signInMethods.join(', ')}");
+      else if (!signUp && signInMethods.contains(company))
+        return LoginResponseMessage(
+            errCode: SUCCESS,
+            msg: "User ${email} does have an account linked to ${company}");
     } catch (e) {
-      return "No email found for this sign up method: ${e}";
+      return LoginResponseMessage(errCode: ERROR, msg: "${e}");
     }
   }
 
