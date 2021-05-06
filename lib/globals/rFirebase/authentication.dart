@@ -288,10 +288,15 @@ class Authentication {
             errCode: USER_LINKED_OTHER_COMPANY,
             msg:
                 "User ${email} is not linked to ${company} but is linked to ${signInMethods.join(', ')}");
-      else if (!signUp && signInMethods.contains(company))
+      else if (signUp || (!signUp && signInMethods.contains(company)))
         return LoginResponseMessage(
             errCode: SUCCESS,
             msg: "User ${email} does have an account linked to ${company}");
+      else {
+        return LoginResponseMessage(
+            errCode: ERROR,
+            msg: "Error in logging in for ${company}");
+      }
     } catch (e) {
       return LoginResponseMessage(errCode: ERROR, msg: "${e}");
     }
