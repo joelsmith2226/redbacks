@@ -176,7 +176,7 @@ class Authentication {
       // Sign in the user with Firebase. If the nonce we generated earlier does
       // not match the nonce in `appleCredential.identityToken`, sign in will fail.
       LoginResponseMessage result = await shouldLoginEmail(
-          "insert apple email here", "apple.com", context, signUp);
+         appleCredential.email, "apple.com", context, signUp);
       if (result.errCode == SUCCESS) {
         return await FirebaseAuth.instance
             .signInWithCredential(oauthCredential);
