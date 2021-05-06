@@ -92,10 +92,9 @@ class ConfirmTransfersView extends StatelessWidget {
   Future _signupConfirmationFn(LoggedInUser user, BuildContext context) async {
     user.confirmTransfersButtonPressed();
     Navigator.popUntil(context, (route) => route.isFirst);
-    Navigator.pushReplacementNamed(context, Routes.Login);
-    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacementNamed(context, Routes.Root);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("All signed up! Please login with your details!")));
+        content: Text("All signed up! Logging you in!")));
     // Kill all listening that has been done to this point
 
   }
