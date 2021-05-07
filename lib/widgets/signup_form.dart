@@ -203,7 +203,7 @@ class _SignupFormState extends State<SignupForm> {
 
   void registerUserOnFirebase(UserCredential userCredential) async {
     print("Successful User Registration for ${userCredential.user.email}.");
-    Navigator.pushReplacementNamed(context, Routes.Loading);
+    Navigator.pushReplacementNamed(context, Routes.NameSignup);
   }
 
   void _errorHandling(FirebaseAuthException e) {

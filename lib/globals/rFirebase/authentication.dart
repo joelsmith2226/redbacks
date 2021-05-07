@@ -12,6 +12,7 @@ import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/models/login_response_message.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:redbacks/widgets/form_widgets.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class Authentication {
@@ -29,9 +30,10 @@ class Authentication {
           // If sign in method clicked and no user exists, bypass first sign up screen
         } else if (result.errCode == NO_USER_EXISTS) {
           LoggedInUser userProvider =
-          Provider.of<LoggedInUser>(context, listen: false);
+              Provider.of<LoggedInUser>(context, listen: false);
           userProvider.signingUp = true;
-          UserCredential user =  await getGoogleCredentials(googleSignInAccount, auth);
+          UserCredential user =
+              await getGoogleCredentials(googleSignInAccount, auth);
           userProvider.setNameFromCredential(user);
           Navigator.pushReplacementNamed(context, Routes.NameSignup);
           return null;
@@ -57,7 +59,8 @@ class Authentication {
     return null;
   }
 
-  Future<UserCredential> getGoogleCredentials(GoogleSignInAccount googleSignInAccount, FirebaseAuth auth) async {
+  Future<UserCredential> getGoogleCredentials(
+      GoogleSignInAccount googleSignInAccount, FirebaseAuth auth) async {
     final GoogleSignInAuthentication googleSignInAuthentication =
         await googleSignInAccount.authentication;
     final AuthCredential credential = GoogleAuthProvider.credential(
@@ -86,13 +89,16 @@ class Authentication {
   Future<UserCredential> signInWithFacebook(
       {BuildContext context, bool signUp = false}) async {
     try {
-      final LoginResult loginResult = await FacebookAuth.instance.login();
+      final LoginResult loginResult =
+          await FacebookAuth.instance.login(permissions: ['email']);
       if (loginResult.status == LoginStatus.success) {
         // Create a credential from the access token
         final OAuthCredential credential =
             FacebookAuthProvider.credential(loginResult.accessToken.token);
 
-        final userData = await FacebookAuth.instance.getUserData();
+        final userData =
+            await FacebookAuth.instance.getUserData(fields: 'email');
+
         LoginResponseMessage result = await shouldLoginEmail(
             userData["email"], "facebook.com", context, signUp);
         if (result.errCode == SUCCESS) {
@@ -100,9 +106,10 @@ class Authentication {
           // If sign in method clicked and no user exists, bypass first sign up screen
         } else if (result.errCode == NO_USER_EXISTS) {
           LoggedInUser userProvider =
-          Provider.of<LoggedInUser>(context, listen: false);
+              Provider.of<LoggedInUser>(context, listen: false);
           userProvider.signingUp = true;
-          UserCredential user =  await FirebaseAuth.instance.signInWithCredential(credential);
+          UserCredential user =
+              await FirebaseAuth.instance.signInWithCredential(credential);
           userProvider.setNameFromCredential(user);
           Navigator.pushReplacementNamed(context, Routes.NameSignup);
           return null;
@@ -176,17 +183,21 @@ class Authentication {
       // Sign in the user with Firebase. If the nonce we generated earlier does
       // not match the nonce in `appleCredential.identityToken`, sign in will fail.
       LoginResponseMessage result = await shouldLoginEmail(
-         appleCredential.email, "apple.com", context, signUp);
+          appleCredential.email, "apple.com", context, signUp);
       if (result.errCode == SUCCESS) {
-        return await FirebaseAuth.instance
+        UserCredential c = await FirebaseAuth.instance
             .signInWithCredential(oauthCredential);
+        if (appleCredential.email == null) {
+          await _linkEmailDialog(context);
+        }
+        return c;
         // If sign in method clicked and no user exists, bypass first sign up screen
       } else if (result.errCode == NO_USER_EXISTS) {
         LoggedInUser userProvider =
-        Provider.of<LoggedInUser>(context, listen: false);
+            Provider.of<LoggedInUser>(context, listen: false);
         userProvider.signingUp = true;
-        UserCredential user = await FirebaseAuth.instance.signInWithCredential(
-            oauthCredential);
+        UserCredential user =
+            await FirebaseAuth.instance.signInWithCredential(oauthCredential);
         userProvider.setNameFromCredential(user);
         Navigator.pushReplacementNamed(context, Routes.NameSignup);
         return null;
@@ -272,6 +283,7 @@ class Authentication {
   Future<LoginResponseMessage> shouldLoginEmail(
       String email, String company, BuildContext context, bool signUp) async {
     try {
+      // First check if email is found:
       List<String> signInMethods =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
       print(signInMethods);
@@ -294,8 +306,7 @@ class Authentication {
             msg: "User ${email} does have an account linked to ${company}");
       else {
         return LoginResponseMessage(
-            errCode: ERROR,
-            msg: "Error in logging in for ${company}");
+            errCode: ERROR, msg: "Error in logging in for ${company}");
       }
     } catch (e) {
       return LoginResponseMessage(errCode: ERROR, msg: "${e}");
@@ -306,5 +317,57 @@ class Authentication {
 
   Future<void> sendForgotPwdEmail(String email) async {
     await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  }
+
+  Future<void> linkEmailToAccount(String email) {
+    return FirebaseAuth.instance.currentUser.updateEmail(email);
+  }
+
+  Future<String> _linkEmailDialog(BuildContext context) async {
+    TextEditingController _controller = new TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    return await showDialog<String>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("3rd Party Couldn't Retrieve Email"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("The 3rd party sign-in failed to retrieve the email."
+                    "With your permission, please input your email for the 3rd party to link to account"),
+                FormWidgets().TextForm("email", "Enter your email", context,
+                    controller: _controller, key: formKey),
+              ],
+            ),
+            actions: [
+              MaterialButton(
+                textColor: Color(0xFF6200EE),
+                onPressed: () async {
+                  String email = _controller.value.text;
+                  try {
+                    await Authentication().linkEmailToAccount(email);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Updated email: $email")));
+                    Navigator.pop(context, email); // exit app
+                  } catch (e) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text("${e}")));
+                    Navigator.pop(context, ""); // exit app
+                  }
+                },
+                child: Text('OK'),
+              ),
+              MaterialButton(
+                textColor: Color(0xFF6200EE),
+                onPressed: () async {
+                  Navigator.pop(context, "");
+                },
+                child: Text('Cancel'),
+              )
+            ],
+          );
+        });
   }
 }

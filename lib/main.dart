@@ -96,6 +96,7 @@ class MyApp extends StatelessWidget {
       },
       child: Sizer(builder: (context, orientation, screenType) {
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'Redbacks Fantasy League',
           theme: ThemeSwitcher.of(context).themeData,
           home: RootView(),

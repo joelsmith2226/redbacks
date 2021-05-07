@@ -6,7 +6,7 @@ class FormWidgets {
   FormWidgets();
 
   Widget TextForm(String name, String label, BuildContext context,
-      {req = false, String initial = "", double width = 0.75, TextEditingController controller}) {
+      {req = false, String initial = "", double width = 0.75, TextEditingController controller, GlobalKey<FormState> key}) {
     var validators = [
       FormBuilderValidators.required(context),
     ];
@@ -14,7 +14,7 @@ class FormWidgets {
     return Container(
       width: MediaQuery.of(context).size.width * width,
       child: FormBuilderTextField(
-        key: UniqueKey(),
+        key: key,
         textAlign: TextAlign.center,
         controller: controller,
         name: name,

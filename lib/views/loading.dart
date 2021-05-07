@@ -136,8 +136,8 @@ class _LoadingViewState extends State<LoadingView> {
           return AlertDialog(
             title: Text("New user"),
             content: Text(
-                "Hi there!\n\nYou've tried to login without signing up first."
-                    "\n\nPress Sign Up below or return back to the login screen"),
+                "Hi there!\n\nAre you a new user? We can't seem to find a team"
+                    "\n\nPress Sign Up below to create a new team or return back to the login screen"),
             actions: [
               MaterialButton(
                 textColor: Color(0xFF6200EE),
@@ -152,9 +152,8 @@ class _LoadingViewState extends State<LoadingView> {
                 heroTag: "signUpPopUp",
                 onPressed: () async {
                   Navigator.pop(context);
-                  await FirebaseAuth.instance.signOut();
                   Navigator.pushReplacementNamed(context, Routes.Login);
-                  Navigator.pushNamed(context, Routes.Signup);
+                  Navigator.pushNamed(context, Routes.NameSignup);
                 },
                 child: FittedBox(
                   fit: BoxFit.scaleDown,

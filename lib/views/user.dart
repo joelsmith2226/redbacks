@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:redbacks/globals/rFirebase/authentication.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:redbacks/widgets/form_widgets.dart';
 
 class UserView extends StatefulWidget {
   @override
@@ -45,7 +47,7 @@ class _UserViewState extends State<UserView> {
                   userDetailRow("Total\nPoints", '${user.totalPts}'),
                   userDetailRow("Chips\nRemaining", user.chipsRemaining()),
                   userDetailRow("Chips\nUsed", user.chipsUsed()),
-                  userDetailRow("Email", user.email),
+                  userDetailRow("Email", user.email ?? "-"),
                 ],
               ),
             ),
@@ -78,15 +80,66 @@ class _UserViewState extends State<UserView> {
         Container(
           width: MediaQuery.of(context).size.width * 0.4,
           child: Text(
-              value,
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor),
-              textAlign: TextAlign.left,
-            ),
+            value,
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).primaryColor),
+            textAlign: TextAlign.left,
+          ),
         ),
+        key == "Email" && value == '-'
+            ? FittedBox(
+                fit: BoxFit.scaleDown,
+                child: MaterialButton(
+                  child: Text("Update\nEmail?"),
+                  color: Theme.of(context).accentColor,
+                  onPressed: () => _linkEmailDialog(),
+                ),
+              )
+            : Container(),
       ]),
     );
+  }
+
+
+  void _linkEmailDialog() async {
+    showDialog(
+        context: this.context,
+        builder: (BuildContext context) {
+          TextEditingController _controller = new TextEditingController();
+          return AlertDialog(
+            title: Text("Update Email"),
+            content: FormWidgets().TextForm(
+                "email", "Enter your email", this.context,
+                controller: _controller),
+            actions: [
+              MaterialButton(
+                textColor: Color(0xFF6200EE),
+                onPressed: () async {
+                  String email = _controller.value.text;
+                  try {
+                    await Authentication().linkEmailToAccount(email);
+                    Navigator.pop(context, true); // exit app
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Updated email: $email")));
+                    setState(() {});
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("${e}")));
+                  }
+                },
+                child: Text('OK'),
+              ),
+              MaterialButton(
+                textColor: Color(0xFF6200EE),
+                onPressed: () async {
+                  Navigator.pop(context, false);
+                },
+                child: Text('Cancel'),
+              )
+            ],
+          );
+        });
   }
 }
