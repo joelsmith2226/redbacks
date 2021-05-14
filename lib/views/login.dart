@@ -137,9 +137,8 @@ class _LoginViewState extends State<LoginView> {
                 textColor: Color(0xFF6200EE),
                 onPressed: () {
                   String email = _controller.value.text;
-                  Navigator.pop(context, true); // exit app
                   Authentication().sendForgotPwdEmail(email);
-                  Navigator.pop(context, true); // exit app
+                  Navigator.pop(context, true);
                   ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Reset password sent to $email")));
                 },

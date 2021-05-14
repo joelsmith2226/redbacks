@@ -101,20 +101,14 @@ class _NameSignupFormState extends State<NameSignupForm> {
 
   void _addNameForm(List<Widget> columnChildren) {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-    List<String> names = user.name.split(' ');
-    if (names.length < 2) {
-      names = ["", ""];
-    }
 
     columnChildren.add(FormBuilder(
       key: _formKeyName,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          SignupTextForm("firstName", "First Name *", false,
-              keyboard: TextInputType.text, initial: names[0]),
-          SignupTextForm("lastName", "Last Name *", false,
-              keyboard: TextInputType.text, initial: names[1]),
+          SignupTextForm("displayName", "Display Name *", false,
+              keyboard: TextInputType.text, initial: user.name ?? ""),
           SignupTextForm("teamName", "Enter Team Name *", false,
               keyboard: TextInputType.text),
         ],
@@ -135,8 +129,7 @@ class _NameSignupFormState extends State<NameSignupForm> {
         onPressed: () async {
           if (_formKeyName.currentState.saveAndValidate()) {
             setState(() {
-              this.name =
-                  '${_formKeyName.currentState.value["firstName"]} ${_formKeyName.currentState.value["lastName"]}';
+              this.name = _formKeyName.currentState.value["displayName"];
               this.teamName = _formKeyName.currentState.value["teamName"];
 
               // Set user details
