@@ -70,7 +70,7 @@ class FirebaseUsers {
 
     return users
         .doc(uid)
-        .set({}, SetOptions(merge:true))
+        .set({}, SetOptions(merge: true))
         .then((value) => print("User Added: ${uid}"))
         .catchError((error) => print("Failed to add user: $error"));
   }
@@ -82,21 +82,21 @@ class FirebaseUsers {
     return userCollection
         .doc(user.uid)
         .set({
-      "email": user.email,
-      "name": user.name,
-      "budget": user.budget,
-      "team-value": user.teamValue,
-      "gw-pts": user.gwPts,
-      "total-pts": user.totalPts,
-      "team-name": user.teamName,
-      "free-transfers": user.freeTransfers,
-      "completed-transfers": transfersAsStrings,
-      "hits": user.hits,
-      "pre-app-pts": user.preAppPoints,
-      "wildcard": user.chips == null ? null : user.chips[0].toMap(),
-      "free-hit": user.chips == null ? null : user.chips[1].toMap(),
-      "triple-cap": user.chips == null ? null : user.chips[2].toMap(),
-    })
+          "email": user.email,
+          "name": user.name,
+          "budget": user.budget,
+          "team-value": user.teamValue,
+          "gw-pts": user.gwPts,
+          "total-pts": user.totalPts,
+          "team-name": user.teamName,
+          "free-transfers": user.freeTransfers,
+          "completed-transfers": transfersAsStrings,
+          "hits": user.hits,
+          "pre-app-pts": user.preAppPoints,
+          "wildcard": user.chips == null ? null : user.chips[0].toMap(),
+          "free-hit": user.chips == null ? null : user.chips[1].toMap(),
+          "triple-cap": user.chips == null ? null : user.chips[2].toMap(),
+        })
         .then((value) => print("User Misc Details Added: ${user.uid}"))
         .catchError(
             (error) => print("Failed to add user misc details: $error"));
@@ -118,17 +118,17 @@ class FirebaseUsers {
     int freeTransfers = userDetails.get('free-transfers');
 
     // Unlimited frees could be triggered on signup or wildcard
-    if (freeTransfers == UNLIMITED){
+    if (freeTransfers == UNLIMITED) {
       freeTransfers = 1;
     }
 
     return userCollection
         .doc(uid)
         .set({
-      "free-transfers": freeTransfers,
-      "completed-transfers": [],
-      "hits": 0,
-    }, SetOptions(merge: true))
+          "free-transfers": freeTransfers,
+          "completed-transfers": [],
+          "hits": 0,
+        }, SetOptions(merge: true))
         .then((value) => print("Reset misc fields for deadline: ${uid}"))
         .catchError(
             (error) => print("Failed to add user misc details: $error"));
@@ -142,41 +142,39 @@ class FirebaseUsers {
     user.currGW = docs.data()["curr-gw"];
     user.patchMode = docs.data()["patch-mode"];
     user.admins = docs.data()["admins"];
+    user.deadlineTime = docs.data()["deadline-time"] ?? "1pm";
   }
 
   Future<void> pushAdminCurrGW(LoggedInUser user) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference users = firestore.collection('users');
     return users.doc('admin').set(
-        {
-          "curr-gw": user.currGW,
-        },
-        SetOptions(merge: true),
+      {
+        "curr-gw": user.currGW,
+      },
+      SetOptions(merge: true),
     );
   }
-
 
   Future<void> pushPatchMode(LoggedInUser user) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference users = firestore.collection('users');
     return users.doc('admin').set(
-        {
-          "patch-mode": user.patchMode,
-        },
-        SetOptions(merge: true),
+      {
+        "patch-mode": user.patchMode,
+      },
+      SetOptions(merge: true),
     );
   }
-
 
   Future<void> resetChips(bool wc, bool tc, bool fh) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference users = firestore.collection('users');
     QuerySnapshot userList = await users.get();
     for (int i = 0; i < userList.docs.length; i++) {
-      if (userList.docs[i].id != 'admin')
-        if (wc) {
-          setChip(userList, i, 0, "Wildcard");
-        }
+      if (userList.docs[i].id != 'admin') if (wc) {
+        setChip(userList, i, 0, "Wildcard");
+      }
       if (fh) {
         setChip(userList, i, 1, "Free Hit");
       }
@@ -188,39 +186,64 @@ class FirebaseUsers {
 
   void setChip(QuerySnapshot userList, int i, int chipIndex, String name) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    firestore.collection('users').doc(userList.docs[i].id).set(
-      {
-        name: {
-          "active": false,
-          "available": true,
-        }
-      },
-      SetOptions(merge: true)
-    );
+    firestore.collection('users').doc(userList.docs[i].id).set({
+      name: {
+        "active": false,
+        "available": true,
+      }
+    }, SetOptions(merge: true));
   }
 
   void activateDeactivateChip(String uid, String name, bool activeStatus) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    firestore.collection('users').doc(uid).set(
-        {
-          name: {
-            "active": activeStatus,
-          }
-        },
-        SetOptions(merge: true)
-    );
+    firestore.collection('users').doc(uid).set({
+      name: {
+        "active": activeStatus,
+      }
+    }, SetOptions(merge: true));
   }
 
   void availableUnavailableChip(String uid, String name, bool availableStatus) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    firestore.collection('users').doc(uid).set(
-        {
-          name: {
-            "available": availableStatus,
-          }
-        },
-        SetOptions(merge: true)
-    );
+    firestore.collection('users').doc(uid).set({
+      name: {
+        "available": availableStatus,
+      }
+    }, SetOptions(merge: true));
   }
 
+  Future<void> calculateTotalsWithPreapp() async {
+    // for every user
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference users = firestore.collection('users');
+    QuerySnapshot userList = await users.get();
+    for (int i = 0; i < userList.docs.length; i++) {
+      if (userList.docs[i].id != 'admin') {
+        DocumentSnapshot currUser =
+            await firestore.collection('users').doc(userList.docs[i].id).get();
+        // get pre app pts
+        int totalPts = currUser.data()['pre-app-pts'] ?? 0;
+        // get each gw pts
+        totalPts += await totalPtsFromGWforUser(currUser.id);
+        // calculate new total and save to db
+        firestore.collection('users').doc(userList.docs[i].id).set({
+          'total-pts': totalPts,
+        }, SetOptions(merge: true));
+      }
+    }
+  }
+
+  Future<int> totalPtsFromGWforUser(String uid) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    QuerySnapshot gws = await firestore
+        .collection('users')
+        .doc(uid)
+        .collection('GW-History')
+        .get();
+    int totalPtsFromGWs = 0;
+    for (int i = 0; i < gws.docs.length; i++) {
+      totalPtsFromGWs += gws.docs[i].data()['gw-pts'] ?? 0;
+    }
+    return totalPtsFromGWs;
+  }
 }

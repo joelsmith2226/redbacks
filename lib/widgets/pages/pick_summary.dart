@@ -56,6 +56,8 @@ class _PickSummaryState extends State<PickSummary> {
   }
 
   Widget DeadlineContainer() {
+    LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+
     return SummaryContainer(
         onPress: widget.summaryDialogFn,
         body: Column(
@@ -78,7 +80,7 @@ class _PickSummaryState extends State<PickSummary> {
                     .width * 0.2,
                 child: FittedBox(
                   fit: BoxFit.fitHeight,
-                  child: Text("Saturday 12pm",
+                  child: Text("Saturday ${user.deadlineTime}",
                       style: TextStyle(fontSize: 11, color: Colors.white),
                       textAlign: TextAlign.center),),
                 color: Colors.red.withAlpha(200) //_containerColor(),

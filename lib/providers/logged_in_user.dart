@@ -45,6 +45,8 @@ class LoggedInUser extends ChangeNotifier {
   int _preAppPoints = 0;
   List<LeaderboardListEntry> _leaderBoard = [];
 
+  String _deadlineTime = "12pm";
+
   // PATCH MODE
   bool _patchMode = false;
 
@@ -697,5 +699,11 @@ class LoggedInUser extends ChangeNotifier {
         notifyListeners();
       }
     }
+  }
+
+  String get deadlineTime => _deadlineTime;
+
+  set deadlineTime(String value) {
+    _deadlineTime = value;
   }
 }

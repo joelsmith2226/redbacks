@@ -57,6 +57,9 @@ class _AdminActionsState extends State<AdminActions> {
           Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [initPlayerDBBtn(), resetChips()]),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [totalPtsWithPreApp()]),
         ],
       ),
     );
@@ -271,6 +274,46 @@ class _AdminActionsState extends State<AdminActions> {
                         FirebaseUsers().resetChips(wc, tc, fh);
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text('Chips reset'),
+                        ));
+                        Navigator.pop(context);
+                      },
+                      child: Text('Yes'),
+                    ),
+                    MaterialButton(
+                      textColor: Color(0xFF6200EE),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('No'),
+                    ),
+                  ],
+                );
+              });
+        });
+  }
+
+
+  Widget totalPtsWithPreApp() {
+    return MaterialButton(
+        child: Text(
+          "Total Pts With PreApp",
+          style: TextStyle(color: Colors.white),
+        ),
+        color: Colors.black,
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Recalculate total with pre app?'),
+                  content: Text("Sets everyone's totals to 0, adds each gw + preapp pts. You sure you want to do this?"),
+                  actions: [
+                    MaterialButton(
+                      textColor: Color(0xFF6200EE),
+                      onPressed: () {
+                        FirebaseUsers().calculateTotalsWithPreapp();
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Totals recalculated!'),
                         ));
                         Navigator.pop(context);
                       },

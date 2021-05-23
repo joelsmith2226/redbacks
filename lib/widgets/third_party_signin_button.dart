@@ -75,7 +75,7 @@ class _ThirdPartySigninButtonState extends State<ThirdPartySigninButton> {
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
                       child: Text(
-                        '${widget.signUp ? "Sign up" : "Login"} with ${widget.company}',
+                        '${widget.signUp ? "Sign up" : "Sign in"} with ${widget.company}',
                         style: TextStyle(
                             fontSize: 14,
                             color: widget.company == "Google"

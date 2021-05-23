@@ -11,7 +11,7 @@ class PlayerPointBreakdowns extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    this.gws.sort((a, b) => a.id - b.id);
+    this.gws.sort((a, b) => b.id - a.id);
     return Container(
       height: MediaQuery.of(context).size.height * 0.3,
       width: MediaQuery.of(context).size.width,
