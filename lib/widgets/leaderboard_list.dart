@@ -148,7 +148,7 @@ class LeaderboardListTile extends StatelessWidget {
       onTap: () {
         Navigator.pushNamed(context, Routes.PointPageOther,
             arguments: OtherPointPageArgs(this.entry.uid, this.entry.name,
-                this.entry.teamName, user.gwHistory.length));
+                this.entry.teamName, user.gwHistory.length, this.entry.preAppPoints));
       },
       leading: Text(
         "${pos + 1}",

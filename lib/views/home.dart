@@ -41,10 +41,9 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    var config = AppConfig.of(context);
 
     List<String> titles = [
-      "${config.flavorName}",
+      "Transfers",
       "Points",
       "Pick Team",
       "Leaderboard",

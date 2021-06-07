@@ -90,8 +90,10 @@ class _PlayerPointBreakdownState extends State<PlayerPointBreakdown> {
 
   Widget pointBreakdown(PlayerGameweek pgw) {
     List<Widget> pbrs = [];
+    pgw.pointBreakdown.pointBreakdownRows.sort((a, b) => a.category.compareTo(b.category));
     pgw.pointBreakdown.pointBreakdownRows.forEach((pbr) {
-      pbrs.add(pointBreakdownRows(pbr));
+      if (pbr.points != 0)
+        pbrs.add(pointBreakdownRows(pbr));
     });
     return Container(
       width: MediaQuery.of(context).size.width,

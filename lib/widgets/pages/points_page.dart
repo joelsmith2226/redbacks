@@ -35,7 +35,7 @@ class _PointsPageState extends State<PointsPage> {
       currentWeek = user.userGWs.length;
     } else if (currentWeek == 0) {
       // PREAPP POINTS HERE
-      return PreAppPoints(callback: (val) => setState(() => currentWeek = val));
+      return PreAppPoints(callback: (val) => setState(() => currentWeek = val), preAppPoints: user.preAppPoints,);
     } else if (currentWeek < 0) {
       currentWeek = 0;
     }
