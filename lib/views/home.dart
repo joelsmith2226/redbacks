@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:redbacks/app_config.dart';
 import 'package:redbacks/globals/rFirebase/authentication.dart';
 import 'package:redbacks/globals/router.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
+import 'package:redbacks/widgets/pages/fixture_table_page.dart';
 import 'package:redbacks/widgets/pages/leaderboard.dart';
 import 'package:redbacks/widgets/pages/pick_page.dart';
 import 'package:redbacks/widgets/pages/points_page.dart';
@@ -39,7 +41,15 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> titles = ["Transfers", "Points", "Pick Team", "Leaderboard"];
+    var config = AppConfig.of(context);
+
+    List<String> titles = [
+      "${config.flavorName}",
+      "Points",
+      "Pick Team",
+      "Leaderboard",
+      "Fixtures/Table"
+    ];
     user = Provider.of<LoggedInUser>(context);
 
     // Immediately logout if in patchmode
@@ -50,7 +60,13 @@ class _HomeViewState extends State<HomeView> {
     bool loaded = user.team != null;
     if (loaded) {
       user.team.checkCaptain();
-      this._pages = [TransfersPage(), PointsPage(), PickPage(), Leaderboard()];
+      this._pages = [
+        TransfersPage(),
+        PointsPage(),
+        PickPage(),
+        Leaderboard(),
+        FixtureTablePage()
+      ];
       this.loadingTimer != null
           ? this.loadingTimer.cancel()
           : this.loadingTimer = null;
@@ -117,7 +133,9 @@ class _HomeViewState extends State<HomeView> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.arrow_forward), label: titles[2]),
             BottomNavigationBarItem(
-                icon: Icon(Icons.wine_bar), label: titles[3]),
+                icon: Icon(Icons.emoji_events), label: titles[3]),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.table_chart), label: titles[4]),
           ],
           currentIndex: _selectedIndex,
           onTap: (index) {

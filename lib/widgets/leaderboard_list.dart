@@ -141,8 +141,9 @@ class LeaderboardListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     this.context = context;
     LoggedInUser user = Provider.of<LoggedInUser>(context);
+    Color tileColor = pos % 2 == 0 ? Theme.of(context).buttonColor : Colors.white;
     return ListTile(
-      tileColor: Colors.white,
+      tileColor: tileColor,
       contentPadding: EdgeInsets.symmetric(horizontal: 10),
       onTap: () {
         Navigator.pushNamed(context, Routes.PointPageOther,
