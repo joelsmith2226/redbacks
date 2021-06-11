@@ -14,7 +14,11 @@ class PlayerGameweek {
   bool _quarterClean = false;
   bool _halfClean = false;
   bool _fullClean = false;
+  bool _gkpQuarterClean = false;
+  bool _gkpHalfClean = false;
+  bool _gkpFullClean = false;
   int _goalsConceded = 0;
+  int _gkpGoalsConceded = 0;
   int _yellowCards = 0;
   int _redCards = 0;
   int _ownGoals = 0;
@@ -24,6 +28,7 @@ class PlayerGameweek {
   bool _saved = false;
   Player _player;
   PointBreakdown _pointBreakdown;
+  int _heroism = 0;
 
   final GlobalKey<FormBuilderState> key = GlobalKey<FormBuilderState>();
 
@@ -50,6 +55,7 @@ class PlayerGameweek {
     this.ownGoals = data["owns"];
     this.penaltiesMissed = data["pens"];
     this.bonus = data["bonus"];
+    this.heroism = data["heroism"];
     if (data["gw-pts"] == null) {
       this.calculatePoints();
     } else {
@@ -66,7 +72,6 @@ class PlayerGameweek {
       gwPts += 2;
       gwPts += this.goals * POINT_SYSTEM[position][GOALS];
       gwPts += this.assists * POINT_SYSTEM[position][ASSISTS];
-      gwPts += this.saves * POINT_SYSTEM[position][SAVES];
       gwPts += this.quarterClean ? POINT_SYSTEM[position][QUARTER_CLEAN] : 0;
       gwPts += this.halfClean ? POINT_SYSTEM[position][HALF_CLEAN] : 0;
       gwPts += this.fullClean ? POINT_SYSTEM[position][FULL_CLEAN] : 0;
@@ -76,11 +81,18 @@ class PlayerGameweek {
       gwPts += this.ownGoals * POINT_SYSTEM[position][OWNS];
       gwPts += this.penaltiesMissed * POINT_SYSTEM[position][PENS];
       gwPts += this.bonus * POINT_SYSTEM[position][BONUS];
+      gwPts += this.heroism * POINT_SYSTEM[position][HEROISM];
+      gwPts += this.saves * POINT_SYSTEM["GKP"][SAVES];
+      gwPts += this.gkpQuarterClean ? POINT_SYSTEM["GKP"][GKP_QUARTER_CLEAN] : 0;
+      gwPts += this.gkpHalfClean ? POINT_SYSTEM["GKP"][GKP_HALF_CLEAN] : 0;
+      gwPts += this.gkpFullClean ? POINT_SYSTEM["GKP"][GKP_FULL_CLEAN] : 0;
+      gwPts += this.gkpGoalsConceded * POINT_SYSTEM["GKP"][GKP_CONCEDED];
     }
     // Clear existing point breakdown first then readd
     this.pointBreakdown.empty();
     generatePointBreakdown();
     print(this.pointBreakdown.toMap());
+    print(this.heroism);
   }
 
   void generatePointBreakdown() {
@@ -88,23 +100,35 @@ class PlayerGameweek {
       _addPointBreakdownBool(APPEARANCE, this.appearance);
       _addPointBreakdown(GOALS, this.goals);
       _addPointBreakdown(ASSISTS, this.assists);
-      _addPointBreakdown(SAVES, this.saves);
       _addPointBreakdownBool(QUARTER_CLEAN, this.quarterClean);
       _addPointBreakdownBool(HALF_CLEAN, this.halfClean);
       _addPointBreakdownBool(FULL_CLEAN, this.fullClean);
+      _addGKPPointBreakdown(SAVES, this.saves);
+      _addGKPPointBreakdownBool(GKP_QUARTER_CLEAN, this.gkpQuarterClean);
+      _addGKPPointBreakdownBool(GKP_HALF_CLEAN, this.gkpHalfClean);
+      _addGKPPointBreakdownBool(GKP_FULL_CLEAN, this.gkpFullClean);
       _addPointBreakdown(CONCEDED, this.goalsConceded);
+      _addGKPPointBreakdown(GKP_CONCEDED, this.gkpGoalsConceded);
       _addPointBreakdown(YELLOW, this.yellowCards);
       _addPointBreakdown(RED, this.redCards);
       _addPointBreakdown(OWNS, this.ownGoals);
       _addPointBreakdown(PENS, this.penaltiesMissed);
+      _addPointBreakdown(HEROISM, this.heroism);
       _addPointBreakdown(BONUS, this.bonus);
     }
   }
 
   void _addPointBreakdown(String key, int value) {
-      if (value != 0) {
+      if (value != 0 || value != null) {
       this.pointBreakdown.addPointBreakdownRow(
           key, value, POINT_SYSTEM[position][key] * value);
+    }
+  }
+
+  void _addGKPPointBreakdown(String key, int value) {
+    if (value != 0 || value != null) {
+      this.pointBreakdown.addPointBreakdownRow(
+          key, value, POINT_SYSTEM["GKP"][key] * value);
     }
   }
 
@@ -114,6 +138,14 @@ class PlayerGameweek {
           key, 1, POINT_SYSTEM[position][key]);
     }
   }
+
+  void _addGKPPointBreakdownBool(String key, bool value) {
+    if (value) {
+      this.pointBreakdown.addPointBreakdownRow(
+          key, 1, POINT_SYSTEM["GKP"][key]);
+    }
+  }
+
 
   bool get appearance => _appearance;
 
@@ -228,4 +260,35 @@ class PlayerGameweek {
   set pointBreakdown(PointBreakdown value) {
     _pointBreakdown = value;
   }
+
+  int get heroism => _heroism;
+
+  set heroism(int value) {
+    _heroism = value;
+  }
+
+  int get gkpGoalsConceded => _gkpGoalsConceded;
+
+  set gkpGoalsConceded(int value) {
+    _gkpGoalsConceded = value;
+  }
+
+  bool get gkpFullClean => _gkpFullClean;
+
+  set gkpFullClean(bool value) {
+    _gkpFullClean = value;
+  }
+
+  bool get gkpHalfClean => _gkpHalfClean;
+
+  set gkpHalfClean(bool value) {
+    _gkpHalfClean = value;
+  }
+
+  bool get gkpQuarterClean => _gkpQuarterClean;
+
+  set gkpQuarterClean(bool value) {
+    _gkpQuarterClean = value;
+  }
+
 }

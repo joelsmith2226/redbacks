@@ -45,6 +45,9 @@ dependencies:
   upgrader: ^3.2.1
   apple_sign_in: ^0.1.0
   sign_in_with_apple: ^3.0.0
+  web_scraper: ^0.1.4
+  http: ^0.13.3
+
 
 dev_dependencies:
   flutter_launcher_icons: ^0.9.0

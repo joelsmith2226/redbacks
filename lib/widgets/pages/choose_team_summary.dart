@@ -38,7 +38,7 @@ class _ChooseTeamSummaryState extends State<ChooseTeamSummary> {
         ),
         ChooseTeamSummaryContainer(
           "Budget Left:",
-          "\$${user.budget + removalBudget}m",
+          "\$${roundToXDecimalPlaces(user.budget + removalBudget)}m",
         ),
       ]),
     );

@@ -44,10 +44,7 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
     this.context = context;
 
     return Container(
-      height: MediaQuery
-          .of(context)
-          .size
-          .height * 0.75,
+      height: MediaQuery.of(context).size.height * 0.75,
       child: Column(
         children: [
           PlayerCarousel(gw: this.GW),
@@ -55,10 +52,7 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
             margin: EdgeInsets.all(20),
             color: Colors.white,
             alignment: Alignment.center,
-            height: MediaQuery
-                .of(context)
-                .size
-                .height * heightMultiplier,
+            height: MediaQuery.of(context).size.height * heightMultiplier,
             child: playerForm(),
           ),
           playerFormActions(),
@@ -85,17 +79,15 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
 
   Widget playerForm() {
     List<Widget> formElements = <Widget>[
-      dropdownForm(APPEARANCE, "Made appearance?", ["Yes", "No"],
-          initial: "")
+      dropdownForm(APPEARANCE, "Made appearance?", ["Yes", "No"], initial: "")
     ];
     try {
       if (this._currKey.currentState == null ||
           this._currKey.currentState.value[APPEARANCE] == "Yes") {
         formElements.addAll([
-          dropdownForm(
-              POSITION, "Select Position", ["GKP", "DEF", "MID", "FWD"],
+          dropdownForm(POSITION, "Select Position", ["DEF", "MID", "FWD"],
               initial: this.currPlayerGW.player.position),
-          goalAssistSaves(),
+          goalAssists(),
           Divider(
             thickness: 1,
           ),
@@ -106,8 +98,10 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
           Divider(
             thickness: 1,
           ),
+          dropdownForm(HEROISM, "Defensive Heroism", ["3"]),
           dropdownForm(BONUS, "Bonus Points", ["0", "1", "2", "3"],
               initial: "0"),
+          goalkeeperSection(),
         ]);
       }
     } catch (e) {}
@@ -122,7 +116,6 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
     );
   }
 
-
   Widget playerFormFromLoaded() {
     List<Widget> formElements = <Widget>[
       dropdownForm(APPEARANCE, "Made appearance?", ["Yes", "No"],
@@ -135,7 +128,7 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
           dropdownForm(
               POSITION, "Select Position", ["GKP", "DEF", "MID", "FWD"],
               initial: this.currPlayerGW.player.position),
-          goalAssistSaves(),
+          goalAssists(),
           Divider(
             thickness: 1,
           ),
@@ -146,6 +139,7 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
           Divider(
             thickness: 1,
           ),
+          dropdownForm(HEROISM, "Defensive Heroism", ["3"]),
           dropdownForm(BONUS, "Bonus Points", ["0", "1", "2", "3"],
               initial: '${this.currPlayerGW.bonus}'),
         ]);
@@ -164,17 +158,12 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
 
   Widget playerFormActions() {
     return Container(
-      height: MediaQuery
-          .of(context)
-          .size
-          .height * 0.04,
+      height: MediaQuery.of(context).size.height * 0.04,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           MaterialButton(
-            color: Theme
-                .of(context)
-                .primaryColor,
+            color: Theme.of(context).primaryColor,
             child: Text(
               "Back",
               style: TextStyle(color: Colors.white),
@@ -185,29 +174,25 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
             },
           ),
           MaterialButton(
-            color: Theme
-                .of(context)
-                .primaryColor,
+            color: Theme.of(context).primaryColor,
             child: Text(
               "Save Player",
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () {
               saveStateToGWObject();
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(
-                  "Player saved: ${this._currKey.currentState.value} => points: ${this.currPlayerGW.gwPts}pts")));
-                  // Shift to next available index
-                  if (this.GW.currPlayerIndex <
-                  this.GW.playerGameweeks.length - 1)
-              {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                      "Player saved: ${this._currKey.currentState.value} => points: ${this.currPlayerGW.gwPts}pts")));
+              // Shift to next available index
+              if (this.GW.currPlayerIndex <
+                  this.GW.playerGameweeks.length - 1) {
                 this.GW.currPlayerIndex += 1;
               }
             },
           ),
           MaterialButton(
-            color: Theme
-                .of(context)
-                .primaryColor,
+            color: Theme.of(context).primaryColor,
             child: Text(
               "Submit to DB",
               style: TextStyle(color: Colors.white),
@@ -229,10 +214,7 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
     ];
     UniqueKey key = UniqueKey();
     return Container(
-      width: MediaQuery
-          .of(context)
-          .size
-          .width * width,
+      width: MediaQuery.of(context).size.width * width,
       child: FormBuilderTextField(
         key: key,
         textAlign: TextAlign.center,
@@ -289,13 +271,12 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
       spacing: 5,
       options: List.generate(
           options.length,
-              (index) =>
-              FormBuilderFieldOption(
-                  value: options[index],
-                  child: Text(
-                    options[index],
-                    style: TextStyle(fontSize: 10),
-                  ))),
+          (index) => FormBuilderFieldOption(
+              value: options[index],
+              child: Text(
+                options[index],
+                style: TextStyle(fontSize: 10),
+              ))),
       onChanged: (val) {
         saveCurrPlayerGWState(this._currKey);
       },
@@ -324,11 +305,10 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
     setState(() {});
   }
 
-  Widget goalAssistSaves() {
-    return Row(children: [
+  Widget goalAssists() {
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       NumberForm(this.currPlayerGW.goals, GOALS, "Goals Scored"),
       NumberForm(this.currPlayerGW.assists, ASSISTS, "Assists Scored"),
-      NumberForm(this.currPlayerGW.saves, SAVES, "2x Saves Scored"),
     ]);
   }
 
@@ -362,8 +342,8 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
         'Are you sure?',
         textAlign: TextAlign.center,
       ),
-      content:
-      Text("Are you sure you are happy to overwrite GW-${this.GW.id} in DB?"),
+      content: Text(
+          "Are you sure you are happy to overwrite GW-${this.GW.id} in DB?"),
       actions: [
         MaterialButton(
           textColor: Color(0xFF6200EE),
@@ -399,16 +379,10 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
 
   cleansGoalsAgainst() {
     return Container(
-        width: MediaQuery
-            .of(context)
-            .size
-            .width * 0.6,
+        width: MediaQuery.of(context).size.width * 0.6,
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Container(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width * 0.55,
+            width: MediaQuery.of(context).size.width * 0.55,
             child: dropdownForm(CLEANS, "Cleans kept",
                 [NO_CLEAN, QUARTER_CLEAN, HALF_CLEAN, FULL_CLEAN],
                 initial: "0"),
@@ -429,21 +403,27 @@ class _PlayerGameweekFormState extends State<PlayerGameweekForm> {
     }
   }
 
-  void _loadKey() {
-    // _formKey = new GlobalKey<FormState>();
-    // _formKey.currentState.reset();
-    //
-    // _formKey.currentState.setInternalFieldValue('appearance', this.currPlayerGW.appearance);
-    // _formKey.currentState.setInternalFieldValue('position', this.currPlayerGW.position);
-    // _formKey.currentState.setInternalFieldValue('goals', this.currPlayerGW.goals);
-    // _formKey.currentState.setInternalFieldValue('assists', this.currPlayerGW.assists);
-    // _formKey.currentState.setInternalFieldValue('saves', this.currPlayerGW.saves);
-    // _formKey.currentState.setInternalFieldValue('cleans', cleanIdentifier());
-    // _formKey.currentState.setInternalFieldValue('yellow', this.currPlayerGW.yellowCards);
-    // _formKey.currentState.setInternalFieldValue('red', this.currPlayerGW.redCards);
-    // _formKey.currentState.setInternalFieldValue('owns', this.currPlayerGW.ownGoals);
-    // _formKey.currentState.setInternalFieldValue('pens', this.currPlayerGW.penaltiesMissed);
-    // _formKey.currentState.setInternalFieldValue('conceded', this.currPlayerGW.goalsConceded);
-    // _formKey.currentState.setInternalFieldValue('bonus', '${this.currPlayerGW.bonus}');
+  Widget goalkeeperSection() {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.6,
+      child: Column(
+        children: [
+          Text('\nGKP section\n'),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.55,
+            child: dropdownForm(GKP_CLEANS, "Cleans kept",
+                [GKP_NO_CLEAN, GKP_QUARTER_CLEAN, GKP_HALF_CLEAN, GKP_FULL_CLEAN],
+                initial: "0"),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              NumberForm(0, GKP_CONCEDED, "Goals conceded"),
+              NumberForm(0, SAVES, "2x saves"),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }

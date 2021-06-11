@@ -6,6 +6,7 @@ import 'package:redbacks/globals/constants.dart';
 import 'package:redbacks/globals/rFirebase/firebaseCore.dart';
 import 'package:redbacks/globals/rFirebase/firebaseGWHistory.dart';
 import 'package:redbacks/globals/rFirebase/firebaseLeaderboard.dart';
+import 'package:redbacks/globals/rFirebase/firebasePlayers.dart';
 import 'package:redbacks/globals/rFirebase/firebaseUsers.dart';
 import 'package:redbacks/models/leaderboard_list_entry.dart';
 import 'package:redbacks/models/original_models.dart';
@@ -364,6 +365,10 @@ class LoggedInUser extends ChangeNotifier {
             .completedTransfers
             .add(Transfer.fromPlayers(incoming: newTP, outgoing: oldTP));
         newTrans.add("${oldTP.name}=>${newTP.name}");
+
+        // Adjust in/out number for global player data
+        FirebasePlayers().addToTransferIn(newTP);
+        FirebasePlayers().addToTransferOut(oldTP);
       }
     }
   }

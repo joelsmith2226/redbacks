@@ -120,6 +120,8 @@ class FirebaseUsers {
     // Unlimited frees could be triggered on signup or wildcard
     if (freeTransfers == UNLIMITED) {
       freeTransfers = 1;
+    } else if (freeTransfers != 2){
+      freeTransfers += 1;
     }
 
     return userCollection
@@ -132,6 +134,26 @@ class FirebaseUsers {
         .then((value) => print("Reset misc fields for deadline: ${uid}"))
         .catchError(
             (error) => print("Failed to add user misc details: $error"));
+  }
+
+
+  Future<void> addFreeTransfer(String uid) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference userCollection = firestore.collection('users');
+    DocumentSnapshot userDetails = await userCollection.doc(uid).get();
+    int freeTransfers = userDetails.get('free-transfers');
+
+    // Unlimited frees could be triggered on signup or wildcard
+    freeTransfers += 1;
+
+    return userCollection
+        .doc(uid)
+        .set({
+      "free-transfers": freeTransfers,
+    }, SetOptions(merge: true))
+        .then((value) => print("Added free transfer: ${uid}"))
+        .catchError(
+            (error) => print("Failed to add free: $error"));
   }
 
   // GLOBAL ADMIN INFO

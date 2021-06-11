@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "510867103316-5ti8o3fj8fpq6ha7m8hhrmgv83rkupul.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.redbacks",
+            "certificate_hash": "d396bd520f944c341b12250f86f15dadfb08ffc3"
+          }
+        },
+        {
           "client_id": "510867103316-ijeu9308jlqsbdhku2c8rh6it8f8kc2m.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -67,11 +75,27 @@
       },
       "oauth_client": [
         {
+          "client_id": "510867103316-43g82mu5hfcmidfpv0dfe1n45580agl1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.joelsmithinc.redbacks",
+            "certificate_hash": "d396bd520f944c341b12250f86f15dadfb08ffc3"
+          }
+        },
+        {
           "client_id": "510867103316-8nj66t0mugsr6e0ajlbt4ga8lp4icoj6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.joelsmithinc.redbacks",
             "certificate_hash": "335bc5a0a6fb082b1dcd8a5f071571954747a1bc"
+          }
+        },
+        {
+          "client_id": "510867103316-qn4ds6rt43gbs1uonurgppdt6vdrh4r6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.joelsmithinc.redbacks",
+            "certificate_hash": "affb7de6d68a0806a93c5c20f68b70007359092d"
           }
         },
         {

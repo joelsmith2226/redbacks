@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "164982423858",
+    "project_id": "redbacks-dev",
+    "storage_bucket": "redbacks-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:164982423858:android:a405e6881bb637394b172b",
+        "android_client_info": {
+          "package_name": "com.joelsmithinc.redbacks.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "164982423858-i8hta620bmhueapkfk7hn0gsc1itkg80.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZhzRnZ8Tbt07WkBjDts2T1FI62_dSynA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "164982423858-i8hta620bmhueapkfk7hn0gsc1itkg80.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "164982423858-8c0qk3fjpbgh8eruahq95se4t3vvhsbg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.joelsmithinc.redbacks.dev"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

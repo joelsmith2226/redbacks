@@ -39,7 +39,13 @@ class _AdminActionsState extends State<AdminActions> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          calcTotalCurrPtsPlayersBtn(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              calcTotalCurrPtsPlayersBtn(),
+              addFreeTransferBtn(),
+            ],
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -292,7 +298,6 @@ class _AdminActionsState extends State<AdminActions> {
         });
   }
 
-
   Widget totalPtsWithPreApp() {
     return MaterialButton(
         child: Text(
@@ -306,7 +311,8 @@ class _AdminActionsState extends State<AdminActions> {
               builder: (context) {
                 return AlertDialog(
                   title: Text('Recalculate total with pre app?'),
-                  content: Text("Sets everyone's totals to 0, adds each gw + preapp pts. You sure you want to do this?"),
+                  content: Text(
+                      "Sets everyone's totals to 0, adds each gw + preapp pts. You sure you want to do this?"),
                   actions: [
                     MaterialButton(
                       textColor: Color(0xFF6200EE),
@@ -343,6 +349,46 @@ class _AdminActionsState extends State<AdminActions> {
           FirebasePlayers().calculatePlayerGlobalPts();
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text('Players Pts totalled!')));
+        });
+  }
+
+  Widget addFreeTransferBtn() {
+    return MaterialButton(
+        child: Text(
+          "Add free transfer",
+          style: TextStyle(color: Colors.white),
+        ),
+        color: Colors.blue,
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Add free transfer?'),
+                  content: Text(
+                      "Are you sure you want to give all users an additional free?"),
+                  actions: [
+                    MaterialButton(
+                      textColor: Color(0xFF6200EE),
+                      onPressed: () {
+                        FirebaseCore().addFreeTransfer();
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Free transfers added'),
+                        ));
+                        Navigator.pop(context);
+                      },
+                      child: Text('Yes'),
+                    ),
+                    MaterialButton(
+                      textColor: Color(0xFF6200EE),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('No'),
+                    ),
+                  ],
+                );
+              });
         });
   }
 

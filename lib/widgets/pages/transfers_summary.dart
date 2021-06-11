@@ -27,7 +27,8 @@ class _TransfersSummaryState extends State<TransfersSummary> {
           children: [
             TransfersSummaryContainer("Free Transfers", fts),
             TransfersSummaryContainer("Hits Taken", "${user.hits}"),
-            TransfersSummaryContainer("Bank", "\$${user.budget}m"),
+            TransfersSummaryContainer(
+                "Bank", "\$${roundToXDecimalPlaces(user.budget)}m"),
           ],
         ),
       ),

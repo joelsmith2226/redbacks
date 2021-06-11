@@ -191,7 +191,10 @@ class Gameweek extends ChangeNotifier {
       curr.redCards = ifValidReturn(currentState, RED, 0);
       curr.bonus = int.parse(ifValidReturn(currentState, BONUS, "0"));
       curr.goalsConceded = ifValidReturn(currentState, CONCEDED, 0);
+      curr.heroism = int.tryParse(ifValidReturn(currentState, HEROISM, "0")) ?? 0;
+      curr.gkpGoalsConceded = ifValidReturn(currentState, GKP_CONCEDED, 0);
       setClean(currentState, curr);
+      setGKPClean(currentState, curr);
       curr.calculatePoints();
     }
     curr.saved = true;
@@ -221,6 +224,27 @@ class Gameweek extends ChangeNotifier {
         break;
       case FULL_CLEAN:
         curr.fullClean = true;
+        break;
+    }
+  }
+
+
+  void setGKPClean(FormBuilderState currentState, PlayerGameweek curr) {
+    // Set all cleans to false;
+    curr.gkpFullClean = false;
+    curr.gkpHalfClean = false;
+    curr.gkpQuarterClean = false;
+    switch (currentState.fields[GKP_CLEANS].value) {
+      case GKP_NO_CLEAN:
+        break;
+      case GKP_QUARTER_CLEAN:
+        curr.gkpQuarterClean = true;
+        break;
+      case GKP_HALF_CLEAN:
+        curr.gkpHalfClean = true;
+        break;
+      case GKP_FULL_CLEAN:
+        curr.gkpFullClean = true;
         break;
     }
   }

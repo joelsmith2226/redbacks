@@ -148,8 +148,19 @@ class FirebaseCore {
     performMethodOnAllUsers((QueryDocumentSnapshot val) async {
       await addUserGWHistoryToDB(val, currGW);
       await firebaseUsers.resetMiscDetailsForNewWeek(val.reference.id);
+      await firebasePlayers.resetTransferredInOutForNewWeek();
     });
   }
+
+  // User + GW history
+  Future<void> addFreeTransfer() {
+    // get a list of users
+    // add free
+    performMethodOnAllUsers((QueryDocumentSnapshot val) async {
+      await firebaseUsers.addFreeTransfer(val.reference.id);
+    });
+  }
+
 
   // Helper Functions
 

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -28,9 +29,6 @@ const int NO_USER_EXISTS = 2;
 const int USER_LINKED_OTHER_COMPANY = 3;
 const int ERROR = 4;
 
-
-
-
 // MODES
 const String CAPTAIN = "cap";
 const String VICE = "vice";
@@ -53,17 +51,26 @@ const String GAMEWEEK = "gw";
 const String POSITION = "position";
 const String GOALS = "goals";
 const String ASSISTS = "assists";
-const String SAVES = "saves";
-const String CLEANS = "cleans";
 const String YELLOW = "yellow";
 const String RED = "red";
 const String OWNS = "owns";
 const String PENS = "pens";
 const String BONUS = "bonus";
+const String CLEANS = "cleans";
 const String NO_CLEAN = "0";
 const String QUARTER_CLEAN = "1/4";
 const String HALF_CLEAN = "1/2";
 const String FULL_CLEAN = "Full";
+const String HEROISM = "heroism";
+const String GKP_CLEANS = "gkp-cleans";
+const String GKP_NO_CLEAN = "0 GKP";
+const String GKP_QUARTER_CLEAN = "1/4 GKP";
+const String GKP_HALF_CLEAN = "1/2 GKP";
+const String GKP_FULL_CLEAN = "Full GKP";
+const String SAVES = "saves";
+const String GKP_CONCEDED = "conceded_G";
+
+
 
 // Point System
 const Map<String, Map<String, int>> POINT_SYSTEM = {
@@ -76,12 +83,13 @@ const Map<String, Map<String, int>> POINT_SYSTEM = {
     OWNS: -2,
     PENS: -2,
     BONUS: 1,
-    NO_CLEAN: 0,
-    QUARTER_CLEAN: 1,
-    HALF_CLEAN: 2,
-    FULL_CLEAN: 5,
-    CONCEDED: -1,
+    GKP_NO_CLEAN: 0,
+    GKP_QUARTER_CLEAN: 1,
+    GKP_HALF_CLEAN: 2,
+    GKP_FULL_CLEAN: 5,
+    GKP_CONCEDED: -1,
     APPEARANCE: 2,
+    HEROISM: 1,
   },
   "DEF": {
     GOALS: 8,
@@ -98,6 +106,7 @@ const Map<String, Map<String, int>> POINT_SYSTEM = {
     FULL_CLEAN: 5,
     CONCEDED: -1,
     APPEARANCE: 2,
+    HEROISM: 1,
   },
   "MID": {
     GOALS: 6,
@@ -114,6 +123,7 @@ const Map<String, Map<String, int>> POINT_SYSTEM = {
     FULL_CLEAN: 1,
     CONCEDED: 0,
     APPEARANCE: 2,
+    HEROISM: 1,
   },
   "FWD": {
     GOALS: 4,
@@ -130,6 +140,7 @@ const Map<String, Map<String, int>> POINT_SYSTEM = {
     FULL_CLEAN: 0,
     CONCEDED: 0,
     APPEARANCE: 2,
+    HEROISM: 1,
   },
 };
 const Map<String, String> POINT_LABELS = {
@@ -146,6 +157,7 @@ const Map<String, String> POINT_LABELS = {
   FULL_CLEAN: "Full Clean",
   CONCEDED: "Goals Conceded",
   APPEARANCE: "Appearance",
+  HEROISM: "Defensive Heroism",
 };
 
 class OtherPointPageArgs {
@@ -153,8 +165,9 @@ class OtherPointPageArgs {
   final String name;
   final String teamName;
   final int currWeek;
+  final int preAppPoints;
 
-  OtherPointPageArgs(this.uid, this.name, this.teamName, this.currWeek);
+  OtherPointPageArgs(this.uid, this.name, this.teamName, this.currWeek, this.preAppPoints);
 }
 
 const int UNLIMITED = 100;
@@ -163,3 +176,13 @@ const String UNLIMITED_SYMBOL = '∞';
 const String SEVERITY = 'severity';
 const String MESSAGE = 'message';
 const String PERCENT = 'percent';
+
+double roundToXDecimalPlaces (double number, {int numberOfDecimal = 1}) {
+  String numbersAfterDecimal = number.toString().split('.')[1];
+  if (numbersAfterDecimal != '0') {
+    int existingNumberOfDecimal = numbersAfterDecimal.length;
+    number += 1 / (10 * pow(10, existingNumberOfDecimal));
+  }
+
+  return double.parse(number.toStringAsFixed(numberOfDecimal));
+}

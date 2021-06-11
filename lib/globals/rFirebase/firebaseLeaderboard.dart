@@ -29,7 +29,10 @@ class FirebaseLeaderboard {
     int totalPts = userDeets.data().containsKey('total-pts')
         ? userDeets.get('total-pts')
         : 0;
-    leaderboard.add(LeaderboardListEntry(name, teamName, gwPts, totalPts, uid));
+    int preAppPoints = userDeets.data().containsKey('pre-app-pts')
+        ? userDeets.get('pre-app-pts')
+        : 0;
+    leaderboard.add(LeaderboardListEntry(name, teamName, gwPts, totalPts, uid, preAppPoints));
     return leaderboard;
   }
 

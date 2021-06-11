@@ -76,9 +76,8 @@ class FirebaseGWHistory {
       int prevTotal = 0;
       try {
         if (gw.id > 1) {
-          DocumentSnapshot prevGWHistory =
-          await getUserGWHistory("GW-${gw.id - 1}", doc.reference.id);
-          prevTotal = prevGWHistory.get("total-pts");
+          DocumentSnapshot userDocSnap = await user.get();
+          prevTotal = userDocSnap.get("total-pts");
         }
       } catch (e) {
         print("something went wrong, couldnt find a document probs but we caught it");
@@ -242,6 +241,7 @@ class FirebaseGWHistory {
           'owns': pgw.ownGoals,
           'pens': pgw.penaltiesMissed,
           'bonus': pgw.bonus,
+          'heroism': pgw.heroism,
           'saved': pgw.saved,
           'gw-pts': pgw.gwPts,
           'point-breakdown': pgw.pointBreakdown.toMap(),
