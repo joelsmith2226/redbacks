@@ -5,12 +5,12 @@ import 'package:redbacks/widgets/pages/points_summary.dart';
 
 class PreAppPoints extends StatelessWidget {
   Function callback;
+  int preAppPoints;
 
-  PreAppPoints({@required this.callback});
+  PreAppPoints({@required this.callback, this.preAppPoints});
 
   @override
   Widget build(BuildContext context) {
-    LoggedInUser user = Provider.of<LoggedInUser>(context);
     return Container(
       height: MediaQuery.of(context).size.height * 0.9,
       child: Column(
@@ -31,16 +31,9 @@ class PreAppPoints extends StatelessWidget {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               Text(
-                "${user.preAppPoints}",
+                "${this.preAppPoints}",
                 style: TextStyle(
                     fontSize: 50,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor),
-              ),
-              Text(
-                "Don't worry if this says 0, it will just take some time to transition pre-existing points",
-                style: TextStyle(
-                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).primaryColor),
               ),

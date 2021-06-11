@@ -151,6 +151,16 @@ class FirebaseCore {
     });
   }
 
+  // User + GW history
+  Future<void> addFreeTransfer() {
+    // get a list of users
+    // add free
+    performMethodOnAllUsers((QueryDocumentSnapshot val) async {
+      await firebaseUsers.addFreeTransfer(val.reference.id);
+    });
+  }
+
+
   // Helper Functions
 
   Future<void> performMethodOnAllUsers(Function fn) async {

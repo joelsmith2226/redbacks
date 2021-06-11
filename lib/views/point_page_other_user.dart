@@ -24,6 +24,7 @@ class _PointPageOtherUserState extends State<PointPageOtherUser> {
   String uid;
   String name;
   String teamName;
+  int preAppPoints;
 
   @override
   void initState() {
@@ -34,12 +35,16 @@ class _PointPageOtherUserState extends State<PointPageOtherUser> {
   @override
   Widget build(BuildContext context) {
     final OtherPointPageArgs args =
-        ModalRoute.of(context).settings.arguments as OtherPointPageArgs;
+    ModalRoute
+        .of(context)
+        .settings
+        .arguments as OtherPointPageArgs;
     if (loading) {
       uid = args.uid;
       name = args.name;
       teamName = args.teamName;
       currentWeek = args.currWeek;
+      preAppPoints = args.preAppPoints;
     } // load once
 
     UserGW ugw;
@@ -71,23 +76,24 @@ class _PointPageOtherUserState extends State<PointPageOtherUser> {
             child: loading
                 ? CircularProgressIndicator()
                 : currentWeek == 0
-                    ? PreAppPoints(
-                        callback: (val) => setState(() => currentWeek = val))
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          PointsSummary(ugw, currentWeek,
-                              (val) => setState(() => currentWeek = val)),
-                          ugw == null
-                              ? Container(child: Text("No points for this GW"))
-                              : Expanded(
-                                  child: Container(
-                                    child: TeamWidget(ugw.team,
-                                        bench: true, mode: POINTS),
-                                  ),
-                                ),
-                        ],
-                      ),
+                ? PreAppPoints(
+                callback: (val) => setState(() => currentWeek = val),
+                preAppPoints: this.preAppPoints)
+                : Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                PointsSummary(ugw, currentWeek,
+                        (val) => setState(() => currentWeek = val)),
+                ugw == null
+                    ? Container(child: Text("No points for this GW"))
+                    : Expanded(
+                  child: Container(
+                    child: TeamWidget(ugw.team,
+                        bench: true, mode: POINTS),
+                  ),
+                ),
+              ],
+            ),
             alignment: Alignment.center,
           ),
         ],
@@ -105,7 +111,7 @@ class _PointPageOtherUserState extends State<PointPageOtherUser> {
   void _loadInUserGWHistory() async {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
     userGWHistory =
-        await FirebaseGWHistory().getCompleteUserGWHistory(uid, user.gwHistory);
+    await FirebaseGWHistory().getCompleteUserGWHistory(uid, user.gwHistory);
     setState(() {
       loading = false;
     });
