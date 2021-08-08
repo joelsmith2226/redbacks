@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -175,3 +176,13 @@ const String UNLIMITED_SYMBOL = '∞';
 const String SEVERITY = 'severity';
 const String MESSAGE = 'message';
 const String PERCENT = 'percent';
+
+double roundToXDecimalPlaces (double number, {int numberOfDecimal = 1}) {
+  String numbersAfterDecimal = number.toString().split('.')[1];
+  if (numbersAfterDecimal != '0') {
+    int existingNumberOfDecimal = numbersAfterDecimal.length;
+    number += 1 / (10 * pow(10, existingNumberOfDecimal));
+  }
+
+  return double.parse(number.toStringAsFixed(numberOfDecimal));
+}

@@ -29,7 +29,7 @@ void main() async {
   };
 
   var configuredApp = new AppConfig(
-    flavorName: 'development',
+    flavorName: 'dev',
     child: new ThemeSwitcherWidget(
       initialTheme: _themes[themeChoice],
       child: MyApp(

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:redbacks/models/player.dart';
 import 'package:redbacks/models/player_gameweek.dart';
+import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/providers/gameweek.dart';
 
 class FirebasePlayers {
@@ -140,5 +141,37 @@ class FirebasePlayers {
     firestore.collection('players').doc(player.docs[0].id).set({
       'flagged': p.flag == null ? null : p.flag.toMap(),
     }, SetOptions(merge: true));
+  }
+
+  Future<void> addToTransferOut(TeamPlayer p) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    // Get correct player doc
+    QuerySnapshot player = await firestore.collection('players').where('name', isEqualTo: p.name).limit(1).get();
+
+    firestore.collection('players').doc(player.docs[0].id).set({
+      'transferredOut': p.transferredOut + 1,
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> addToTransferIn(TeamPlayer p) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    // Get correct player doc
+    QuerySnapshot player = await firestore.collection('players').where('name', isEqualTo: p.name).limit(1).get();
+
+    firestore.collection('players').doc(player.docs[0].id).set({
+      'transferredIn': p.transferredIn + 1,
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> resetTransferredInOutForNewWeek() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference players = firestore.collection('players');
+    QuerySnapshot playersSnapshot = await players.get();
+    for (int i = 0; i < playersSnapshot.docs.length; i++) {
+      firestore.collection('players').doc(playersSnapshot.docs[i].id).set({
+        'transferredIn': 0,
+        'transferredOut': 0,
+      }, SetOptions(merge: true));
+    }
   }
 }

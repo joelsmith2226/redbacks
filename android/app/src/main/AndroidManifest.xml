@@ -2,7 +2,7 @@
     package="com.joelsmithinc.redbacks">
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="Redbacks"
+        android:label="Redbacks DEV"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
 

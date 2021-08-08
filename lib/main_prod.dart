@@ -29,17 +29,10 @@ void main() async {
   };
 
   var configuredApp = new AppConfig(
-    flavorName: 'production',
+    flavorName: 'prod',
     child: new ThemeSwitcherWidget(
       initialTheme: _themes[themeChoice],
-      child: MyApp(Firebase.initializeApp(
-          name: "Redbacks",
-          options: const FirebaseOptions(
-              appId: 'redbacks',
-              apiKey: 'AIzaSyAZhzRnZ8Tbt07WkBjDts2T1FI62_dSynA',
-              messagingSenderId: 'my_messagingSenderId',
-              projectId: 'redbacks')),
-          FirebaseAuth.instance),
+      child: MyApp(Firebase.initializeApp(), FirebaseAuth.instance),
     ),
   );
 

@@ -148,6 +148,7 @@ class FirebaseCore {
     performMethodOnAllUsers((QueryDocumentSnapshot val) async {
       await addUserGWHistoryToDB(val, currGW);
       await firebaseUsers.resetMiscDetailsForNewWeek(val.reference.id);
+      await firebasePlayers.resetTransferredInOutForNewWeek();
     });
   }
 
