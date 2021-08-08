@@ -5,6 +5,8 @@ import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/pages/homepage_summary.dart';
 import 'package:redbacks/widgets/summary_container.dart';
 
+import '../../globals/rFirebase/firebaseUsers.dart';
+
 class PickSummary extends StatefulWidget {
   Function summaryDialogFn;
 
@@ -45,10 +47,10 @@ class _PickSummaryState extends State<PickSummary> {
                     .of(context)
                     .size
                     .width * 0.2,
-                child: Text("Coming Soon",
+                child: Text(_containerText(),
                     style: TextStyle(fontSize: 11, color: Colors.white),
                     textAlign: TextAlign.center),
-                color: Colors.grey //_containerColor(),
+                color: _containerColor(),
             )
           ],
         )
@@ -92,10 +94,10 @@ class _PickSummaryState extends State<PickSummary> {
 
   String _containerText() {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
-    if (!user.chips[2].available) {
-      return "Used";
-    } else if (user.chips[2].active) {
+    if (user.chips[2].active) {
       return "Active";
+    } else if (!user.chips[2].available) {
+      return "Used";
     } else {
       return "Available";
     }
@@ -104,10 +106,10 @@ class _PickSummaryState extends State<PickSummary> {
   Color _containerColor() {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
 
-    if (!user.chips[2].available) {
-      return Colors.grey;
-    } else if (user.chips[2].active) {
+    if (user.chips[2].active) {
       return Colors.green;
+    } else if (!user.chips[2].available) {
+      return Colors.grey;
     } else {
       return DEFAULT_COLOR.withAlpha(150);
     }

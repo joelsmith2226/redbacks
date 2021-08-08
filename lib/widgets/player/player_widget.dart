@@ -26,10 +26,13 @@ class PlayerWidget extends StatefulWidget {
 }
 
 class _PlayerWidgetState extends State<PlayerWidget> {
+  bool tripleCap = false;
+
   @override
   Widget build(BuildContext context) {
     if (widget.player == null) {
       LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+      tripleCap = user.chips[2].active;
       widget.player = widget.teamPlayer.playerFromTeamPlayer(user.playerDB);
     }
     switch (widget.mode) {
@@ -208,9 +211,10 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       child: Container(
         width: MediaQuery.of(context).size.width * 0.07,
         child: Image.asset(
+
           widget.teamPlayer.rank == CAPTAIN
-              ? "assets/captain.png"
-              : "assets/vice.png",
+              ? (this.tripleCap ? "assets/triple.png" : "assets/captain.png")
+        : "assets/vice.png",
           alignment: Alignment.bottomRight,
         ),
       ),

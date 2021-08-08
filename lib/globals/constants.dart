@@ -170,7 +170,8 @@ class OtherPointPageArgs {
   OtherPointPageArgs(this.uid, this.name, this.teamName, this.currWeek, this.preAppPoints);
 }
 
-const int UNLIMITED = 100;
+const int UNLIMITED = 10000;
+const double UNLIMITED_BUDGET = 10000.0;
 const String UNLIMITED_SYMBOL = '∞';
 
 const String SEVERITY = 'severity';

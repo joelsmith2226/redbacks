@@ -18,6 +18,11 @@ class _TransfersSummaryState extends State<TransfersSummary> {
     String fts = user.freeTransfers == UNLIMITED
         ? UNLIMITED_SYMBOL
         : '${user.freeTransfers}';
+
+    String budget = user.budget == UNLIMITED
+        ? UNLIMITED_SYMBOL
+        : '\$${roundToXDecimalPlaces(user.budget)}m';
+
     return Column(children: [
       HomepageSummary(
         bottomMargin: 0,
@@ -28,7 +33,7 @@ class _TransfersSummaryState extends State<TransfersSummary> {
             TransfersSummaryContainer("Free Transfers", fts),
             TransfersSummaryContainer("Hits Taken", "${user.hits}"),
             TransfersSummaryContainer(
-                "Bank", "\$${roundToXDecimalPlaces(user.budget)}m"),
+                "Bank", "${budget}"),
           ],
         ),
       ),

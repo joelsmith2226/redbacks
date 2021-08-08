@@ -7,6 +7,8 @@ import 'package:redbacks/models/team.dart';
 import 'package:redbacks/models/user_GW.dart';
 import 'package:redbacks/providers/gameweek.dart';
 
+import 'firebaseUsers.dart';
+
 class FirebaseGWHistory {
   Future<void> addUserGWHistoryToDB(
       QueryDocumentSnapshot doc, int currGw) async {
@@ -17,6 +19,18 @@ class FirebaseGWHistory {
     var transfers = doc.data().containsKey('completed-transfers')
         ? doc.data()['completed-transfers']
         : 0;
+    var budget = doc.data().containsKey('budget') ? doc.data()['budget'] : 0.0;
+    var activeChip = "";
+    if (doc.data().containsKey('free-hit') && doc.data()['free-hit'].containsKey('active') && doc.data()['free-hit']['active']) {
+      activeChip = 'free-hit';
+    }
+    if (doc.data().containsKey('wildcard') && doc.data()['wildcard'].containsKey('active') && doc.data()['wildcard']['active']) {
+      activeChip = 'wildcard';
+    }
+    if (doc.data().containsKey('triple-cap') && doc.data()['triple-cap'].containsKey('active') && doc.data()['triple-cap']['active']) {
+      activeChip = 'triple-cap';
+    }
+
     DocumentReference gwHistoryDoc =
         user.collection("GW-History").doc("GW-${currGw}");
 
@@ -26,8 +40,13 @@ class FirebaseGWHistory {
       "total-pts": 0,
       "transfers": transfers,
       "hits": hits,
-      "chips-used": "",
+      "chips-used": activeChip,
+      "budget": budget,
     }).catchError((error) => print("Failed to add gw history: $error"));
+
+    if (activeChip != "") {
+      FirebaseUsers().activateDeactivateChip(doc.reference.id, activeChip, false);
+    }
 
     // add team details
     CollectionReference submissionTeam = user.collection('Team');
@@ -48,7 +67,8 @@ class FirebaseGWHistory {
     await gw.setTeamGWPts(teamCollection);
     print("SET TEAM PTS");
     // Check captain/vice captain who gets double points
-    await gw.setCaptainViceGWPts(teamCollection);
+    DocumentSnapshot gwHistorySnapshot = await gwHistoryDoc.get();
+    await gw.setCaptainViceGWPts(teamCollection, gwHistorySnapshot.get("chips-used"));
     print("SET CAP PTS");
 
     // Check if bench sub is required
@@ -69,7 +89,6 @@ class FirebaseGWHistory {
       }
 
       // Reduce by hits if required
-      DocumentSnapshot gwHistorySnapshot = await gwHistoryDoc.get();
       int hits = gwHistorySnapshot.get('hits');
       teamGWPts -= (hits * 4);
 
@@ -101,6 +120,20 @@ class FirebaseGWHistory {
       }, SetOptions(merge: true));
 
       print("GLOBAL SET");
+
+      // If limitless was previously active, revert to previous week
+      if (gwHistorySnapshot.get("chips-used") == "free-hit") {
+        // reset team
+        DocumentReference gwHistoryDoc =
+        user.collection("GW-History").doc("GW-${gw.id - 1}");
+        CollectionReference oldTeam = gwHistoryDoc.collection('Team');
+        await FirebaseCore().copyCollection(oldTeam, user);
+        DocumentSnapshot prevGW = await user.collection("GW-History").doc("GW-${gw.id - 1}").get();
+        // reset budget
+        user.set({
+          "budget": prevGW.data().containsKey("budget") ? prevGW.data()["budget"] :  0.0,
+        }, SetOptions(merge: true));
+      }
     });
 
     // // add team details
@@ -156,7 +189,7 @@ class FirebaseGWHistory {
       chip: userGW.get('chips-used'),
       points: userGW.get('gw-pts'),
       totalPts: userGW.get('total-pts'),
-      completedTransfers: [], //todo COMPLETED TRANSFERS
+      completedTransfers: [],
     ));
   }
 
@@ -177,7 +210,7 @@ class FirebaseGWHistory {
     gwModels.forEach((gw) async {
       CollectionReference playerGWs = firestore
           .collection('gw-history')
-          .doc('gw-${gw.id}') // um wtf todo
+          .doc('gw-${gw.id}')
           .collection('player-gameweeks');
       QuerySnapshot qs = await playerGWs.get();
       await _populatePlayerGWs(qs, players, gw);
