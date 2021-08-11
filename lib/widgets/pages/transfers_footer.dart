@@ -6,7 +6,15 @@ import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/pages/homepage_summary.dart';
 import 'package:redbacks/widgets/summary_container.dart';
 
+import '../../globals/constants.dart';
+import '../../globals/constants.dart';
+import '../../globals/constants.dart';
+
 class TransfersFooter extends StatefulWidget {
+  String fts;
+  String budget;
+  Function callback;
+  TransfersFooter(this.fts, this.budget, this.callback);
   @override
   _TransfersFooterState createState() => _TransfersFooterState();
 }
@@ -15,9 +23,6 @@ class _TransfersFooterState extends State<TransfersFooter> {
   @override
   Widget build(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
-    String fts = user.freeTransfers == UNLIMITED
-        ? UNLIMITED_SYMBOL
-        : '${user.freeTransfers}';
     return FittedBox(
       fit: BoxFit.fitWidth,
       child: HomepageSummary(
@@ -35,16 +40,16 @@ class _TransfersFooterState extends State<TransfersFooter> {
 
   Widget ChipSummary(int chipIndex) {
     return SummaryContainer(
-        // onPress: chipIndex == 0 UNCOMMENT WHEN READY FOR chips todo
-        //     ? () => wildcardDialog(context)
-        //     : () => freehitDialog(context),
+        onPress: chipIndex == 0
+            ? () => wildcardDialog(context)
+            : () => freehitDialog(context),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Container(
               width: MediaQuery.of(context).size.width * 0.2,
               child: Text(
-                chipIndex == 0 ? "Wildcard" : "Free Hit",
+                chipIndex == 0 ? "Wildcard" : "Limitless",
                 style: TextStyle(fontSize: 11, color: Colors.white),
                 textAlign: TextAlign.center,
               ),
@@ -52,10 +57,10 @@ class _TransfersFooterState extends State<TransfersFooter> {
             ),
             Container(
               width: MediaQuery.of(context).size.width * 0.2,
-              child: Text("Coming Soon", //_containerText(chipIndex),
+              child: Text(_containerText(chipIndex),
                   style: TextStyle(fontSize: 11, color: Colors.white),
                   textAlign: TextAlign.center),
-              color: Colors.grey //_containerColor(chipIndex),
+              color: _containerColor(chipIndex),
             )
           ],
         ));
@@ -63,13 +68,13 @@ class _TransfersFooterState extends State<TransfersFooter> {
 
   void wildcardDialog(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-    if (user.chips[1].active || user.chips[0].active) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-            'Cannot activate Wildcard while on Free Hit or cannot deactivate once popped'),
-      ));
-      return; //cannot deactivate once active or if WC active
-    }
+    // if (user.anyChipsActive()) {
+    //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    //     content: Text(
+    //         'Cannot activate Wildcard while other chips active or cannot deactivate once popped'),
+    //   ));
+    //   return; //cannot deactivate once active or if WC active
+    // }
     showDialog(
         context: context,
         builder: (context) {
@@ -83,15 +88,30 @@ class _TransfersFooterState extends State<TransfersFooter> {
               MaterialButton(
                 textColor: Color(0xFF6200EE),
                 onPressed: () {
-                  setState(() {
-                    user.chips[0].active = !wcStatus;
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Wildcard Activated!'),
-                    ));
+                  if (wcStatus) {
                     FirebaseUsers().activateDeactivateChip(
                         user.uid, "wildcard", !wcStatus);
+                    FirebaseUsers()
+                        .availableUnavailableChip(user.uid, "wildcard", true);
+                    FirebaseUsers().unlimitedTransfers(user.uid, number: 1);
+                    user.freeTransfers = UNLIMITED;
                     Navigator.pop(context);
-                  });
+                    setState(() {});
+                  } else {
+                    setState(() {
+                      user.chips[0].active = !wcStatus;
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Wildcard Activated!'),
+                      ));
+                      FirebaseUsers().activateDeactivateChip(
+                          user.uid, "wildcard", !wcStatus);
+                      FirebaseUsers().availableUnavailableChip(
+                          user.uid, "wildcard", false);
+                      FirebaseUsers().unlimitedTransfers(user.uid);
+                      widget.callback(UNLIMITED_SYMBOL, widget.budget);
+                      Navigator.pop(context);
+                    });
+                  }
                 },
                 child: Text('${wcStatus ? "Deactivate" : "Activate"}'),
               ),
@@ -109,10 +129,10 @@ class _TransfersFooterState extends State<TransfersFooter> {
 
   void freehitDialog(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-    if (user.chips[1].active || user.chips[0].active) {
+    if (user.anyChipsActive()) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
-            'Cannot activate Free Hit while on Wildcard or cannot deactivate once popped'),
+            'Cannot activate Limitless while other chips active or cannot deactivate once popped'),
       ));
       return;
     }
@@ -121,9 +141,9 @@ class _TransfersFooterState extends State<TransfersFooter> {
         builder: (context) {
           bool fhStatus = user.chips[1].active;
           return AlertDialog(
-            title: Text("Activate Freehit?"),
+            title: Text("Activate Limitless?"),
             content: Text(
-                "Freehit allows you to make unlimited transfers for one week with no"
+                "Limitless allows you to make unlimited transfers with unlimited budget for one week with no"
                 "hits applied and then your team returns to your current team prior to activating."
                 " You only get one per season. Are you sure you want to activate?"),
             actions: [
@@ -133,10 +153,19 @@ class _TransfersFooterState extends State<TransfersFooter> {
                   setState(() {
                     user.chips[1].active = !fhStatus;
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Freehit Activated!'),
+                      content: Text('Limitless Activated!'),
                     ));
+                    FirebaseUsers().activateDeactivateChip(
+                        user.uid, "free-hit", !fhStatus);
                     FirebaseUsers()
-                        .activateDeactivateChip(user.uid, "freehit", !fhStatus);
+                        .availableUnavailableChip(user.uid, "free-hit", false);
+                    FirebaseUsers().unlimitedTransfers(user.uid);
+                    FirebaseUsers().unlimitedBudget(user.uid);
+                    user.freeTransfers = UNLIMITED;
+                    user.budget = UNLIMITED_BUDGET; // to load in immediately
+                    user.originalModels.budget = UNLIMITED_BUDGET;
+                    user.originalModels.freeTransfers = UNLIMITED;
+                    widget.callback(UNLIMITED_SYMBOL, UNLIMITED_SYMBOL);
                     Navigator.pop(context);
                   });
                 },
@@ -156,10 +185,10 @@ class _TransfersFooterState extends State<TransfersFooter> {
 
   String _containerText(int chipIndex) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
-    if (!user.chips[chipIndex].available) {
-      return "Used";
-    } else if (user.chips[chipIndex].active) {
+    if (user.chips[chipIndex].active) {
       return "Active";
+    } else if (!user.chips[chipIndex].available) {
+      return "Used";
     } else {
       return "Available";
     }
@@ -168,10 +197,10 @@ class _TransfersFooterState extends State<TransfersFooter> {
   Color _containerColor(int chipIndex) {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
 
-    if (!user.chips[chipIndex].available) {
-      return Colors.grey;
-    } else if (user.chips[chipIndex].active) {
+    if (user.chips[chipIndex].active) {
       return Colors.green;
+    } else if (!user.chips[chipIndex].available) {
+      return Colors.grey;
     } else {
       return Theme.of(context).primaryColor.withAlpha(150);
     }

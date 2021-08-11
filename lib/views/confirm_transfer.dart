@@ -38,7 +38,7 @@ class ConfirmTransfersView extends StatelessWidget {
                 // Transfer list
                 TransferList(transferList: pendings),
                 // chip options
-                user.signingUp ? Container() : ChipsContainer(chips: user.chips),
+                // user.signingUp ? Container() : ChipsContainer(chips: user.chips),
                 // confirm
               ],
             ),

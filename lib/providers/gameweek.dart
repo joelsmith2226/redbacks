@@ -52,7 +52,7 @@ class Gameweek extends ChangeNotifier {
     });
   }
 
-  Future<void> setCaptainViceGWPts(CollectionReference teamCollection) async {
+  Future<void> setCaptainViceGWPts(CollectionReference teamCollection, String chipUsed) async {
     // Identify captain/vice captain and check if captain played
     await teamCollection.get().then((QuerySnapshot teamPlayerDocs) async {
       QueryDocumentSnapshot captainDoc;
@@ -89,8 +89,12 @@ class Gameweek extends ChangeNotifier {
           // no multiplier appropriate cos no vice/cap played
           return;
         }
+        var multiplier = 2;
+        if (chipUsed == "triple-cap") {
+          multiplier = 3;
+        }
         await teamCollection.doc('Player-${index}').set({
-          'gw-pts': pgw.gwPts * 2,
+          'gw-pts': pgw.gwPts * multiplier,
         }, SetOptions(merge: true));
       }
     });

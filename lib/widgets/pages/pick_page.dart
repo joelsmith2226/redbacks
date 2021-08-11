@@ -26,7 +26,7 @@ class _PickPageState extends State<PickPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          PickSummary(summaryDialogFn: () => null //tripleCapDialog(context),
+          PickSummary(summaryDialogFn: () => tripleCapDialog(context),
               ),
           Expanded(
             child: Container(
@@ -39,6 +39,13 @@ class _PickPageState extends State<PickPage> {
   }
 
   void tripleCapDialog(BuildContext context) {
+    if (user.anyChipsActive() && !user.chips[2].active) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+            'Cannot activate Triple Cap while other chips active or cannot deactivate once popped'),
+      ));
+      return;
+    }
     showDialog(
         context: context,
         builder: (context) {
@@ -62,6 +69,8 @@ class _PickPageState extends State<PickPage> {
                     ));
                     FirebaseUsers().activateDeactivateChip(
                         user.uid, "triple-cap", !tripCapStatus);
+                    FirebaseUsers().availableUnavailableChip(
+                        user.uid, "triple-cap", false);
                     Navigator.pop(context);
                   });
                 },

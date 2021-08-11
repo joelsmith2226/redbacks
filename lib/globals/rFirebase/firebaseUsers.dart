@@ -79,6 +79,7 @@ class FirebaseUsers {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference userCollection = firestore.collection('users');
     List<String> transfersAsStrings = user.completedTransferAsList();
+    user.adjustChipsIfActive();
     return userCollection
         .doc(user.uid)
         .set({
@@ -198,7 +199,7 @@ class FirebaseUsers {
         setChip(userList, i, 0, "Wildcard");
       }
       if (fh) {
-        setChip(userList, i, 1, "Free Hit");
+        setChip(userList, i, 1, "Limitless");
       }
       if (tc) {
         setChip(userList, i, 2, "Triple Cap");
@@ -267,5 +268,19 @@ class FirebaseUsers {
       totalPtsFromGWs += gws.docs[i].data()['gw-pts'] ?? 0;
     }
     return totalPtsFromGWs;
+  }
+
+  void unlimitedTransfers(String uid, {int number = UNLIMITED}) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    firestore.collection('users').doc(uid).set({
+      'free-transfers': number
+    }, SetOptions(merge: true));
+  }
+
+  void unlimitedBudget(String uid) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    firestore.collection('users').doc(uid).set({
+      'budget': UNLIMITED_BUDGET
+    }, SetOptions(merge: true));
   }
 }

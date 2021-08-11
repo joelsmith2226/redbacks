@@ -5,6 +5,8 @@ import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/providers/logged_in_user.dart';
 import 'package:redbacks/widgets/player/player_list.dart';
 
+import '../../globals/constants.dart';
+
 class PlayerSelectorCard {
   TeamPlayer outgoingPlayer;
   TeamPlayer incomingPlayer;
@@ -44,7 +46,7 @@ class PlayerSelectorCard {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Budget: ${budget}m"),
+                Text("Budget: ${roundToXDecimalPlaces(budget)}m"),
                 PlayerList(
                     players: playerDB, outgoingPlayer: this.outgoingPlayer),
               ],

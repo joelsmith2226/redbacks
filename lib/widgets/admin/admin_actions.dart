@@ -100,6 +100,7 @@ class _AdminActionsState extends State<AdminActions> {
                               "DEADLINE ACTIVATED: new curr gw ${user.currGW}"),
                         ));
                         setState(() {});
+                        Navigator.pop(context);
                       },
                       child: Text("Confirm Deadline"),
                     ),

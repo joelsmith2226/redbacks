@@ -57,7 +57,7 @@ class _ChipsContainerState extends State<ChipsContainer> {
         child: RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
-            text: "Chip   ",
+            text: "Chip             ",
             style: GoogleFonts.merriweatherSans(),
             children: [TextSpan(text: "Availability")],
           ),
@@ -84,10 +84,8 @@ class _ChipsContainerState extends State<ChipsContainer> {
                 textAlign: TextAlign.center,
               )),
           MaterialButton(
-            child: Text("N/A"),
-                // ? (c.active ? 'Active' : 'Inactive') todo
-                // : 'Unavailable'),
-            color: Colors.grey,//c.active ? Colors.green : Colors.red,
+            child: Text(c.available ? (c.active ? 'Active' : 'Inactive') : 'Unavailable'),
+            color: c.available ? (c.active ? Colors.green : Colors.red) : Colors.grey,
             onPressed: () => setState(() {
              // c.active = !c.active;
             }),

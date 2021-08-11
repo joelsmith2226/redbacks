@@ -124,7 +124,7 @@ class LoggedInUser extends ChangeNotifier {
   void setInitialChips() {
     this.chips = [
       RFLChip("Wildcard", true, false),
-      RFLChip("Free Hit", true, false),
+      RFLChip("Limitless", true, false),
       RFLChip("Triple Cap", true, false)
     ];
   }
@@ -156,6 +156,7 @@ class LoggedInUser extends ChangeNotifier {
     await this.loadInGlobalDBCollections();
     await this.loadMiscDetailsFromDB();
     await this.getCompleteUserGWHistory();
+    this.team = await FirebaseCore().getTeam(this.uid, this.playerDB);
   }
 
   void userDetailsPushDB() {
@@ -237,6 +238,9 @@ class LoggedInUser extends ChangeNotifier {
   /// Assumes only runs after confirming that both players are viable
   /// for transfer
   String adjustBudget(Transfer currTransfer) {
+    if (this.chips[1].active) {
+      return "";
+    }
     TeamPlayer incoming = currTransfer.incoming;
     TeamPlayer outgoing = currTransfer.outgoing;
     this.budget -= incoming.boughtPrice;
@@ -710,5 +714,17 @@ class LoggedInUser extends ChangeNotifier {
 
   set deadlineTime(String value) {
     _deadlineTime = value;
+  }
+
+  bool anyChipsActive() {
+    return chips[0].active || chips[1].active || chips[2].active;
+  }
+
+  void adjustChipsIfActive() {
+    this.chips.forEach((chip) {
+      if (chip.active){
+        chip.available = false;
+      }
+    });
   }
 }

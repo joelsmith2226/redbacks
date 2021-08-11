@@ -20,6 +20,9 @@ class _ChooseTeamSummaryState extends State<ChooseTeamSummary> {
       freshHits = (user.hits - user.originalModels.hits) * 4;
     }
     String fts = user.freeTransfers == UNLIMITED ? UNLIMITED_SYMBOL : '${user.freeTransfers}';
+    String budget = user.budget == UNLIMITED
+        ? UNLIMITED_SYMBOL
+        : '\$${roundToXDecimalPlaces(user.budget)}m';
     return HomepageSummary(
       body: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -38,7 +41,7 @@ class _ChooseTeamSummaryState extends State<ChooseTeamSummary> {
         ),
         ChooseTeamSummaryContainer(
           "Budget Left:",
-          "\$${roundToXDecimalPlaces(user.budget + removalBudget)}m",
+          budget,
         ),
       ]),
     );

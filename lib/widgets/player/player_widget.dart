@@ -10,26 +10,35 @@ import 'package:redbacks/widgets/player/player_card.dart';
 import 'package:redbacks/widgets/player/player_selector_card.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../models/user_GW.dart';
+
 class PlayerWidget extends StatefulWidget {
   TeamPlayer teamPlayer;
   Player player;
   String mode;
   bool benched = false;
+  UserGW ugw;
 
   PlayerWidget(this.player, this.mode, {this.benched = false});
 
   PlayerWidget.fromTeamPlayer(this.teamPlayer, this.mode,
-      {this.benched = false});
+      {this.benched = false, this.ugw});
 
   @override
   _PlayerWidgetState createState() => _PlayerWidgetState();
 }
 
 class _PlayerWidgetState extends State<PlayerWidget> {
+  bool tripleCap = false;
+
   @override
   Widget build(BuildContext context) {
     if (widget.player == null) {
       LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
+      tripleCap = user.chips[2].active;
+      if (widget.ugw != null && widget.ugw.chip == 'triple-cap') {
+        tripleCap = true;
+      }
       widget.player = widget.teamPlayer.playerFromTeamPlayer(user.playerDB);
     }
     switch (widget.mode) {
@@ -208,9 +217,10 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       child: Container(
         width: MediaQuery.of(context).size.width * 0.07,
         child: Image.asset(
+
           widget.teamPlayer.rank == CAPTAIN
-              ? "assets/captain.png"
-              : "assets/vice.png",
+              ? (this.tripleCap ? "assets/triple.png" : "assets/captain.png")
+        : "assets/vice.png",
           alignment: Alignment.bottomRight,
         ),
       ),
