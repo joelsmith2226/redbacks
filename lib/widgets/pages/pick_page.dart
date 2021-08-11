@@ -69,6 +69,8 @@ class _PickPageState extends State<PickPage> {
                     ));
                     FirebaseUsers().activateDeactivateChip(
                         user.uid, "triple-cap", !tripCapStatus);
+                    FirebaseUsers().availableUnavailableChip(
+                        user.uid, "triple-cap", false);
                     Navigator.pop(context);
                   });
                 },

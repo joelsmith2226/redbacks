@@ -96,6 +96,8 @@ class _PickSummaryState extends State<PickSummary> {
     LoggedInUser user = Provider.of<LoggedInUser>(context);
     if (user.chips[2].active) {
       return "Active";
+    } else if (user.anyChipsActive()) {
+      return "Not Available";
     } else if (!user.chips[2].available) {
       return "Used";
     } else {
@@ -108,7 +110,7 @@ class _PickSummaryState extends State<PickSummary> {
 
     if (user.chips[2].active) {
       return Colors.green;
-    } else if (!user.chips[2].available) {
+    } else if (!user.chips[2].available || user.anyChipsActive()) {
       return Colors.grey;
     } else {
       return DEFAULT_COLOR.withAlpha(150);

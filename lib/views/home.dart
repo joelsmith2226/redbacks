@@ -36,6 +36,9 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
+    user = Provider.of<LoggedInUser>(context, listen: false);
+    user.originalModels = null;
+
   }
 
   @override

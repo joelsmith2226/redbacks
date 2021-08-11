@@ -3,14 +3,16 @@ import 'package:redbacks/models/team.dart';
 import 'package:redbacks/models/team_player.dart';
 import 'package:redbacks/widgets/player/player_widget.dart';
 
+import '../models/user_GW.dart';
 import 'bench.dart';
 
 class TeamWidget extends StatelessWidget {
   Team team;
   String mode;
   bool bench = false;
+  UserGW ugw;
 
-  TeamWidget(this.team, {this.mode, this.bench}) {
+  TeamWidget(this.team, {this.mode, this.bench, this.ugw}) {
     List<TeamPlayer> players = this.team.players;
     r1Players.add(players[0]);
     r2Players.addAll([players[1], players[2]]);
@@ -32,7 +34,7 @@ class TeamWidget extends StatelessWidget {
     List<PlayerWidget> widgets = [];
 
     players.forEach((p) {
-      widgets.add(PlayerWidget.fromTeamPlayer(p, this.mode));
+      widgets.add(PlayerWidget.fromTeamPlayer(p, this.mode, ugw: ugw));
     });
     return widgets;
   }

@@ -7,8 +7,14 @@ import 'package:redbacks/widgets/pages/homepage_summary.dart';
 import 'package:redbacks/widgets/summary_container.dart';
 
 import '../../globals/constants.dart';
+import '../../globals/constants.dart';
+import '../../globals/constants.dart';
 
 class TransfersFooter extends StatefulWidget {
+  String fts;
+  String budget;
+  Function callback;
+  TransfersFooter(this.fts, this.budget, this.callback);
   @override
   _TransfersFooterState createState() => _TransfersFooterState();
 }
@@ -62,13 +68,13 @@ class _TransfersFooterState extends State<TransfersFooter> {
 
   void wildcardDialog(BuildContext context) {
     LoggedInUser user = Provider.of<LoggedInUser>(context, listen: false);
-    if (user.anyChipsActive()) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-            'Cannot activate Wildcard while other chips active or cannot deactivate once popped'),
-      ));
-      return; //cannot deactivate once active or if WC active
-    }
+    // if (user.anyChipsActive()) {
+    //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    //     content: Text(
+    //         'Cannot activate Wildcard while other chips active or cannot deactivate once popped'),
+    //   ));
+    //   return; //cannot deactivate once active or if WC active
+    // }
     showDialog(
         context: context,
         builder: (context) {
@@ -82,18 +88,30 @@ class _TransfersFooterState extends State<TransfersFooter> {
               MaterialButton(
                 textColor: Color(0xFF6200EE),
                 onPressed: () {
-                  setState(() {
-                    user.chips[0].active = !wcStatus;
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Wildcard Activated!'),
-                    ));
+                  if (wcStatus) {
                     FirebaseUsers().activateDeactivateChip(
                         user.uid, "wildcard", !wcStatus);
-                    FirebaseUsers().availableUnavailableChip(user.uid, "wildcard", false);
-                    FirebaseUsers().unlimitedTransfers(user.uid);
+                    FirebaseUsers()
+                        .availableUnavailableChip(user.uid, "wildcard", true);
+                    FirebaseUsers().unlimitedTransfers(user.uid, number: 1);
                     user.freeTransfers = UNLIMITED;
                     Navigator.pop(context);
-                  });
+                    setState(() {});
+                  } else {
+                    setState(() {
+                      user.chips[0].active = !wcStatus;
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Wildcard Activated!'),
+                      ));
+                      FirebaseUsers().activateDeactivateChip(
+                          user.uid, "wildcard", !wcStatus);
+                      FirebaseUsers().availableUnavailableChip(
+                          user.uid, "wildcard", false);
+                      FirebaseUsers().unlimitedTransfers(user.uid);
+                      widget.callback(UNLIMITED_SYMBOL, widget.budget);
+                      Navigator.pop(context);
+                    });
+                  }
                 },
                 child: Text('${wcStatus ? "Deactivate" : "Activate"}'),
               ),
@@ -137,15 +155,17 @@ class _TransfersFooterState extends State<TransfersFooter> {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text('Limitless Activated!'),
                     ));
+                    FirebaseUsers().activateDeactivateChip(
+                        user.uid, "free-hit", !fhStatus);
                     FirebaseUsers()
-                        .activateDeactivateChip(user.uid, "free-hit", !fhStatus);
-                    FirebaseUsers().availableUnavailableChip(user.uid, "free-hit", false);
+                        .availableUnavailableChip(user.uid, "free-hit", false);
                     FirebaseUsers().unlimitedTransfers(user.uid);
                     FirebaseUsers().unlimitedBudget(user.uid);
                     user.freeTransfers = UNLIMITED;
                     user.budget = UNLIMITED_BUDGET; // to load in immediately
                     user.originalModels.budget = UNLIMITED_BUDGET;
                     user.originalModels.freeTransfers = UNLIMITED;
+                    widget.callback(UNLIMITED_SYMBOL, UNLIMITED_SYMBOL);
                     Navigator.pop(context);
                   });
                 },

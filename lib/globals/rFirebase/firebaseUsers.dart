@@ -79,6 +79,7 @@ class FirebaseUsers {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference userCollection = firestore.collection('users');
     List<String> transfersAsStrings = user.completedTransferAsList();
+    user.adjustChipsIfActive();
     return userCollection
         .doc(user.uid)
         .set({
@@ -269,10 +270,10 @@ class FirebaseUsers {
     return totalPtsFromGWs;
   }
 
-  void unlimitedTransfers(String uid) {
+  void unlimitedTransfers(String uid, {int number = UNLIMITED}) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     firestore.collection('users').doc(uid).set({
-      'free-transfers': UNLIMITED
+      'free-transfers': number
     }, SetOptions(merge: true));
   }
 

@@ -178,6 +178,12 @@ const String SEVERITY = 'severity';
 const String MESSAGE = 'message';
 const String PERCENT = 'percent';
 
+const Map<String, String> CHIPS = {
+  'wildcard': "Wildcard",
+  'triple-cap': 'Triple\nCaptain',
+  'free-hit': 'Limitless'
+};
+
 double roundToXDecimalPlaces (double number, {int numberOfDecimal = 1}) {
   String numbersAfterDecimal = number.toString().split('.')[1];
   if (numbersAfterDecimal != '0') {
