@@ -46,6 +46,15 @@ class _PickPageState extends State<PickPage> {
       ));
       return;
     }
+
+    if (!user.chips[2].available && !user.chips[2].active) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+            'You\'ve already used your triple captain for the season!'),
+      ));
+      return;
+    }
+
     showDialog(
         context: context,
         builder: (context) {
@@ -63,6 +72,7 @@ class _PickPageState extends State<PickPage> {
                 onPressed: () {
                   setState(() {
                     user.chips[2].active = !tripCapStatus;
+
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text(
                           'Triple Captain ${tripCapStatus ? "Deactivated" : "Activated"}!'),
@@ -70,7 +80,9 @@ class _PickPageState extends State<PickPage> {
                     FirebaseUsers().activateDeactivateChip(
                         user.uid, "triple-cap", !tripCapStatus);
                     FirebaseUsers().availableUnavailableChip(
-                        user.uid, "triple-cap", false);
+                        user.uid, "triple-cap", !user.chips[2].available);
+                    user.chips[2].available = !user.chips[2].available;
+
                     Navigator.pop(context);
                   });
                 },

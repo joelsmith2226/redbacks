@@ -32,10 +32,6 @@ class _ChooseTeamSummaryState extends State<ChooseTeamSummary> {
           fts,
         ),
         user.signingUp ? Container() : ChooseTeamSummaryContainer(
-          "Wildcard",
-          "Available",
-        ),
-        user.signingUp ? Container() : ChooseTeamSummaryContainer(
           "Cost",
           "${freshHits}",
         ),

@@ -147,8 +147,8 @@ class _TransfersSummaryState extends State<TransfersSummary> {
           return AlertDialog(
             title: Text("Activate Wildcard?"),
             content: Text(
-                "Wildcard allows you to make unlimited transfers for one week with no"
-                    "hits applied. You only get one per season. Are you sure you want to activate?"),
+                "Wildcard allows you to make unlimited transfers for one week with no "
+                    "hits applied. You only get one per season and once active you can't deactivate. Are you sure you want to activate?"),
             actions: [
               MaterialButton(
                 textColor: Color(0xFF6200EE),
@@ -215,9 +215,9 @@ class _TransfersSummaryState extends State<TransfersSummary> {
           return AlertDialog(
             title: Text("Activate Limitless?"),
             content: Text(
-                "Limitless allows you to make unlimited transfers with unlimited budget for one week with no"
+                "Limitless allows you to make unlimited transfers with unlimited budget for one week with no "
                     "hits applied and then your team returns to your current team prior to activating."
-                    " You only get one per season. Are you sure you want to activate?"),
+                    " You only get one per season and once active you can't deactivate. Are you sure you want to activate?"),
             actions: [
               MaterialButton(
                 textColor: Color(0xFF6200EE),
